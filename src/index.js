@@ -72,7 +72,7 @@ function init() {
     let ambient = new AmbientLight(0x666666);
     scene.add(ambient);
     let directionalLight = new DirectionalLight(0x887766);
-    directionalLight.position.set(-1, 1, 1).normalize();
+    directionalLight.position.set(1, 1, 1).normalize();
     scene.add(directionalLight);
 
     // Helpers
@@ -197,5 +197,13 @@ function add2dCurve(f, sampling, extent, scene) {
 
 function sine2DCurve(t1, t2) {
     let firstOrderCurve = sineCurve(t1);
-    return Math.exp(-t2 / 20) * Math.cos(0.5 * t2) * Math.cos(0.2 * t2) * firstOrderCurve; // z = 0 => 1
+    let cx = 0;
+    let cy = 15;
+    let dx2 = Math.pow(t1 - cx, 2);
+    let dy2 = Math.pow(t2 - cy, 2);
+    return 1.5 * Math.exp(-(dx2+dy2) / 25.0)
+        + firstOrderCurve *
+        (Math.exp(-t2 / 20) * Math.cos(0.5 * t2) * Math.cos(0.2 * t2))
+        ;
+    // z = 0 => 1
 }
