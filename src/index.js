@@ -5,11 +5,11 @@ import {
     AxesHelper,
     BoxBufferGeometry,
     Color,
-    DirectionalLight, Geometry,
+    DirectionalLight, DoubleSide, Geometry,
     GridHelper, Line, LineBasicMaterial,
     Mesh,
-    MeshBasicMaterial,
-    PerspectiveCamera,
+    MeshBasicMaterial, MeshLambertMaterial, MeshPhongMaterial,
+    PerspectiveCamera, PlaneBufferGeometry,
     Scene, Vector3,
     WebGLRenderer
 } from "three";
@@ -95,15 +95,20 @@ function init() {
     mouseHelper = new Mesh(mouseGeometry, mouseMaterial);
     // scene.add(mouseHelper);
 
-    let sampling = 200;
+    let sampling1d = 200;
     let f = sineCurve;
     let redX = 0.5;
     let redY = 0.5;
-    let extent = {x: [-15, 15], y: [-15 * redY, 15 * redY], z: [-15, 15]};
+    let redZ = 0.5;
+    let extent = {x: [-15, 15], y: [0, 60 * redY], z: [-15 * redZ, 15 * redZ]};
 
-    add1dCurve(f, sampling, extent, scene);
+    add1dCurve(f, sampling1d, extent, scene);
 
-    addLarge1dCurve(f, sampling, extent, scene);
+    addLarge1dCurve(f, sampling1d, extent, scene);
+
+    let sampling2d = 128;
+    let g = sine2DCurve;
+    add2dCurve(g, sampling2d, extent, scene);
 }
 
 function add1dCurve(f, sampling, extent, scene) {
@@ -115,14 +120,14 @@ function add1dCurve(f, sampling, extent, scene) {
     });
 
     let geometry = new Geometry();
-    let xMin = extent.x[0]; let yMin = extent.y[0];
-    let xMax = extent.x[1]; let yMax = extent.y[1];
-    let xRan = xMax - xMin; let yRan = yMax - yMin;
+    let xMin = extent.x[0]; let zMin = extent.z[0];
+    let xMax = extent.x[1]; let zMax = extent.z[1];
+    let xRan = xMax - xMin; let zRan = zMax - zMin;
     for (let i = 0; i < sampling; ++i) {
         let x = xMin + xRan * (i / sampling);
-        let y = yRan * f(x) / 2;
+        let z = zRan * f(x) / 2;
         geometry.vertices.push(
-            new Vector3(x, y, 0)
+            new Vector3(x, z, 0)
         );
     }
 
@@ -131,21 +136,20 @@ function add1dCurve(f, sampling, extent, scene) {
 }
 
 function addLarge1dCurve(f, sampling, extent, scene) {
-
     let lineMaterial = new MeshLineMaterial({
         color: 0xff0000,
         lineWidth: 0.5,
     });
 
     let geometry = new Geometry();
-    let xMin = extent.x[0]; let yMin = extent.y[0];
-    let xMax = extent.x[1]; let yMax = extent.y[1];
-    let xRan = xMax - xMin; let yRan = yMax - yMin;
+    let xMin = extent.x[0]; let zMin = extent.z[0];
+    let xMax = extent.x[1]; let zMax = extent.z[1];
+    let xRan = xMax - xMin; let zRan = zMax - zMin;
     for (let i = 0; i < sampling; ++i) {
         let x = xMin + xRan * (i / sampling);
-        let y = yRan * f(x) / 2;
+        let z = zRan * f(x) / 2;
         geometry.vertices.push(
-            new Vector3(x, y, -0.01)
+            new Vector3(x, z, -0.01)
         );
     }
 
@@ -160,4 +164,38 @@ function addLarge1dCurve(f, sampling, extent, scene) {
 function sineCurve(t) {
     let x = 1.0 * t - 7;
     return Math.sin(x) * Math.cos(x * 0.2) + Math.cos(0.3 * x);
+}
+
+function add2dCurve(f, sampling, extent, scene) {
+    var geometry = new PlaneBufferGeometry(15, 15, sampling, sampling);
+
+    let xMin = extent.x[0]; let yMin = extent.y[0]; let zMin = extent.z[0];
+    let xMax = extent.x[1]; let yMax = extent.y[1]; let zMax = extent.z[1];
+    let xRan = xMax - xMin; let yRan = yMax - yMin; let zRan = zMax - zMin;
+
+    let pAttribute = geometry.getAttribute('position');
+    for (let i = 0; i <= sampling; ++i) {
+        let x = xMin + xRan * (i / sampling);
+        for (let j = 0; j <= sampling; ++j) {
+            let y = yMin + yRan * (j / sampling);
+            let z = zRan * f(x, y) / 2;
+            let id = i + (sampling + 1) * j;
+            pAttribute.setX(id, x);
+            pAttribute.setY(id, y);
+            pAttribute.setZ(id, z);
+        }
+    }
+    geometry.computeVertexNormals();
+
+    let material = new MeshPhongMaterial( {color: 0x0000ff, side: DoubleSide
+    } );
+    let plane = new Mesh(geometry, material);
+    plane.rotation.x = - Math.PI / 2;
+    plane.position.z = 0;
+    scene.add(plane);
+}
+
+function sine2DCurve(t1, t2) {
+    let firstOrderCurve = sineCurve(t1);
+    return Math.exp(-t2 / 20) * Math.cos(0.5 * t2) * Math.cos(0.2 * t2) * firstOrderCurve; // z = 0 => 1
 }
