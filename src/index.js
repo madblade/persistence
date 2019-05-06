@@ -1,7 +1,7 @@
 import './styles.css';
 
 import {
-    AmbientLight,
+    AmbientLight, ArrowHelper,
     AxesHelper,
     BoxBufferGeometry,
     Color,
@@ -42,6 +42,41 @@ function render() {
     renderer.render(scene, camera);
 }
 
+function addXYHelper(scene) {
+    let gridHelper = new GridHelper(30, 10);
+    gridHelper.position.y = 0;
+    gridHelper.rotation.x = Math.PI/2;
+    scene.add(gridHelper);
+}
+
+function addXZHelper(scene) {
+    let gridHelper = new GridHelper(30, 10);
+    gridHelper.position.y = -15;
+    gridHelper.position.z = -15;
+    scene.add(gridHelper);
+}
+
+function addXHelper(scene) {
+    let dir = new Vector3(1, 0, 0);
+    dir.normalize();
+    let origin = new Vector3(-15, -16, 0);
+    addArrowHelper(dir, origin, scene)
+}
+
+function addYHelper(scene) {
+    let dir = new Vector3(0, 1, 0);
+    dir.normalize();
+    let origin = new Vector3(-16, -15, 0);
+    addArrowHelper(dir, origin, scene)
+}
+
+function addZHelper(scene) {
+    let dir = new Vector3(0, 0, -1);
+    dir.normalize();
+    let origin = new Vector3(-16, -16, 0);
+    addArrowHelper(dir, origin, scene)
+}
+
 function init() {
     // HTML
     container = document.createElement('div');
@@ -77,10 +112,11 @@ function init() {
 
     // Helpers
     // var gridHelper = new PolarGridHelper(30, 10);
-    let gridHelper = new GridHelper(30, 10);
-    gridHelper.position.y = 0;
-    gridHelper.rotation.x = Math.PI/2;
-    scene.add(gridHelper);
+    addXYHelper(scene);
+    addXZHelper(scene);
+    addXHelper(scene);
+    addYHelper(scene);
+    addZHelper(scene);
 
     // AXES RED GREEN BLUE
     let axesHelper = new AxesHelper(5);
@@ -104,16 +140,25 @@ function init() {
 
     add1dCurve(f, sampling1d, extent, scene);
 
-    addLarge1dCurve(f, sampling1d, extent, scene);
+    // addLarge1dCurve(f, sampling1d, extent, scene);
 
-    let sampling2d = 128;
+    let sampling2d = 512;
     let g = sine2DCurve;
-    add2dCurve(g, sampling2d, extent, scene);
+    // add2dCurve(g, sampling2d, extent, scene);
+
+}
+
+
+function addArrowHelper(dir, origin, scene) {
+    let length = 30;
+    let hex = new Color('#000000');
+    let arrowHelper = new ArrowHelper(dir, origin, length, hex, 1, 1);
+    scene.add(arrowHelper);
 }
 
 function add1dCurve(f, sampling, extent, scene) {
     let material = new LineBasicMaterial({
-        color: 0x0000ff,
+        color: new Color('#4c72e2'),
         linewidth: 1,
         linecap: 'round', //ignored by WebGLRenderer
         linejoin:  'round' //ignored by WebGLRenderer
@@ -137,7 +182,7 @@ function add1dCurve(f, sampling, extent, scene) {
 
 function addLarge1dCurve(f, sampling, extent, scene) {
     let lineMaterial = new MeshLineMaterial({
-        color: 0xff0000,
+        color: new Color('#ffa765'),
         lineWidth: 0.5,
     });
 
@@ -187,8 +232,10 @@ function add2dCurve(f, sampling, extent, scene) {
     }
     geometry.computeVertexNormals();
 
-    let material = new MeshPhongMaterial( {color: 0x0000ff, side: DoubleSide
-    } );
+    let material = new MeshPhongMaterial({
+        color: new Color('#4c72e2'),
+        side: DoubleSide
+    });
     let plane = new Mesh(geometry, material);
     plane.rotation.x = - Math.PI / 2;
     plane.position.z = 0;
