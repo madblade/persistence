@@ -95,9 +95,12 @@ function init() {
     mouseHelper = new Mesh(mouseGeometry, mouseMaterial);
     // scene.add(mouseHelper);
 
-    let sampling = 50;
+    let sampling = 200;
     let f = sineCurve;
-    let extent = {x: [-15, 15], y: [-15, 15], z: [-15, 15]};
+    let redX = 0.5;
+    let redY = 0.5;
+    let extent = {x: [-15, 15], y: [-15 * redY, 15 * redY], z: [-15, 15]};
+
     add1dCurve(f, sampling, extent, scene);
 
     addLarge1dCurve(f, sampling, extent, scene);
@@ -154,6 +157,7 @@ function addLarge1dCurve(f, sampling, extent, scene) {
     // scene.add(line);
 }
 
-function sineCurve(x) {
-    return Math.sin(0.25 * x);
+function sineCurve(t) {
+    let x = 1.0 * t - 7;
+    return Math.sin(x) * Math.cos(x * 0.2) + Math.cos(0.3 * x);
 }
