@@ -38,7 +38,38 @@ function animate() {
     stats.end();
 }
 
+var surface2D;
+var ttt = 0;
 function render() {
+    ttt += 1;
+    ttt %= 100;
+    if (ttt >= 0 && surface2D !== null) {
+        let pt = ttt / 100;
+        // console.log(ttt / 60);
+        let geometry = surface2D.geometry;
+        let pAttribute = geometry.getAttribute('position');
+        let redY = 0.5;
+        let redZ = 0.5;
+        let sampling = 128;
+        let extent = {x: [-15, 15], y: [0, 60 * redY], z: [-15 * redZ, 15 * redZ]};
+        let xMin = extent.x[0]; let yMin = extent.y[0]; let zMin = extent.z[0];
+        let xMax = extent.x[1]; let yMax = extent.y[1]; let zMax = extent.z[1];
+        let xRan = xMax - xMin; let yRan = yMax - yMin; let zRan = zMax - zMin;
+        let f = sine2DCurve;
+        for (let i = 0; i <= sampling; ++i) {
+            let x = xMin + xRan * (i / sampling);
+            for (let j = 0; j <= sampling; ++j) {
+                let y = yMin + yRan * (j / sampling);
+                let z = zRan * f(x, y, 2.0 * Math.PI * pt) / 2;
+                let id = i + (sampling + 1) * j;
+                pAttribute.setX(id, x);
+                pAttribute.setY(id, y);
+                pAttribute.setZ(id, z);
+            }
+        }
+        pAttribute.needsUpdate = true;
+        geometry.computeVertexNormals();
+    }
     renderer.render(scene, camera);
 }
 
@@ -112,7 +143,7 @@ function init() {
 
     // Helpers
     // var gridHelper = new PolarGridHelper(30, 10);
-    addXYHelper(scene);
+    // addXYHelper(scene);
     addXZHelper(scene);
     addXHelper(scene);
     addYHelper(scene);
@@ -142,9 +173,9 @@ function init() {
 
     // addLarge1dCurve(f, sampling1d, extent, scene);
 
-    let sampling2d = 512;
+    let sampling2d = 128;
     let g = sine2DCurve;
-    // add2dCurve(g, sampling2d, extent, scene);
+    add2dCurve(g, sampling2d, extent, scene);
 
 }
 
@@ -212,7 +243,7 @@ function sineCurve(t) {
 }
 
 function add2dCurve(f, sampling, extent, scene) {
-    var geometry = new PlaneBufferGeometry(15, 15, sampling, sampling);
+    let geometry = new PlaneBufferGeometry(15, 15, sampling, sampling);
 
     let xMin = extent.x[0]; let yMin = extent.y[0]; let zMin = extent.z[0];
     let xMax = extent.x[1]; let yMax = extent.y[1]; let zMax = extent.z[1];
@@ -223,7 +254,7 @@ function add2dCurve(f, sampling, extent, scene) {
         let x = xMin + xRan * (i / sampling);
         for (let j = 0; j <= sampling; ++j) {
             let y = yMin + yRan * (j / sampling);
-            let z = zRan * f(x, y) / 2;
+            let z = zRan * f(x, y, 0) / 2;
             let id = i + (sampling + 1) * j;
             pAttribute.setX(id, x);
             pAttribute.setY(id, y);
@@ -236,13 +267,14 @@ function add2dCurve(f, sampling, extent, scene) {
         color: new Color('#4c72e2'),
         side: DoubleSide
     });
-    let plane = new Mesh(geometry, material);
+    var plane = new Mesh(geometry, material);
     plane.rotation.x = - Math.PI / 2;
     plane.position.z = 0;
+    surface2D = plane;
     scene.add(plane);
 }
 
-function sine2DCurve(t1, t2) {
+function sine2DCurve(t1, t2, t3) {
     let firstOrderCurve = sineCurve(t1);
     let cx = 0;
     let cy = 15;
@@ -250,7 +282,7 @@ function sine2DCurve(t1, t2) {
     let dy2 = Math.pow(t2 - cy, 2);
     return 1.5 * Math.exp(-(dx2+dy2) / 25.0)
         + firstOrderCurve *
-        (Math.exp(-t2 / 20) * Math.cos(0.5 * t2) * Math.cos(0.2 * t2))
+        (Math.exp(-t2 / 20) * Math.cos(0.5 * t2 * (1.0)) * Math.cos(0.2 * t2 + t3))
         ;
     // z = 0 => 1
 }
