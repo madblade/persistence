@@ -94,27 +94,33 @@ function init() {
     let xHelper = plotter.makeAxisHelperX();
     let yHelper = plotter.makeAxisHelperY();
     let zHelper = plotter.makeAxisHelperZ();
-    slider.addSlide({
-        mesh: xyHelper,
-        // clear: true
-    });
-    slider.addSlide({
-        mesh: xzHelper,
-        // clear: true
-    });
+    slider.addSlide(
+        [{
+            mesh: xyHelper,
+        },
+        {
+            mesh: xzHelper,
+        }]
+    );
     slider.addSlide({
         mesh: xHelper,
-        // clear: true
     });
     slider.addSlide({
         mesh: yHelper,
-        // clear: true
     });
     slider.addSlide({
         mesh: zHelper,
-        // clear: true,
-        clearAll: true
     });
+
+    // for (let i = 0; i < 16; ++i)
+    // {
+    //     slider.computeBounds(
+    //         [[[
+    //             1, 2, [0, 1, 2], [2, 1, [3, 4, 5, 6], 3, 4, 5], 4, 5
+    //         ]]],
+    //         i);
+    // }
+
     // slider.addSlide({
     //     clear: true
     // });

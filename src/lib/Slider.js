@@ -10,9 +10,7 @@ function Slider(scene)
     // meshes: [ [mesh1a, mesh1b, mesh1c], mesh2, [mesh3a, [mesh3a1, mesh3a2]] ],
     // transition: 'sharp', 'fade', 'x', 'y', 'z'
     // }
-    this.slides = [
-
-    ];
+    this.slides = [[[ ]]];
 
     this.currentSlide = -1;
 
@@ -24,13 +22,13 @@ function Slider(scene)
 
 }
 
-Slider.prototype.flatten = function(array, mutable)
+Slider.prototype.flatten = function(array)
 {
     let toString = Object.prototype.toString;
     let arrayTypeStr = '[object Array]';
 
     let result = [];
-    let nodes = (mutable && array) || array.slice();
+    let nodes = array.slice();
     let node;
 
     if (!array.length) {
@@ -51,6 +49,125 @@ Slider.prototype.flatten = function(array, mutable)
     return result;
 };
 
+Slider.prototype.computeBounds = function(array, index)
+{
+    let flat = [];
+    if (!array.length) return flat;
+
+    let toString = Object.prototype.toString;
+    let arrayTypeStr = '[object Array]';
+
+    let bounds = [];
+    let nodes = array.slice();
+    let node = nodes.shift();
+
+    // Flatten
+    do {
+        if (node === 'x') {
+            bounds.push('x');
+            continue; // goes down to the while statement
+        }
+
+        if (toString.call(node) === arrayTypeStr) {
+            bounds.push(node.length);
+            nodes.splice(0, 0, ...node, 'x');
+        } else {
+            bounds.push('e');
+            flat.push(node);
+        }
+    } while (nodes.length && (node = nodes.shift()) !== undefined);
+
+    // Search bounds
+    let indexStart = 0;
+    let indexEnd = 0;
+    let numberElementsToRead = 0;
+    let numberElementsRead = 0;
+    let testIndex = 0;
+    for (let i = 0; i < bounds.length; ++i) {
+        let b = bounds[i];
+        if (b === 'e') {
+            testIndex++;
+            numberElementsRead++;
+        } else if (b !== 'x') {
+            indexStart = i;
+            numberElementsToRead = b;
+            numberElementsRead = 0;
+        } else if (b === 'x') {
+            // Get last opener
+            let nbEnd = 1;
+            let nbStart = 0;
+            numberElementsRead = 1;
+            for (let j = indexStart - 1; j > 0; --j) {
+                if (bounds[j] === 'e') {
+                    if (nbEnd - nbStart === 1) numberElementsRead++;
+                }
+                else if (bounds[j] === 'x') {
+                    if (nbEnd - nbStart === 1) numberElementsRead++;
+                    nbEnd++;
+                }
+                else {
+                    nbStart++;
+                }
+                if (nbStart === nbEnd) {
+                    indexStart = j;
+                    numberElementsToRead = bounds[j];
+                    break;
+                }
+            }
+        }
+
+        if (testIndex === index + 1) {
+            indexEnd = indexStart;
+            if (numberElementsToRead < 1)
+                break;
+            if (numberElementsRead === numberElementsToRead) {
+                indexEnd = i;
+                break;
+            }
+
+            for (let j = i + 1; j < bounds.length; ++j) {
+                if (bounds[j] === 'e') {
+                    numberElementsRead++;
+                } else if (bounds[j] !== 'x') {
+                    let nbStarts = 1;
+                    let nbEnd = 0;
+                    // Fast-forward inner array.
+                    for (let k = j + 1; k < bounds.length; ++k) {
+                        if (bounds[k] === 'e') {}
+                        else if (bounds[k] === 'x') nbEnd++;
+                        else nbStarts++;
+
+                        if (nbEnd === nbStarts) {
+                            j = k;
+                            break;
+                        }
+                    }
+                    numberElementsRead++;
+                }
+
+                if (numberElementsRead >= numberElementsToRead) {
+                    indexEnd = j;
+                    break;
+                }
+            }
+
+            break;
+        }
+    }
+
+    // Count number of os
+    let elementStart = 0;
+    for (let i = 0; i < indexStart; ++i) {
+        if (bounds[i] === 'e') elementStart++;
+    }
+    let elementEnd = 0;
+    for (let i = 0; i < indexEnd; ++i) {
+        if (bounds[i] === 'e') elementEnd++;
+    }
+
+    return [indexStart, indexEnd];
+};
+
 Slider.prototype.computeNbSlides = function()
 {
     let slides = this.slides;
@@ -67,7 +184,7 @@ Slider.prototype.getSlideAt = function(index)
 
 Slider.prototype.addSlide = function(slide)
 {
-    this.slides.push(slide);
+    this.slides[0][0].push(slide);
 };
 
 Slider.prototype.onKeyDown = function(event)
@@ -148,15 +265,15 @@ Slider.prototype.transition = function(
     if (oldSlideIndex >= 0 &&
         ((oldSlide = this.getSlideAt(oldSlideIndex)) !== undefined))
     {
-        // if (oldSlide.mesh) {
-        //     this.removeMesh(oldSlide.mesh);
-        //     if (oldSlide.request) {
-        //         oldSlide.request(false);
-        //     }
-        // }
-        if (oldSlide.clearAll) {
-            this.clearActiveMeshes();
-        } else if ((backwards || oldSlide.clear) && oldSlide.mesh) {
+
+        let slides = this.slides;
+        let bounds = this.computeBounds(slides, oldSlideIndex);
+
+        if (oldSlideIndex === bounds[1] && !backwards) {
+            for (let slideId = bounds[0]; slideId < bounds[1]; ++slideId) {
+                this.removeMesh(this.getSlideAt(slideId).mesh);
+            }
+        } else {
             this.removeMesh(oldSlide.mesh);
         }
 
@@ -169,11 +286,20 @@ Slider.prototype.transition = function(
         newSlideIndex < this.computeNbSlides() &&
         ((newSlide = this.getSlideAt(newSlideIndex)) !== undefined))
     {
-        if (newSlide.mesh) {
-            this.addMesh(newSlide.mesh);
-            if (newSlide.request) {
-                newSlide.request(true);
+
+        let slides = this.slides;
+        let bounds = this.computeBounds(slides, newSlideIndex);
+
+        if (newSlideIndex === bounds[1] && backwards) {
+            for (let slideId = bounds[0]; slideId < bounds[1]; ++slideId) {
+                this.addMesh(this.getSlideAt(slideId).mesh);
             }
+        } else {
+            this.addMesh(newSlide.mesh);
+        }
+
+        if (newSlide.request) {
+            newSlide.request(true);
         }
     }
 
