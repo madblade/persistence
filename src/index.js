@@ -94,11 +94,30 @@ function init() {
     let xHelper = plotter.makeAxisHelperX();
     let yHelper = plotter.makeAxisHelperY();
     let zHelper = plotter.makeAxisHelperZ();
-    slider.addSlide(xyHelper);
-    slider.addSlide(xzHelper);
-    slider.addSlide(xHelper);
-    slider.addSlide(yHelper);
-    slider.addSlide(zHelper);
+    slider.addSlide({
+        mesh: xyHelper,
+        // clear: true
+    });
+    slider.addSlide({
+        mesh: xzHelper,
+        // clear: true
+    });
+    slider.addSlide({
+        mesh: xHelper,
+        // clear: true
+    });
+    slider.addSlide({
+        mesh: yHelper,
+        // clear: true
+    });
+    slider.addSlide({
+        mesh: zHelper,
+        // clear: true,
+        clearAll: true
+    });
+    // slider.addSlide({
+    //     clear: true
+    // });
 
     // AXES RED GREEN BLUE
     let axesHelper = new AxesHelper(5);
@@ -120,18 +139,27 @@ function init() {
     let extent = {x: [-15, 15], y: [0, 60 * redY], z: [-15 * redZ, 15 * redZ]};
 
     let curve1d = plotter.make1dCurve(plotter.generatorCurve1d.bind(plotter), sampling1d, extent);
-    slider.addSlide(curve1d);
+    slider.addSlide({
+        mesh: curve1d
+    });
 
     let largeCurve1d = plotter.makeLarge1dCurve(plotter.generatorCurve1d.bind(plotter), sampling1d, extent);
-    slider.addSlide(largeCurve1d);
+    slider.addSlide({
+        mesh: largeCurve1d
+    });
 
     let sampling2d = 128;
     let curve2d = plotter.make2dCurve(plotter.generatorCurve2d.bind(plotter), sampling2d, extent);
-    slider.addSlide(curve2d);
+    slider.addSlide({
+        mesh: curve2d
+    });
 
     let curve2dt = plotter.make2dCurve(plotter.generatorCurve2d.bind(plotter), sampling2d, extent);
     surface2D = curve2dt;
-    slider.addSlide({mesh: curve2dt, request: function(v) {requireAnimateSurface2D = v;}.bind(this)});
+    slider.addSlide({
+        mesh: curve2dt,
+        request: function(v) {requireAnimateSurface2D = v;}.bind(this)
+    });
 }
 
 init();

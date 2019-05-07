@@ -18,6 +18,10 @@ function Slider(scene)
 
     this.transiting = false;
 
+    this.activeMeshes = [
+
+    ];
+
 }
 
 Slider.prototype.flatten = function(array, mutable)
@@ -110,31 +114,66 @@ Slider.prototype.previous = function()
     }
 };
 
+Slider.prototype.removeMesh = function(mesh) {
+    this.scene.remove(mesh);
+    let am = this.activeMeshes;
+    for (let i = 0; i < am.length; ++i) {
+        if (am[i] === mesh) {
+            this.activeMeshes.splice(i, 1);
+            break;
+        }
+    }
+};
+
+Slider.prototype.addMesh = function(mesh) {
+    this.scene.add(mesh);
+    this.activeMeshes.push(mesh);
+};
+
+Slider.prototype.clearActiveMeshes = function() {
+    let am = this.activeMeshes;
+    for (let i = 0; i < am.length; ++i) {
+        this.scene.remove(am[i]);
+    }
+    this.activeMeshes = [];
+};
+
 Slider.prototype.transition = function(
     oldSlideIndex, newSlideIndex, backwards)
 {
     console.log(oldSlideIndex + " -> " + newSlideIndex);
-    if (oldSlideIndex >= 0) {
-        let oldSlide = this.getSlideAt(oldSlideIndex);
-        if (oldSlide && oldSlide.mesh) {
-            this.scene.remove(oldSlide.mesh);
-            if (oldSlide.request) {
-                oldSlide.request(false);
-            }
-        } else if (oldSlide) {
-            this.scene.remove(oldSlide);
+    let oldSlide;
+    let newSlide;
+
+    if (oldSlideIndex >= 0 &&
+        ((oldSlide = this.getSlideAt(oldSlideIndex)) !== undefined))
+    {
+        // if (oldSlide.mesh) {
+        //     this.removeMesh(oldSlide.mesh);
+        //     if (oldSlide.request) {
+        //         oldSlide.request(false);
+        //     }
+        // }
+        if (oldSlide.clearAll) {
+            this.clearActiveMeshes();
+        } else if ((backwards || oldSlide.clear) && oldSlide.mesh) {
+            this.removeMesh(oldSlide.mesh);
+        }
+
+        if (oldSlide.request) {
+            oldSlide.request(false);
         }
     }
 
-    if (newSlideIndex >= 0 && newSlideIndex < this.computeNbSlides()) {
-        let newSlide = this.getSlideAt(newSlideIndex);
-        if (newSlide && newSlide.mesh) {
-            this.scene.add(newSlide.mesh);
+    if (newSlideIndex >= 0 &&
+        newSlideIndex < this.computeNbSlides() &&
+        ((newSlide = this.getSlideAt(newSlideIndex)) !== undefined))
+    {
+        if (newSlide.mesh) {
+            this.addMesh(newSlide.mesh);
             if (newSlide.request) {
                 newSlide.request(true);
             }
-        } else if (newSlide) {
-            this.scene.add(newSlide);
         }
     }
 
