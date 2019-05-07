@@ -1,29 +1,28 @@
 import './styles.css';
 
 import {
-    AmbientLight, ArrowHelper,
+    AmbientLight,
     AxesHelper,
     BoxBufferGeometry,
     Color,
-    DirectionalLight, DoubleSide, Geometry,
-    GridHelper, Line, LineBasicMaterial,
+    DirectionalLight,
     Mesh,
-    MeshBasicMaterial, MeshLambertMaterial, MeshPhongMaterial,
-    PerspectiveCamera, PlaneBufferGeometry,
-    Scene, Vector3,
+    MeshBasicMaterial,
+    PerspectiveCamera,
+    Scene,
     WebGLRenderer
 } from "three";
 // import dat from "dat.gui";
 import OrbitControls from './lib/OrbitControls';
 import Stats from 'stats.js/src/Stats'
-import {MeshLine, MeshLineMaterial} from "./lib/MeshLine";
 import Plotter from './lib/Plot';
+import Slider from "./lib/Slider";
 
 let container, stats;
 // let gui;
 let camera, scene, renderer;
 let mouseHelper;
-
+let slider;
 
 function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -41,17 +40,15 @@ function animate() {
 var plotter;
 var surface2D;
 var ttt = 0;
+var requireAnimateSurface2D = false;
 function render() {
     ttt += 1;
     ttt %= 100;
-    if (ttt >= 0 && surface2D !== null) {
+    if (ttt >= 0 && surface2D !== null && requireAnimateSurface2D) {
         plotter.updateCurve2dt(surface2D, ttt, 100, plotter.generatorCurve2d.bind(plotter));
     }
     renderer.render(scene, camera);
 }
-
-
-var slides;
 
 function init() {
     // HTML
@@ -87,23 +84,21 @@ function init() {
     directionalLight.position.set(1, 1, 1).normalize();
     scene.add(directionalLight);
 
-    // Helpers
-    // var gridHelper = new PolarGridHelper(30, 10);
-    // addXYHelper(scene);
+    slider = new Slider(scene);
+    window.addEventListener('keydown', slider.onKeyDown.bind(slider), false);
     plotter = new Plotter();
-    slides = [];
-    console.log(plotter);
+
+    // Helpers
     let xyHelper = plotter.makeAxisHelperXY();
     let xzHelper = plotter.makeAxisHelperXZ();
     let xHelper = plotter.makeAxisHelperX();
     let yHelper = plotter.makeAxisHelperY();
     let zHelper = plotter.makeAxisHelperZ();
-    slides.push(xyHelper, xzHelper, xHelper, yHelper, zHelper);
-
-    // addXZHelper(scene);
-    // addXHelper(scene);
-    // addYHelper(scene);
-    // addZHelper(scene);
+    slider.addSlide(xyHelper);
+    slider.addSlide(xzHelper);
+    slider.addSlide(xHelper);
+    slider.addSlide(yHelper);
+    slider.addSlide(zHelper);
 
     // AXES RED GREEN BLUE
     let axesHelper = new AxesHelper(5);
@@ -125,22 +120,18 @@ function init() {
     let extent = {x: [-15, 15], y: [0, 60 * redY], z: [-15 * redZ, 15 * redZ]};
 
     let curve1d = plotter.make1dCurve(plotter.generatorCurve1d.bind(plotter), sampling1d, extent);
-    // add1dCurve(f, sampling1d, extent, scene);
-    slides.push(curve1d);
+    slider.addSlide(curve1d);
 
     let largeCurve1d = plotter.makeLarge1dCurve(plotter.generatorCurve1d.bind(plotter), sampling1d, extent);
-    // addLarge1dCurve(f, sampling1d, extent, scene);
-    slides.push(largeCurve1d);
+    slider.addSlide(largeCurve1d);
 
     let sampling2d = 128;
     let curve2d = plotter.make2dCurve(plotter.generatorCurve2d.bind(plotter), sampling2d, extent);
-    // add2dCurve(g, sampling2d, extent, scene);
-    surface2D = curve2d;
-    slides.push(curve2d);
+    slider.addSlide(curve2d);
 
-    for (let i = 0; i < slides.length; ++i) {
-        scene.add(slides[i]);
-    }
+    let curve2dt = plotter.make2dCurve(plotter.generatorCurve2d.bind(plotter), sampling2d, extent);
+    surface2D = curve2dt;
+    slider.addSlide({mesh: curve2dt, request: function(v) {requireAnimateSurface2D = v;}.bind(this)});
 }
 
 init();
