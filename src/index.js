@@ -94,14 +94,6 @@ function init() {
     let xHelper = plotter.makeAxisHelperX();
     let yHelper = plotter.makeAxisHelperY();
     let zHelper = plotter.makeAxisHelperZ();
-    slider.addSlide(
-        [{
-            mesh: xyHelper,
-        },
-        {
-            mesh: xzHelper,
-        }]
-    );
     slider.addSlide({
         mesh: xHelper,
     });
@@ -111,14 +103,22 @@ function init() {
     slider.addSlide({
         mesh: zHelper,
     });
+    slider.addSlide(
+        [{
+            mesh: xyHelper,
+        },
+        {
+            mesh: xzHelper,
+        }]
+    );
 
     // for (let i = 0; i < 16; ++i)
     // {
-    //     slider.computeBounds(
+    //     console.log(slider.computeBounds(
     //         [[[
     //             1, 2, [0, 1, 2], [2, 1, [3, 4, 5, 6], 3, 4, 5], 4, 5
     //         ]]],
-    //         i);
+    //         i));
     // }
 
     // slider.addSlide({
@@ -166,6 +166,11 @@ function init() {
         mesh: curve2dt,
         request: function(v) {requireAnimateSurface2D = v;}.bind(this)
     });
+
+    // for (let i = 0; i < 9; ++i)
+    // {
+    //     console.log(slider.computeBounds(slider.slides, i));
+    // }
 }
 
 init();

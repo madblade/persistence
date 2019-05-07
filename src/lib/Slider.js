@@ -77,6 +77,8 @@ Slider.prototype.computeBounds = function(array, index)
         }
     } while (nodes.length && (node = nodes.shift()) !== undefined);
 
+    console.log(bounds);
+
     // Search bounds
     let indexStart = 0;
     let indexEnd = 0;
@@ -165,7 +167,7 @@ Slider.prototype.computeBounds = function(array, index)
         if (bounds[i] === 'e') elementEnd++;
     }
 
-    return [indexStart, indexEnd];
+    return [elementStart, elementEnd];
 };
 
 Slider.prototype.computeNbSlides = function()
@@ -268,12 +270,15 @@ Slider.prototype.transition = function(
 
         let slides = this.slides;
         let bounds = this.computeBounds(slides, oldSlideIndex);
+        console.log('## bounds ##');
+        console.log(bounds);
+        console.log(oldSlideIndex);
 
         if (oldSlideIndex === bounds[1] && !backwards) {
-            for (let slideId = bounds[0]; slideId < bounds[1]; ++slideId) {
+            for (let slideId = bounds[0]; slideId <= bounds[1]; ++slideId) {
                 this.removeMesh(this.getSlideAt(slideId).mesh);
             }
-        } else {
+        } else if (backwards) {
             this.removeMesh(oldSlide.mesh);
         }
 
