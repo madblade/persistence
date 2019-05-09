@@ -39,14 +39,15 @@ function animate() {
 
 var plotter;
 var surface2D;
-var ttt = 0;
-var requireAnimateSurface2D = false;
+// var ttt = 0;
+// var requireAnimateSurface2D = false;
 function render() {
-    ttt += 1;
-    ttt %= 100;
-    if (ttt >= 0 && surface2D !== null && requireAnimateSurface2D) {
-        plotter.updateCurve2dt(surface2D, ttt, 100, plotter.generatorCurve2d.bind(plotter));
-    }
+    // ttt += 1;
+    // ttt %= 100;
+    // if (ttt >= 0 && surface2D !== null && requireAnimateSurface2D) {
+    //     plotter.updateCurve2dt(surface2D, ttt, 100, plotter.generatorCurve2d.bind(plotter));
+    // }
+    slider.update();
     renderer.render(scene, camera);
 }
 
@@ -94,15 +95,21 @@ function init() {
     let xHelper = plotter.makeAxisHelperX();
     let yHelper = plotter.makeAxisHelperY();
     let zHelper = plotter.makeAxisHelperZ();
-    slider.addSlide({
-        mesh: xHelper,
-    });
-    slider.addSlide({
-        mesh: yHelper,
-    });
-    slider.addSlide({
-        mesh: zHelper,
-    });
+    slider.addSlide(
+        [{
+            mesh: xHelper,
+        }]
+    );
+    slider.addSlide(
+        [{
+            mesh: yHelper,
+        }]
+    );
+    slider.addSlide(
+        [{
+            mesh: zHelper,
+        }]
+    );
     slider.addSlide(
         [{
             mesh: xyHelper,
@@ -145,27 +152,39 @@ function init() {
     let extent = {x: [-15, 15], y: [0, 60 * redY], z: [-15 * redZ, 15 * redZ]};
 
     let curve1d = plotter.make1dCurve(plotter.generatorCurve1d.bind(plotter), sampling1d, extent);
-    slider.addSlide({
-        mesh: curve1d
-    });
+    slider.addSlide(
+        {
+            mesh: curve1d
+        }
+    );
 
     let largeCurve1d = plotter.makeLarge1dCurve(plotter.generatorCurve1d.bind(plotter), sampling1d, extent);
-    slider.addSlide({
-        mesh: largeCurve1d
-    });
+    slider.addSlide(
+        {
+            mesh: largeCurve1d
+        }
+    );
 
     let sampling2d = 128;
     let curve2d = plotter.make2dCurve(plotter.generatorCurve2d.bind(plotter), sampling2d, extent);
-    slider.addSlide({
-        mesh: curve2d
-    });
+    slider.addSlide(
+        {
+            mesh: curve2d
+        }
+    );
 
     let curve2dt = plotter.make2dCurve(plotter.generatorCurve2d.bind(plotter), sampling2d, extent);
     surface2D = curve2dt;
-    slider.addSlide({
-        mesh: curve2dt,
-        request: function(v) {requireAnimateSurface2D = v;}.bind(this)
-    });
+    slider.addSlide(
+        {
+            mesh: curve2dt,
+            animate:
+                function(time, maxTime, mesh) {
+                    plotter.updateCurve2dt(mesh, time, maxTime, plotter.generatorCurve2d.bind(plotter))
+                }
+                // function(v) {requireAnimateSurface2D = v;}.bind(this)
+        }
+    );
 
     // for (let i = 0; i < 9; ++i)
     // {
