@@ -276,17 +276,49 @@ Slider.prototype.removeMesh = function(mesh) {
 };
 
 Slider.prototype.addMesh = function(mesh) {
+    // Reset mesh post-transition
+    this.resetMesh(mesh);
     this.scene.add(mesh);
     this.activeMeshes.push(mesh);
 };
 
-// Slider.prototype.clearActiveMeshes = function() {
-//     let am = this.activeMeshes;
-//     for (let i = 0; i < am.length; ++i) {
-//         this.scene.remove(am[i]);
-//     }
-//     this.activeMeshes = [];
-// };
+Slider.prototype.resetScale = function(mesh) {
+    if (mesh.scale) {
+        mesh.scale.x = 1;
+        mesh.scale.y = 1;
+        mesh.scale.z = 1;
+    }
+};
+
+Slider.prototype.resetOpacity = function(mesh) {
+    if (mesh.material && mesh.material.opacity) {
+        mesh.material.opacity = 1;
+    }
+    else if (mesh.materials && mesh.materials[0] && mesh.materials[0].opacity)
+    {
+        mesh.materials[0].opacity = 1;
+    }
+    else if (mesh.children) // Going down just one level.
+    {
+        let c = mesh.children;
+        for (let i = 0; i < c.length; ++i) {
+            let m = c[i].material;
+            if (m && m.opacity) {
+                m.opacity = 1;
+            }
+        }
+    }
+};
+
+Slider.prototype.resetMesh = function(mesh) {
+    if (!mesh) return;
+    this.resetScale(mesh);
+    this.resetOpacity(mesh);
+};
+
+//
+// Transition animations.
+//
 
 Slider.prototype.endOldSlideTransition = function(oldSlide, oldSlideIndex, bounds, backwards)
 {
@@ -308,6 +340,7 @@ Slider.prototype.endOldSlideTransition = function(oldSlide, oldSlideIndex, bound
 Slider.prototype.endNewSlideTransition = function(newSlide, newSlideIndex)
 {
     if (newSlide.animate) {
+        // this.time = 0;
         this.needAnimation[newSlideIndex] = true;
     }
 
@@ -326,6 +359,7 @@ Slider.prototype.transitionOut = function(
     if (oldSlideIndex >= 0 &&
         ((oldSlide = this.getSlideAt(oldSlideIndex)) !== undefined))
     {
+        this.startTime = this.time;
 
         let slides = this.slides;
         let bounds = this.computeBounds(slides, oldSlideIndex);
@@ -371,11 +405,13 @@ Slider.prototype.transitionIn = function(
     newSlideIndex, backwards)
 {
     let newSlide;
+    let isMakingTransitionIn = false;
 
     if (newSlideIndex >= 0 &&
         newSlideIndex < this.computeNbSlides() &&
         ((newSlide = this.getSlideAt(newSlideIndex)) !== undefined))
     {
+        this.startTime = this.time;
 
         let slides = this.slides;
         let bounds = this.computeBounds(slides, newSlideIndex);
@@ -396,14 +432,19 @@ Slider.prototype.transitionIn = function(
             }.bind(this);
 
             this.needIn[newSlideIndex] = true;
+            isMakingTransitionIn = true;
+            this.update();
         } else {
             this.endNewSlideTransition(newSlide, newSlideIndex);
+            isMakingTransitionIn = false;
         }
 
         // if (newSlide.animate) {
         //     this.needAnimation[newSlideIndex] = true;
         // }
     }
+
+    return isMakingTransitionIn;
 };
 
 Slider.prototype.transitionStart = function(
@@ -411,7 +452,6 @@ Slider.prototype.transitionStart = function(
 {
     console.log(oldSlideIndex + " -> " + newSlideIndex);
 
-    this.startTime = this.time;
     this.backwards = backwards;
 
     let isManagingTransitionIn = this.transitionOut(oldSlideIndex, newSlideIndex, backwards);
@@ -437,12 +477,12 @@ Slider.prototype.update = function() {
     // First update out-transitions
     for (let i = 0; i < needO.length; ++i) {
         if (needO[i] && !backwards) {
-            console.log('out: ' + i);
+            // console.log('out: ' + i);
             let finished = flat[i].animateOut(
                 this.time, this.startTime, this.maxTime, this.maxTimeTransition, flat[i].mesh
             );
             if (finished) {
-                console.log('end fade out');
+                console.log('end animate out');
                 this.endOutAnimationCallback();
             }
 
@@ -473,7 +513,7 @@ Slider.prototype.update = function() {
             );
             // console.log('in: ' + i);
             if (finished) {
-                console.log('end fade in');
+                console.log('end animate in');
                 this.endInAnimationCallback();
             }
 

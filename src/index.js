@@ -83,6 +83,21 @@ function init() {
     plotter = new Plotter();
 
     // Helpers
+    let stretchIn = function(t, s, m, mx, mesh) {
+        return plotter.stretchIn('y', mesh, t, s, m, mx);
+    };
+    let stretchOut = function(t, s, m, mx, mesh) {
+        return plotter.stretchOut('y', mesh, t, s, m, mx);
+        // return true; //
+    };
+    let fadeIn = function(t, s, m, mx, mesh) {
+        return plotter.fadeIn(mesh, t, s, m, mx);
+    };
+    let fadeOut = function(t, s, m, mx, mesh) {
+        return plotter.fadeOut(mesh, t, s, m, mx);
+    };
+
+
     let xyHelper = plotter.makeAxisHelperXY();
     let xzHelper = plotter.makeAxisHelperXZ();
     let xHelper = plotter.makeAxisHelperX();
@@ -91,27 +106,29 @@ function init() {
     slider.addSlide(
         [{
             mesh: xHelper,
-            animateIn: function(time, startTime, maxTime, maxTimeTransition, mesh) {
-                return plotter.fadeIn(mesh, time, startTime, maxTime, maxTimeTransition);
-            },
-            animateOut: function(time, startTime, maxTime, maxTimeTransition, mesh) {
-                return true; // plotter.fadeOut(mesh, time, startTime, maxTime, maxTimeTransition);
-            }
+            animateIn: stretchIn,
+            animateOut: stretchOut
         }]
     );
     slider.addSlide(
         [{
             mesh: yHelper,
+            animateIn: stretchIn,
+            animateOut: stretchOut
         }]
     );
     slider.addSlide(
         [{
             mesh: zHelper,
+            animateIn: stretchIn,
+            animateOut: stretchOut
         }]
     );
     slider.addSlide(
         [{
             mesh: xyHelper,
+            animateIn: fadeIn,
+            animateOut: fadeOut
         },
         {
             mesh: xzHelper,
@@ -167,9 +184,9 @@ function init() {
     let sampling2d = 128;
     let curve2d = plotter.make2dCurve(plotter.generatorCurve2d.bind(plotter), sampling2d, extent);
     slider.addSlide(
-        {
+        [{
             mesh: curve2d
-        }
+        }]
     );
 
     let curve2dt = plotter.make2dCurve(plotter.generatorCurve2d.bind(plotter), sampling2d, extent);

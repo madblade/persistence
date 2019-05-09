@@ -126,8 +126,8 @@ Plotter.prototype.generatorCurve2d = function(t1, t2, t3) {
         ;
 };
 
-Plotter.prototype.updateCurve2dt = function(surface2D, ttt, tttMax, f) {
-    let pt = ttt / tttMax;
+Plotter.prototype.updateCurve2dt = function(surface2D, time, maxTime, f) {
+    let pt = time / maxTime;
     let geometry = surface2D.geometry;
     let pAttribute = geometry.getAttribute('position');
     let redY = 0.5;
@@ -187,38 +187,73 @@ Plotter.prototype.makeAxisHelperZ = function() {
     return this.makeArrowHelper(dir, origin)
 };
 
+//
+// Transitions
+//
+
+Plotter.prototype.getNumberOfTicks = function(time, startTime, maxTime)
+{
+    return (time > startTime) ?
+        (time - startTime) :
+        (time + maxTime - startTime);
+};
+
+Plotter.prototype.stretchIn = function(axis, mesh, time, startTime, maxTime, maxTimeTransition)
+{
+    let nbTicks =  this.getNumberOfTicks(time, startTime, maxTime);
+    console.log(nbTicks + ' ( ' + time + ', ' + startTime + ' )');
+    let progress = nbTicks / maxTimeTransition;
+
+    mesh.scale[axis] = Math.max(progress, 0.001);
+    return nbTicks === maxTimeTransition;
+};
+
+Plotter.prototype.stretchOut = function(axis, mesh, time, startTime, maxTime, maxTimeTransition)
+{
+    let nbTicks =  this.getNumberOfTicks(time, startTime, maxTime);
+    let progress = nbTicks / maxTimeTransition;
+
+    mesh.scale[axis] = Math.max(1 - progress, 0.001);
+    return nbTicks === maxTimeTransition;
+};
+
+Plotter.prototype.setOpacity = function(mesh, opacity) {
+    if (mesh.material && mesh.material.opacity) {
+        mesh.material.opacity = opacity;
+    }
+    else if (mesh.materials && mesh.materials[0] && mesh.materials[0].opacity)
+    {
+        mesh.materials[0].opacity = opacity;
+    }
+    else if (mesh.children) // Going down just one level.
+    {
+        let c = mesh.children;
+        for (let i = 0; i < c.length; ++i) {
+            let m = c[i].material;
+            if (m && m.opacity) {
+                m.opacity = opacity;
+            }
+        }
+    }
+};
+
 // Returns false if animation in progress
 // Return true if animation finished
 Plotter.prototype.fadeIn = function(mesh, time, startTime, maxTime, maxTimeTransition)
 {
-    // if (startTime > maxTime || startTime < 0) {
-    //     console.log('[Plot] Incorrect time bounds');
-    //     return true; // Abort animation
-    // }
-
-    let nbTicks = (time > startTime) ?
-        (time - startTime) :
-        (time + maxTime - startTime) ;
-
+    let nbTicks =  this.getNumberOfTicks(time, startTime, maxTime);
     let progress = nbTicks / maxTimeTransition;
 
-    // console.log(progress);
-    // console.log(mesh);
-    mesh.scale.y = Math.max(progress, 0.001);
-    // mesh.materials[0].opacity = 1.0 - progress;
+    this.setOpacity(mesh, progress);
     return nbTicks === maxTimeTransition;
 };
 
 Plotter.prototype.fadeOut = function(mesh, time, startTime, maxTime, maxTimeTransition)
 {
-    let nbTicks = (time > startTime) ?
-        (time - startTime) :
-        (time + maxTime - startTime) ;
-
+    let nbTicks =  this.getNumberOfTicks(time, startTime, maxTime);
     let progress = nbTicks / maxTimeTransition;
 
-    mesh.scale.y = Math.max(1 - progress, 0.001);
-
+    this.setOpacity(mesh, 1 - progress);
     return nbTicks === maxTimeTransition;
 };
 
