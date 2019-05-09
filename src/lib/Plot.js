@@ -126,13 +126,12 @@ Plotter.prototype.generatorCurve2d = function(t1, t2, t3) {
         ;
 };
 
-Plotter.prototype.updateCurve2dt = function(surface2D, time, maxTime, f) {
+Plotter.prototype.updateCurve2dt = function(surface2D, time, maxTime, f, sampling) {
     let pt = time / maxTime;
     let geometry = surface2D.geometry;
     let pAttribute = geometry.getAttribute('position');
     let redY = 0.5;
     let redZ = 0.5;
-    let sampling = 128;
     let extent = {x: [-15, 15], y: [0, 60 * redY], z: [-15 * redZ, 15 * redZ]};
     let xMin = extent.x[0]; let yMin = extent.y[0]; let zMin = extent.z[0];
     let xMax = extent.x[1]; let yMax = extent.y[1]; let zMax = extent.z[1];
@@ -201,7 +200,7 @@ Plotter.prototype.getNumberOfTicks = function(time, startTime, maxTime)
 Plotter.prototype.stretchIn = function(axis, mesh, time, startTime, maxTime, maxTimeTransition)
 {
     let nbTicks =  this.getNumberOfTicks(time, startTime, maxTime);
-    console.log(nbTicks + ' ( ' + time + ', ' + startTime + ' )');
+    // console.log(nbTicks + ' ( ' + time + ', ' + startTime + ' )');
     let progress = nbTicks / maxTimeTransition;
 
     mesh.scale[axis] = Math.max(progress, 0.001);
@@ -218,12 +217,14 @@ Plotter.prototype.stretchOut = function(axis, mesh, time, startTime, maxTime, ma
 };
 
 Plotter.prototype.setOpacity = function(mesh, opacity) {
-    if (mesh.material && mesh.material.opacity) {
-        mesh.material.opacity = opacity;
+    let material = null;
+
+    if (mesh.material) {
+        material = mesh.material;
     }
-    else if (mesh.materials && mesh.materials[0] && mesh.materials[0].opacity)
+    else if (mesh.materials && mesh.materials[0])
     {
-        mesh.materials[0].opacity = opacity;
+        material = mesh.materials[0];
     }
     else if (mesh.children) // Going down just one level.
     {
@@ -231,9 +232,17 @@ Plotter.prototype.setOpacity = function(mesh, opacity) {
         for (let i = 0; i < c.length; ++i) {
             let m = c[i].material;
             if (m && m.opacity) {
+                m.transparent = true;
                 m.opacity = opacity;
+                m.needsUpdate = true;
             }
         }
+    }
+
+    if (material) {
+        material.transparent = true;
+        material.opacity = opacity;
+        material.needsUpdate = true;
     }
 };
 
@@ -243,6 +252,7 @@ Plotter.prototype.fadeIn = function(mesh, time, startTime, maxTime, maxTimeTrans
 {
     let nbTicks =  this.getNumberOfTicks(time, startTime, maxTime);
     let progress = nbTicks / maxTimeTransition;
+    // console.log(nbTicks + ' ( ' + time + ', ' + startTime + ' )');
 
     this.setOpacity(mesh, progress);
     return nbTicks === maxTimeTransition;

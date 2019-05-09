@@ -181,7 +181,7 @@ function init() {
         }
     );
 
-    let sampling2d = 128;
+    let sampling2d = 64;
     let curve2d = plotter.make2dCurve(plotter.generatorCurve2d.bind(plotter), sampling2d, extent);
     slider.addSlide(
         [{
@@ -196,7 +196,7 @@ function init() {
             mesh: curve2dt,
             animate:
                 function(time, maxTime, mesh) {
-                    plotter.updateCurve2dt(mesh, time, maxTime, plotter.generatorCurve2d.bind(plotter))
+                    plotter.updateCurve2dt(mesh, time, maxTime, plotter.generatorCurve2d.bind(plotter), sampling2d)
                 }
         }
     );

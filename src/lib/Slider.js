@@ -277,6 +277,7 @@ Slider.prototype.removeMesh = function(mesh) {
 
 Slider.prototype.addMesh = function(mesh) {
     // Reset mesh post-transition
+    console.log(mesh);
     this.resetMesh(mesh);
     this.scene.add(mesh);
     this.activeMeshes.push(mesh);
@@ -291,12 +292,14 @@ Slider.prototype.resetScale = function(mesh) {
 };
 
 Slider.prototype.resetOpacity = function(mesh) {
-    if (mesh.material && mesh.material.opacity) {
-        mesh.material.opacity = 1;
+    let material = null;
+
+    if (mesh.material) {
+        material = mesh.material;
     }
-    else if (mesh.materials && mesh.materials[0] && mesh.materials[0].opacity)
+    else if (mesh.materials && mesh.materials[0])
     {
-        mesh.materials[0].opacity = 1;
+        material = mesh.materials[0];
     }
     else if (mesh.children) // Going down just one level.
     {
@@ -304,9 +307,17 @@ Slider.prototype.resetOpacity = function(mesh) {
         for (let i = 0; i < c.length; ++i) {
             let m = c[i].material;
             if (m && m.opacity) {
+                m.transparent = true;
                 m.opacity = 1;
+                m.needsUpdate = true;
             }
         }
+    }
+
+    if (material) {
+        material.transparent = true;
+        material.opacity = 1;
+        material.needsUpdate = true;
     }
 };
 
@@ -340,7 +351,7 @@ Slider.prototype.endOldSlideTransition = function(oldSlide, oldSlideIndex, bound
 Slider.prototype.endNewSlideTransition = function(newSlide, newSlideIndex)
 {
     if (newSlide.animate) {
-        // this.time = 0;
+        this.time = 0;
         this.needAnimation[newSlideIndex] = true;
     }
 
