@@ -187,4 +187,43 @@ Plotter.prototype.makeAxisHelperZ = function() {
     return this.makeArrowHelper(dir, origin)
 };
 
+// Returns false if animation in progress
+// Return true if animation finished
+Plotter.prototype.fadeIn = function(mesh, time, startTime, maxTime, maxTimeTransition)
+{
+    // if (startTime > maxTime || startTime < 0) {
+    //     console.log('[Plot] Incorrect time bounds');
+    //     return true; // Abort animation
+    // }
+
+    let progress = (time > startTime) ?
+        (time - startTime) / maxTime :
+        (time + maxTime - startTime) / maxTime;
+
+    // console.log(progress);
+    // console.log(mesh);
+    mesh.scale.y = progress;
+    // mesh.materials[0].opacity = 1.0 - progress;
+    return time === startTime;
+};
+
+Plotter.prototype.fadeOut = function(mesh, time, startTime, maxTime, maxTimeTransition)
+{
+    // if (startTime > maxTime || startTime < 0) {
+    //     console.log('[Plot] Incorrect time bounds');
+    //     return true; // Abort animation
+    // }
+
+    let progress = (time > startTime) ?
+        (time - startTime) / maxTime :
+        (time + maxTime - startTime) / maxTime;
+
+    // console.log(progress);
+    // console.log(mesh);
+    mesh.scale.y = 1 - progress;
+
+    // mesh.materials[0].opacity = progress;
+    return time === startTime;
+};
+
 export default Plotter;

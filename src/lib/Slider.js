@@ -24,9 +24,21 @@ function Slider(scene)
 
     ];
 
+    this.needIn = [
+
+    ];
+
+    this.needOut = [
+
+    ];
+
     this.time = 0;
     this.maxTime = 100;
-
+    this.startTime = 0;
+    this.maxTimeTransition = 20;
+    this.endOutAnimationCallback = null;
+    this.endInAnimationCallback = null;
+    this.backwards = false;
 }
 
 Slider.prototype.flatten = function(array)
@@ -198,15 +210,21 @@ Slider.prototype.addSlide = function(slide)
     // Reset needs.
     let nbSlides = this.computeNbSlides();
     this.needAnimation = [];
+    this.needIn = [];
+    this.needOut = [];
     for (let i = 0; i < nbSlides; ++i)
+    {
         this.needAnimation.push(false);
+        this.needIn.push(false);
+        this.needOut.push(false);
+    }
 };
 
 Slider.prototype.onKeyDown = function(event)
 {
     if (this.transiting) return;
 
-    switch(event.keyCode) {
+    switch (event.keyCode) {
         case 33: // page up
         case 37: // left arrow
         case 81: // q
@@ -270,12 +288,44 @@ Slider.prototype.addMesh = function(mesh) {
 //     this.activeMeshes = [];
 // };
 
+Slider.prototype.endOldSlideTransition = function(oldSlide, oldSlideIndex, bounds, backwards)
+{
+    if (oldSlideIndex === bounds[1] && !backwards) {
+        for (let slideId = bounds[0]; slideId <= bounds[1]; ++slideId) {
+            this.removeMesh(this.getSlideAt(slideId).mesh);
+        }
+    } else if (backwards) {
+        this.removeMesh(oldSlide.mesh);
+    }
+
+    if (this.needOut[oldSlideIndex]) {
+        this.needOut[oldSlideIndex] = false;
+    }
+
+    // this.transiting = false;
+};
+
+Slider.prototype.endNewSlideTransition = function(newSlide, newSlideIndex)
+{
+    if (newSlide.animate) {
+        this.needAnimation[newSlideIndex] = true;
+    }
+
+    if (this.needIn[newSlideIndex]) {
+        this.needIn[newSlideIndex] = false;
+    }
+    // this.transiting = false;
+};
+
 Slider.prototype.transitionStart = function(
     oldSlideIndex, newSlideIndex, backwards)
 {
     console.log(oldSlideIndex + " -> " + newSlideIndex);
     let oldSlide;
     let newSlide;
+
+    this.startTime = this.time;
+    this.backwards = backwards;
 
     if (oldSlideIndex >= 0 &&
         ((oldSlide = this.getSlideAt(oldSlideIndex)) !== undefined))
@@ -287,18 +337,30 @@ Slider.prototype.transitionStart = function(
         // console.log(bounds);
         // console.log(oldSlideIndex);
 
-        if (oldSlideIndex === bounds[1] && !backwards) {
-            for (let slideId = bounds[0]; slideId <= bounds[1]; ++slideId) {
-                this.removeMesh(this.getSlideAt(slideId).mesh);
-            }
-        } else if (backwards) {
-            this.removeMesh(oldSlide.mesh);
-        }
-
         if (oldSlide.animate) {
             this.needAnimation[oldSlideIndex] = false;
-            // oldSlide.animate(false);
         }
+
+        // TODO make transition out
+        if (oldSlide.animateOut && !backwards) {
+            this.endOutAnimationCallback = function() {
+                console.log('ending out animation on ' + oldSlideIndex + ', ' + oldSlide);
+                this.endOldSlideTransition(oldSlide, oldSlideIndex, bounds, backwards);
+            }.bind(this);
+
+            this.needOut[oldSlideIndex] = true;
+        } else {
+            this.endOldSlideTransition(oldSlide, oldSlideIndex, bounds, backwards);
+        }
+
+        // if (oldSlideIndex === bounds[1] && !backwards) {
+        //     for (let slideId = bounds[0]; slideId <= bounds[1]; ++slideId) {
+        //         this.removeMesh(this.getSlideAt(slideId).mesh);
+        //     }
+        // } else if (backwards) {
+        //     this.removeMesh(oldSlide.mesh);
+        // }
+
     }
 
     if (newSlideIndex >= 0 &&
@@ -317,13 +379,23 @@ Slider.prototype.transitionStart = function(
             this.addMesh(newSlide.mesh);
         }
 
-        if (newSlide.animate) {
-            this.needAnimation[newSlideIndex] = true;
-            // newSlide.animate(true);
+        // TODO make transition in
+        if (newSlide.animateIn && !backwards) {
+            this.endInAnimationCallback = function() {
+                console.log('ending in animation on ' + newSlideIndex + ', ' + newSlide);
+                this.endNewSlideTransition(newSlide, newSlideIndex);
+            }.bind(this);
+
+            this.needIn[newSlideIndex] = true;
+        } else {
+            this.endNewSlideTransition(newSlide, newSlideIndex);
         }
+
+        // if (newSlide.animate) {
+        //     this.needAnimation[newSlideIndex] = true;
+        // }
     }
 
-    this.transiting = false;
 };
 
 Slider.prototype.update = function() {
@@ -333,7 +405,78 @@ Slider.prototype.update = function() {
     this.time += 1;
     this.time %= this.maxTime;
 
-    // Update animations
+    // Update transitions
+
+    let backwards = this.backwards;
+    let numberActiveTransitions = 0;
+    let needO = this.needOut;
+    let needI = this.needIn;
+
+    // First update out-transitions
+    for (let i = 0; i < needO.length; ++i) {
+        if (needO[i] && !backwards) {
+            console.log('out: ' + i);
+            let finished = flat[i].animateOut(
+                this.time, this.startTime, this.maxTime, this.maxTimeTransition, flat[i].mesh
+            );
+            if (finished) {
+                console.log('end fade out');
+                this.endOutAnimationCallback();
+            }
+
+            numberActiveTransitions++;
+            break;
+        }
+        // else if (needI[i] && backwards) {
+        //     console.log('out: ' + i);
+        //     let finished = flat[i].animateIn(this.maxTime - this.time, this.startTime - 1, this.maxTime, flat[i].mesh);
+        //     if (finished) {
+        //         console.log('end fade out');
+        //         this.endInAnimationCallback();
+        //     }
+        //
+        //     numberActiveTransitions++;
+        //     break;
+        // }
+    }
+    // Only one animation at a time allowed
+    if (numberActiveTransitions > 0)
+        return;
+
+    // Then update in-transitions
+    for (let i = 0; i < needI.length; ++i) {
+        if (needI[i] && !backwards) {
+            let finished = flat[i].animateIn(
+                this.time, this.startTime, this.maxTime, this.maxTimeTransition, flat[i].mesh
+            );
+            // console.log('in: ' + i);
+            if (finished) {
+                console.log('end fade in');
+                this.endInAnimationCallback();
+            }
+
+            numberActiveTransitions++;
+            break;
+        }
+        // else if (needO[i] && backwards) {
+        //     let finished = flat[i].animateOut(this.maxTime - this.time, this.startTime - 1, this.maxTime, flat[i].mesh);
+        //     // console.log('in: ' + i);
+        //     if (finished) {
+        //         console.log('end fade in');
+        //         this.endOutAnimationCallback();
+        //     }
+        //
+        //     numberActiveTransitions++;
+        //     break;
+        // }
+    }
+    if (numberActiveTransitions > 0)
+        return;
+
+    // No active transition at this point
+    this.transiting = false;
+
+    // Update object animations
     let need = this.needAnimation;
     for (let i = 0; i < need.length; ++i) {
         if (need[i]) {

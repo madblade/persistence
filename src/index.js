@@ -39,14 +39,7 @@ function animate() {
 
 var plotter;
 var surface2D;
-// var ttt = 0;
-// var requireAnimateSurface2D = false;
 function render() {
-    // ttt += 1;
-    // ttt %= 100;
-    // if (ttt >= 0 && surface2D !== null && requireAnimateSurface2D) {
-    //     plotter.updateCurve2dt(surface2D, ttt, 100, plotter.generatorCurve2d.bind(plotter));
-    // }
     slider.update();
     renderer.render(scene, camera);
 }
@@ -98,6 +91,12 @@ function init() {
     slider.addSlide(
         [{
             mesh: xHelper,
+            animateIn: function(time, startTime, maxTime, maxTimeTransition, mesh) {
+                return plotter.fadeIn(mesh, time, startTime, maxTime, maxTimeTransition);
+            },
+            animateOut: function(time, startTime, maxTime, maxTimeTransition, mesh) {
+                return plotter.fadeOut(mesh, time, startTime, maxTime, maxTimeTransition);
+            }
         }]
     );
     slider.addSlide(
@@ -182,7 +181,6 @@ function init() {
                 function(time, maxTime, mesh) {
                     plotter.updateCurve2dt(mesh, time, maxTime, plotter.generatorCurve2d.bind(plotter))
                 }
-                // function(v) {requireAnimateSurface2D = v;}.bind(this)
         }
     );
 
