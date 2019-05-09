@@ -35,7 +35,7 @@ function Slider(scene)
     this.time = 0;
     this.maxTime = 100;
     this.startTime = 0;
-    this.maxTimeTransition = 20;
+    this.maxTimeTransition = 10;
     this.endOutAnimationCallback = null;
     this.endInAnimationCallback = null;
     this.backwards = false;
@@ -317,15 +317,11 @@ Slider.prototype.endNewSlideTransition = function(newSlide, newSlideIndex)
     // this.transiting = false;
 };
 
-Slider.prototype.transitionStart = function(
+Slider.prototype.transitionOut = function(
     oldSlideIndex, newSlideIndex, backwards)
 {
-    console.log(oldSlideIndex + " -> " + newSlideIndex);
     let oldSlide;
-    let newSlide;
-
-    this.startTime = this.time;
-    this.backwards = backwards;
+    let isManagingTransitionIn = false;
 
     if (oldSlideIndex >= 0 &&
         ((oldSlide = this.getSlideAt(oldSlideIndex)) !== undefined))
@@ -346,11 +342,16 @@ Slider.prototype.transitionStart = function(
             this.endOutAnimationCallback = function() {
                 console.log('ending out animation on ' + oldSlideIndex + ', ' + oldSlide);
                 this.endOldSlideTransition(oldSlide, oldSlideIndex, bounds, backwards);
+
+                this.transitionIn(newSlideIndex, backwards);
             }.bind(this);
 
             this.needOut[oldSlideIndex] = true;
+            isManagingTransitionIn = true;
+
         } else {
             this.endOldSlideTransition(oldSlide, oldSlideIndex, bounds, backwards);
+            isManagingTransitionIn = false;
         }
 
         // if (oldSlideIndex === bounds[1] && !backwards) {
@@ -362,6 +363,14 @@ Slider.prototype.transitionStart = function(
         // }
 
     }
+
+    return isManagingTransitionIn;
+};
+
+Slider.prototype.transitionIn = function(
+    newSlideIndex, backwards)
+{
+    let newSlide;
 
     if (newSlideIndex >= 0 &&
         newSlideIndex < this.computeNbSlides() &&
@@ -395,7 +404,20 @@ Slider.prototype.transitionStart = function(
         //     this.needAnimation[newSlideIndex] = true;
         // }
     }
+};
 
+Slider.prototype.transitionStart = function(
+    oldSlideIndex, newSlideIndex, backwards)
+{
+    console.log(oldSlideIndex + " -> " + newSlideIndex);
+
+    this.startTime = this.time;
+    this.backwards = backwards;
+
+    let isManagingTransitionIn = this.transitionOut(oldSlideIndex, newSlideIndex, backwards);
+    if (!isManagingTransitionIn) {
+        this.transitionIn(newSlideIndex, backwards);
+    }
 };
 
 Slider.prototype.update = function() {

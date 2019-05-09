@@ -95,7 +95,7 @@ function init() {
                 return plotter.fadeIn(mesh, time, startTime, maxTime, maxTimeTransition);
             },
             animateOut: function(time, startTime, maxTime, maxTimeTransition, mesh) {
-                return plotter.fadeOut(mesh, time, startTime, maxTime, maxTimeTransition);
+                return true; // plotter.fadeOut(mesh, time, startTime, maxTime, maxTimeTransition);
             }
         }]
     );

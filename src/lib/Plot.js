@@ -196,34 +196,30 @@ Plotter.prototype.fadeIn = function(mesh, time, startTime, maxTime, maxTimeTrans
     //     return true; // Abort animation
     // }
 
-    let progress = (time > startTime) ?
-        (time - startTime) / maxTime :
-        (time + maxTime - startTime) / maxTime;
+    let nbTicks = (time > startTime) ?
+        (time - startTime) :
+        (time + maxTime - startTime) ;
+
+    let progress = nbTicks / maxTimeTransition;
 
     // console.log(progress);
     // console.log(mesh);
-    mesh.scale.y = progress;
+    mesh.scale.y = Math.max(progress, 0.001);
     // mesh.materials[0].opacity = 1.0 - progress;
-    return time === startTime;
+    return nbTicks === maxTimeTransition;
 };
 
 Plotter.prototype.fadeOut = function(mesh, time, startTime, maxTime, maxTimeTransition)
 {
-    // if (startTime > maxTime || startTime < 0) {
-    //     console.log('[Plot] Incorrect time bounds');
-    //     return true; // Abort animation
-    // }
+    let nbTicks = (time > startTime) ?
+        (time - startTime) :
+        (time + maxTime - startTime) ;
 
-    let progress = (time > startTime) ?
-        (time - startTime) / maxTime :
-        (time + maxTime - startTime) / maxTime;
+    let progress = nbTicks / maxTimeTransition;
 
-    // console.log(progress);
-    // console.log(mesh);
-    mesh.scale.y = 1 - progress;
+    mesh.scale.y = Math.max(1 - progress, 0.001);
 
-    // mesh.materials[0].opacity = progress;
-    return time === startTime;
+    return nbTicks === maxTimeTransition;
 };
 
 export default Plotter;
