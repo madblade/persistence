@@ -8,7 +8,7 @@ import {
     DirectionalLight,
     Mesh,
     MeshBasicMaterial,
-    PerspectiveCamera,
+    PerspectiveCamera, Quaternion,
     Scene, Vector3,
     WebGLRenderer
 } from "three";
@@ -127,6 +127,12 @@ function init() {
             animateOut: stretchOut
         }]
     );
+
+    let lookAt1 = new Quaternion();
+    lookAt1.setFromAxisAngle(new Vector3(1, 0, 0), -Math.PI/8);
+    let lookAt2 = new Quaternion();
+    lookAt2.setFromAxisAngle(new Vector3(1, 0, 0), Math.PI/8);
+
     slider.addSlide(
         [{
             mesh: xyHelper,
@@ -138,7 +144,7 @@ function init() {
                 position1: new Vector3(0, 0, 0), // Unimportant
                 position2: new Vector3(0, 0, 40),
                 lookat1: new Vector3(0, 0, 0), // Unimportant
-                lookat2: new Vector3(0, 0, 0)
+                lookat2: lookAt1
             },
             transition: linearCamera
         },
@@ -148,7 +154,7 @@ function init() {
                 position1: new Vector3(0, 0, 0), // Unimportant
                 position2: new Vector3(0, 0, 20),
                 lookat1: new Vector3(0, 0, 0), // Unimportant
-                lookat2: new Vector3(0, 0, 0)
+                lookat2: lookAt2
             },
             transition: linearCamera
         },

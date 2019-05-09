@@ -282,7 +282,6 @@ Plotter.prototype.linearCamera = function(
     let targetFocus = backwards ? target.lookat1 : target.lookat2;
 
     let cameraPosition = camera.position;
-    // let camreaFocus = camera.
 
     let dx = initialPosition.x + progress * (targetPosition.x - initialPosition.x);
     let dy = initialPosition.y + progress * (targetPosition.y - initialPosition.y);
@@ -291,6 +290,10 @@ Plotter.prototype.linearCamera = function(
     cameraPosition.x = dx;
     cameraPosition.y = dy;
     cameraPosition.z = dz;
+
+    let cameraQuaternion = camera.quaternion;
+    console.log(cameraQuaternion);
+    cameraQuaternion.slerp(targetFocus, progress);
 
     return nbTicks === maxTimeTransition;
 };
