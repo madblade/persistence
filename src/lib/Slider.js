@@ -1,9 +1,13 @@
 "use strict";
 
-function Slider(scene)
+import {Object3D} from "three";
+
+function Slider(scene, camera, controls)
 {
 
     this.scene = scene;
+    this.camera = camera; // three.perspectivecamera
+    this.controls = controls; // three.orbitcontrols
 
     // Format:
     // { (object)
@@ -29,6 +33,10 @@ function Slider(scene)
     ];
 
     this.needOut = [
+
+    ];
+
+    this.needCam = [
 
     ];
 
@@ -212,11 +220,13 @@ Slider.prototype.addSlide = function(slide)
     this.needAnimation = [];
     this.needIn = [];
     this.needOut = [];
+    this.needCam = [];
     for (let i = 0; i < nbSlides; ++i)
     {
         this.needAnimation.push(false);
         this.needIn.push(false);
         this.needOut.push(false);
+        this.needCam.push(false);
     }
 };
 
@@ -276,6 +286,9 @@ Slider.prototype.removeMesh = function(mesh) {
 };
 
 Slider.prototype.addMesh = function(mesh) {
+    if (!(mesh instanceof Object3D))
+        return;
+
     // Reset mesh post-transition
     console.log(mesh);
     this.resetMesh(mesh);
@@ -344,8 +357,6 @@ Slider.prototype.endOldSlideTransition = function(oldSlide, oldSlideIndex, bound
     if (this.needOut[oldSlideIndex]) {
         this.needOut[oldSlideIndex] = false;
     }
-
-    // this.transiting = false;
 };
 
 Slider.prototype.endNewSlideTransition = function(newSlide, newSlideIndex)
@@ -358,7 +369,10 @@ Slider.prototype.endNewSlideTransition = function(newSlide, newSlideIndex)
     if (this.needIn[newSlideIndex]) {
         this.needIn[newSlideIndex] = false;
     }
-    // this.transiting = false;
+
+    if (this.needCam[newSlideIndex]) {
+        this.needCam[newSlideIndex] = false;
+    }
 };
 
 Slider.prototype.transitionOut = function(
@@ -394,18 +408,24 @@ Slider.prototype.transitionOut = function(
             this.needOut[oldSlideIndex] = true;
             isManagingTransitionIn = true;
 
-        } else {
+        }
+        else if (oldSlide.camera)
+        {
+            this.endOutAnimationCallback = function() {
+                console.log('ending out camera on ' + oldSlideIndex + ', ' + oldSlide);
+                this.endOldSlideTransition(oldSlide, oldSlideIndex, bounds, backwards);
+
+                this.transitionIn(newSlideIndex, backwards);
+            }.bind(this);
+
+            this.needCam[oldSlideIndex] = true;
+            isManagingTransitionIn = true;
+        }
+        else
+        {
             this.endOldSlideTransition(oldSlide, oldSlideIndex, bounds, backwards);
             isManagingTransitionIn = false;
         }
-
-        // if (oldSlideIndex === bounds[1] && !backwards) {
-        //     for (let slideId = bounds[0]; slideId <= bounds[1]; ++slideId) {
-        //         this.removeMesh(this.getSlideAt(slideId).mesh);
-        //     }
-        // } else if (backwards) {
-        //     this.removeMesh(oldSlide.mesh);
-        // }
 
     }
 
@@ -435,7 +455,6 @@ Slider.prototype.transitionIn = function(
             this.addMesh(newSlide.mesh);
         }
 
-        // TODO make transition in
         if (newSlide.animateIn && !backwards) {
             this.endInAnimationCallback = function() {
                 console.log('ending in animation on ' + newSlideIndex + ', ' + newSlide);
@@ -445,14 +464,26 @@ Slider.prototype.transitionIn = function(
             this.needIn[newSlideIndex] = true;
             isMakingTransitionIn = true;
             this.update();
-        } else {
+        }
+        else if (newSlide.camera )
+        {
+            console.log(newSlide.camera);
+            // TODO manage camera interpolation (position + lookat)
+            this.endInAnimationCallback = function() {
+                console.log('ending camera animation on ' + newSlideIndex + ', ' + newSlide);
+                this.endNewSlideTransition(newSlide, newSlideIndex);
+            }.bind(this);
+
+            this.needCam[newSlideIndex] = true;
+            isMakingTransitionIn = true;
+            this.update();
+        }
+        else
+        {
             this.endNewSlideTransition(newSlide, newSlideIndex);
             isMakingTransitionIn = false;
         }
 
-        // if (newSlide.animate) {
-        //     this.needAnimation[newSlideIndex] = true;
-        // }
     }
 
     return isMakingTransitionIn;
@@ -484,6 +515,7 @@ Slider.prototype.update = function() {
     let numberActiveTransitions = 0;
     let needO = this.needOut;
     let needI = this.needIn;
+    let needCam = this.needCam;
 
     // First update out-transitions
     for (let i = 0; i < needO.length; ++i) {
@@ -532,7 +564,8 @@ Slider.prototype.update = function() {
             break;
         }
         // else if (needO[i] && backwards) {
-        //     let finished = flat[i].animateOut(this.maxTime - this.time, this.startTime - 1, this.maxTime, flat[i].mesh);
+        //     let finished = flat[i].animateOut(this.maxTime - this.time,
+        //      this.startTime - 1, this.maxTime, flat[i].mesh);
         //     // console.log('in: ' + i);
         //     if (finished) {
         //         console.log('end fade in');
@@ -545,6 +578,24 @@ Slider.prototype.update = function() {
     }
     if (numberActiveTransitions > 0)
         return;
+
+    // Then update cam-transitions
+    for (let i = 0; i < needCam.length; ++i) {
+        if (needCam[i]) {
+            // TODO manage forward and backwards
+            let finished = flat[i].transition(
+                this.time, this.startTime, this.maxTime, this.maxTimeTransition,
+                flat[i].camera, flat[i].target, backwards
+            );
+            if (finished) {
+                console.log('end camera movement');
+                this.endInAnimationCallback();
+            }
+
+            numberActiveTransitions++;
+            break;
+        }
+    }
 
     // No active transition at this point
     this.transiting = false;

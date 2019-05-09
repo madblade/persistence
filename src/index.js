@@ -9,7 +9,7 @@ import {
     Mesh,
     MeshBasicMaterial,
     PerspectiveCamera,
-    Scene,
+    Scene, Vector3,
     WebGLRenderer
 } from "three";
 // import dat from "dat.gui";
@@ -65,9 +65,11 @@ function init() {
     scene = new Scene();
     scene.background = new Color(0xffffff);
     camera = new PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 2000);
-    camera.position.z = 50;
     camera.position.x = 0;
     camera.position.y = 0;
+    camera.position.z = 50;
+    let cameraPosition1 = new Vector3(0, 0, 50);
+    let cameraTarget1 = new Vector3(0, 0, 0);
     let controls = new OrbitControls(camera, renderer.domElement);
     controls.enablePan = false;
     window.addEventListener('resize', onWindowResize, false);
@@ -78,7 +80,7 @@ function init() {
     directionalLight.position.set(1, 1, 1).normalize();
     scene.add(directionalLight);
 
-    slider = new Slider(scene);
+    slider = new Slider(scene, camera, controls);
     window.addEventListener('keydown', slider.onKeyDown.bind(slider), false);
     plotter = new Plotter();
 
@@ -95,6 +97,9 @@ function init() {
     };
     let fadeOut = function(t, s, m, mx, mesh) {
         return plotter.fadeOut(mesh, t, s, m, mx);
+    };
+    let linearCamera = function(t, s, m, mx, camera, target, backwards) {
+        return plotter.linearCamera(camera, target, t, s, m, mx, backwards);
     };
 
 
@@ -128,7 +133,16 @@ function init() {
         [{
             mesh: xyHelper,
             animateIn: fadeIn,
-            animateOut: fadeOut
+        },
+        {
+            camera: camera,
+            target: {
+                position1: cameraPosition1,
+                position2: new Vector3(0, 0, 1),
+                lookat1: cameraTarget1,
+                lookat2: new Vector3(0, 0, 0)
+            },
+            transition: linearCamera
         },
         {
             mesh: xzHelper,

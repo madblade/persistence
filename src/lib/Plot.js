@@ -248,9 +248,10 @@ Plotter.prototype.setOpacity = function(mesh, opacity) {
 
 // Returns false if animation in progress
 // Return true if animation finished
-Plotter.prototype.fadeIn = function(mesh, time, startTime, maxTime, maxTimeTransition)
+Plotter.prototype.fadeIn = function(
+    mesh, time, startTime, maxTime, maxTimeTransition)
 {
-    let nbTicks =  this.getNumberOfTicks(time, startTime, maxTime);
+    let nbTicks = this.getNumberOfTicks(time, startTime, maxTime);
     let progress = nbTicks / maxTimeTransition;
     // console.log(nbTicks + ' ( ' + time + ', ' + startTime + ' )');
 
@@ -258,12 +259,39 @@ Plotter.prototype.fadeIn = function(mesh, time, startTime, maxTime, maxTimeTrans
     return nbTicks === maxTimeTransition;
 };
 
-Plotter.prototype.fadeOut = function(mesh, time, startTime, maxTime, maxTimeTransition)
+Plotter.prototype.fadeOut = function(
+    mesh, time, startTime, maxTime, maxTimeTransition)
 {
-    let nbTicks =  this.getNumberOfTicks(time, startTime, maxTime);
+    let nbTicks = this.getNumberOfTicks(time, startTime, maxTime);
     let progress = nbTicks / maxTimeTransition;
 
     this.setOpacity(mesh, 1 - progress);
+    return nbTicks === maxTimeTransition;
+};
+
+Plotter.prototype.linearCamera = function(
+    camera, target, time, startTime, maxTime, maxTimeTransition, backwards)
+{
+    let nbTicks = this.getNumberOfTicks(time, startTime, maxTime);
+    let progress = nbTicks / maxTimeTransition;
+
+    let initialPosition = backwards ? target.position2 : target.position1;
+    let targetPosition  = backwards ? target.position1 : target.position2;
+
+    let initialFocus = backwards ? target.lookat2 : target.lookat1;
+    let targetFocus = backwards ? target.lookat1 : target.lookat2;
+
+    let cameraPosition = camera.position;
+    // let camreaFocus = camera.
+
+    let dx = initialPosition.x + progress * (targetPosition.x - initialPosition.x);
+    let dy = initialPosition.y + progress * (targetPosition.y - initialPosition.y);
+    let dz = initialPosition.z + progress * (targetPosition.z - initialPosition.z);
+
+    cameraPosition.x = dx;
+    cameraPosition.y = dy;
+    cameraPosition.z = dz;
+
     return nbTicks === maxTimeTransition;
 };
 
