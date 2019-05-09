@@ -68,8 +68,6 @@ function init() {
     camera.position.x = 0;
     camera.position.y = 0;
     camera.position.z = 50;
-    let cameraPosition1 = new Vector3(0, 0, 50);
-    let cameraTarget1 = new Vector3(0, 0, 0);
     let controls = new OrbitControls(camera, renderer.domElement);
     controls.enablePan = false;
     window.addEventListener('resize', onWindowResize, false);
@@ -137,9 +135,19 @@ function init() {
         {
             camera: camera,
             target: {
-                position1: cameraPosition1,
-                position2: new Vector3(0, 0, 1),
-                lookat1: cameraTarget1,
+                position1: new Vector3(0, 0, 0), // Unimportant
+                position2: new Vector3(0, 0, 40),
+                lookat1: new Vector3(0, 0, 0), // Unimportant
+                lookat2: new Vector3(0, 0, 0)
+            },
+            transition: linearCamera
+        },
+        {
+            camera: camera,
+            target: {
+                position1: new Vector3(0, 0, 0), // Unimportant
+                position2: new Vector3(0, 0, 20),
+                lookat1: new Vector3(0, 0, 0), // Unimportant
                 lookat2: new Vector3(0, 0, 0)
             },
             transition: linearCamera

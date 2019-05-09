@@ -47,6 +47,8 @@ function Slider(scene, camera, controls)
     this.endOutAnimationCallback = null;
     this.endInAnimationCallback = null;
     this.backwards = false;
+
+    this.lastBackwards = false;
 }
 
 Slider.prototype.flatten = function(array)
@@ -233,6 +235,7 @@ Slider.prototype.addSlide = function(slide)
 Slider.prototype.onKeyDown = function(event)
 {
     if (this.transiting) return;
+    this.lastBackwards = this.backwards;
 
     switch (event.keyCode) {
         case 33: // page up
@@ -409,18 +412,18 @@ Slider.prototype.transitionOut = function(
             isManagingTransitionIn = true;
 
         }
-        else if (oldSlide.camera)
-        {
-            this.endOutAnimationCallback = function() {
-                console.log('ending out camera on ' + oldSlideIndex + ', ' + oldSlide);
-                this.endOldSlideTransition(oldSlide, oldSlideIndex, bounds, backwards);
-
-                this.transitionIn(newSlideIndex, backwards);
-            }.bind(this);
-
-            this.needCam[oldSlideIndex] = true;
-            isManagingTransitionIn = true;
-        }
+        // else if (oldSlide.camera && (backwards !== this.lastBackwards))
+        // {
+        //     this.endOutAnimationCallback = function() {
+        //         console.log('ending out camera on ' + oldSlideIndex + ', ' + oldSlide);
+        //         this.endOldSlideTransition(oldSlide, oldSlideIndex, bounds, backwards);
+        //
+        //         this.transitionIn(newSlideIndex, backwards);
+        //     }.bind(this);
+        //
+        //     this.needCam[oldSlideIndex] = true;
+        //     isManagingTransitionIn = true;
+        // }
         else
         {
             this.endOldSlideTransition(oldSlide, oldSlideIndex, bounds, backwards);
@@ -465,9 +468,12 @@ Slider.prototype.transitionIn = function(
             isMakingTransitionIn = true;
             this.update();
         }
-        else if (newSlide.camera )
+        else if (newSlide.camera // && (backwards === this.lastBackwards)
+                )
         {
             console.log(newSlide.camera);
+            newSlide.target.position1.copy(newSlide.camera.position);
+
             // TODO manage camera interpolation (position + lookat)
             this.endInAnimationCallback = function() {
                 console.log('ending camera animation on ' + newSlideIndex + ', ' + newSlide);
@@ -585,7 +591,7 @@ Slider.prototype.update = function() {
             // TODO manage forward and backwards
             let finished = flat[i].transition(
                 this.time, this.startTime, this.maxTime, this.maxTimeTransition,
-                flat[i].camera, flat[i].target, backwards
+                flat[i].camera, flat[i].target, false // backwards
             );
             if (finished) {
                 console.log('end camera movement');
