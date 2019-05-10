@@ -6,9 +6,9 @@ import {
     Geometry, GridHelper,
     Line,
     LineBasicMaterial,
-    Mesh,
+    Mesh, MeshBasicMaterial,
     MeshPhongMaterial, Plane,
-    PlaneBufferGeometry, Quaternion, Sprite, SpriteMaterial, Texture,
+    PlaneBufferGeometry, Quaternion, ShapeBufferGeometry, Sprite, SpriteMaterial, Texture,
     Vector3
 } from "three";
 import {MeshLine, MeshLineMaterial} from "./MeshLine";
@@ -17,6 +17,34 @@ function Plotter()
 {
     this.version = 0;
 }
+
+Plotter.prototype.makeText = function(
+    message, fontGenerator, position, hex, rotation)
+{
+    let xMid, text;
+    let color = new Color(hex);
+    // let matDark = new LineBasicMaterial({
+    //     color: color,
+    //     side: DoubleSide
+    // });
+    let matLite = new MeshBasicMaterial({
+        color: color,
+        transparent: true,
+        opacity: 0.4,
+        side: DoubleSide
+    });
+    let shapes = fontGenerator.generateShapes(message, 100);
+    let geometry = new ShapeBufferGeometry(shapes);
+    geometry.computeBoundingBox();
+    xMid = -0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
+    geometry.translate(xMid, 0, 0);
+    // make shape ( N.B. edge view not visible )
+    text = new Mesh(geometry, matLite);
+    text.position.copy(position);
+    text.scale.copy(new Vector3(0.02, 0.02, 0.02));
+    text.dontReset = true;
+    return text;
+};
 
 Plotter.prototype.makeArrowHelper = function(dir, origin)
 {

@@ -165,35 +165,9 @@ function init() {
 
     lookAt2.multiply(lookAt3);
 
-    let domainText = null;
-    {
-        let xMid, text;
-        let color = 0x006699;
-        let matDark = new LineBasicMaterial({
-            color: color,
-            side: DoubleSide
-        });
-        let matLite = new MeshBasicMaterial({
-            color: color,
-            transparent: true,
-            opacity: 0.4,
-            side: DoubleSide
-        });
-        let message = "domain";
-        let shapes = fontGenerator.generateShapes(message, 100);
-        let geometry = new ShapeBufferGeometry(shapes);
-        geometry.computeBoundingBox();
-        xMid = -0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
-        geometry.translate(xMid, 0, 0);
-        // make shape ( N.B. edge view not visible )
-        text = new Mesh(geometry, matLite);
-        text.position.z = 0;
-        text.position.y = -19;
-        text.position.x = 10;
-        text.scale.copy(new Vector3(0.02, 0.02, 0.05));
-        text.dontReset = true;
-        domainText = text;
-    }
+    let domainText = plotter.makeText('domain', fontGenerator, new Vector3(10, -19, 0), '#006699');
+    let rangeText = plotter.makeText('range', fontGenerator, new Vector3(-20, 15, 0), '#006699');
+    let dataText = plotter.makeText('data', fontGenerator, new Vector3(20, 0, -4), '#0011aa');
 
     slider.addSlide([
         {
@@ -225,6 +199,9 @@ function init() {
             animateIn: stretchIn,
             // animateOut: stretchOut
         },
+        {
+            mesh: rangeText
+        },
         // {
         //     camera: camera,
         //     target: {
@@ -240,6 +217,9 @@ function init() {
             mesh: curve1d,
             animateIn: swipeInRight,
             duration: 45
+        },
+        {
+            mesh: dataText
         },
         {
             mesh: spriteMinimum1
