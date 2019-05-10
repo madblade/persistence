@@ -31,12 +31,12 @@ function MeshLine() {
     this.matrixWorld = new Matrix4();
 }
 
-MeshLine.prototype.setMatrixWorld = function(matrixWorld) {
+MeshLine.prototype.setMatrixWorld = function (matrixWorld) {
     this.matrixWorld = matrixWorld;
 };
 
 
-MeshLine.prototype.setGeometry = function( g, c ) {
+MeshLine.prototype.setGeometry = function (g, c) {
 
     this.widthCallback = c;
 
@@ -47,26 +47,26 @@ MeshLine.prototype.setGeometry = function( g, c ) {
 
     // set the normals
     // g.computeVertexNormals();
-    if( g instanceof Geometry ) {
-        for( let j = 0; j < g.vertices.length; j++ ) {
-            let v = g.vertices[ j ];
-            let c = j/g.vertices.length;
-            this.positions.push( v.x, v.y, v.z );
-            this.positions.push( v.x, v.y, v.z );
+    if (g instanceof Geometry) {
+        for (let j = 0; j < g.vertices.length; j++) {
+            let v = g.vertices[j];
+            let c = j / g.vertices.length;
+            this.positions.push(v.x, v.y, v.z);
+            this.positions.push(v.x, v.y, v.z);
             this.counters.push(c);
             this.counters.push(c);
         }
     }
 
-    if( g instanceof BufferGeometry ) {
+    if (g instanceof BufferGeometry) {
         // read attribute positions ?
     }
 
-    if( g instanceof Float32Array || g instanceof Array ) {
-        for( let j = 0; j < g.length; j += 3 ) {
-            let c = j/g.length;
-            this.positions.push( g[ j ], g[ j + 1 ], g[ j + 2 ] );
-            this.positions.push( g[ j ], g[ j + 1 ], g[ j + 2 ] );
+    if (g instanceof Float32Array || g instanceof Array) {
+        for (let j = 0; j < g.length; j += 3) {
+            let c = j / g.length;
+            this.positions.push(g[j], g[j + 1], g[j + 2]);
+            this.positions.push(g[j], g[j + 1], g[j + 2]);
             this.counters.push(c);
             this.counters.push(c);
         }
@@ -76,34 +76,34 @@ MeshLine.prototype.setGeometry = function( g, c ) {
 
 };
 
-MeshLine.prototype.raycast = ( function () {
+MeshLine.prototype.raycast = (function () {
 
     let inverseMatrix = new Matrix4();
     let ray = new Ray();
     let sphere = new Sphere();
 
-    return function raycast( raycaster, intersects ) {
+    return function raycast(raycaster, intersects) {
 
         let precision = raycaster.linePrecision;
         let precisionSq = precision * precision;
 
         let geometry = this.geometry;
 
-        if ( geometry.boundingSphere === null ) geometry.computeBoundingSphere();
+        if (geometry.boundingSphere === null) geometry.computeBoundingSphere();
 
         // Checking boundingSphere distance to ray
 
-        sphere.copy( geometry.boundingSphere );
-        sphere.applyMatrix4( this.matrixWorld );
+        sphere.copy(geometry.boundingSphere);
+        sphere.applyMatrix4(this.matrixWorld);
 
-        if ( raycaster.ray.intersectSphere( sphere ) === false ) {
+        if (raycaster.ray.intersectSphere(sphere) === false) {
 
             return;
 
         }
 
-        inverseMatrix.getInverse( this.matrixWorld );
-        ray.copy( raycaster.ray ).applyMatrix4( inverseMatrix );
+        inverseMatrix.getInverse(this.matrixWorld);
+        ray.copy(raycaster.ray).applyMatrix4(inverseMatrix);
 
         let vStart = new Vector3();
         let vEnd = new Vector3();
@@ -111,46 +111,46 @@ MeshLine.prototype.raycast = ( function () {
         let interRay = new Vector3();
         let step = this instanceof LineSegments ? 2 : 1;
 
-        if ( geometry instanceof BufferGeometry ) {
+        if (geometry instanceof BufferGeometry) {
 
             let index = geometry.index;
             let attributes = geometry.attributes;
 
-            if ( index !== null ) {
+            if (index !== null) {
 
                 let indices = index.array;
                 let positions = attributes.position.array;
 
-                for ( let i = 0, l = indices.length - 1; i < l; i += step ) {
+                for (let i = 0, l = indices.length - 1; i < l; i += step) {
 
-                    let a = indices[ i ];
-                    let b = indices[ i + 1 ];
+                    let a = indices[i];
+                    let b = indices[i + 1];
 
-                    vStart.fromArray( positions, a * 3 );
-                    vEnd.fromArray( positions, b * 3 );
+                    vStart.fromArray(positions, a * 3);
+                    vEnd.fromArray(positions, b * 3);
 
-                    let distSq = ray.distanceSqToSegment( vStart, vEnd, interRay, interSegment );
+                    let distSq = ray.distanceSqToSegment(vStart, vEnd, interRay, interSegment);
 
-                    if ( distSq > precisionSq ) continue;
+                    if (distSq > precisionSq) continue;
 
-                    interRay.applyMatrix4( this.matrixWorld ); //Move back to world space for distance calculation
+                    interRay.applyMatrix4(this.matrixWorld); //Move back to world space for distance calculation
 
-                    let distance = raycaster.ray.origin.distanceTo( interRay );
+                    let distance = raycaster.ray.origin.distanceTo(interRay);
 
-                    if ( distance < raycaster.near || distance > raycaster.far ) continue;
+                    if (distance < raycaster.near || distance > raycaster.far) continue;
 
-                    intersects.push( {
+                    intersects.push({
 
                         distance: distance,
                         // What do we want? intersection point on the ray or on the segment??
                         // point: raycaster.ray.at( distance ),
-                        point: interSegment.clone().applyMatrix4( this.matrixWorld ),
+                        point: interSegment.clone().applyMatrix4(this.matrixWorld),
                         index: i,
                         face: null,
                         faceIndex: null,
                         object: this
 
-                    } );
+                    });
 
                 }
 
@@ -158,67 +158,67 @@ MeshLine.prototype.raycast = ( function () {
 
                 let positions = attributes.position.array;
 
-                for ( let i = 0, l = positions.length / 3 - 1; i < l; i += step ) {
+                for (let i = 0, l = positions.length / 3 - 1; i < l; i += step) {
 
-                    vStart.fromArray( positions, 3 * i );
-                    vEnd.fromArray( positions, 3 * i + 3 );
+                    vStart.fromArray(positions, 3 * i);
+                    vEnd.fromArray(positions, 3 * i + 3);
 
-                    let distSq = ray.distanceSqToSegment( vStart, vEnd, interRay, interSegment );
+                    let distSq = ray.distanceSqToSegment(vStart, vEnd, interRay, interSegment);
 
-                    if ( distSq > precisionSq ) continue;
+                    if (distSq > precisionSq) continue;
 
-                    interRay.applyMatrix4( this.matrixWorld ); //Move back to world space for distance calculation
+                    interRay.applyMatrix4(this.matrixWorld); //Move back to world space for distance calculation
 
-                    let distance = raycaster.ray.origin.distanceTo( interRay );
+                    let distance = raycaster.ray.origin.distanceTo(interRay);
 
-                    if ( distance < raycaster.near || distance > raycaster.far ) continue;
+                    if (distance < raycaster.near || distance > raycaster.far) continue;
 
-                    intersects.push( {
+                    intersects.push({
 
                         distance: distance,
                         // What do we want? intersection point on the ray or on the segment??
                         // point: raycaster.ray.at( distance ),
-                        point: interSegment.clone().applyMatrix4( this.matrixWorld ),
+                        point: interSegment.clone().applyMatrix4(this.matrixWorld),
                         index: i,
                         face: null,
                         faceIndex: null,
                         object: this
 
-                    } );
+                    });
 
                 }
 
             }
 
-        } else if ( geometry instanceof Geometry ) {
+        } else if (geometry instanceof Geometry) {
 
             let vertices = geometry.vertices;
             let nbVertices = vertices.length;
 
-            for ( let i = 0; i < nbVertices - 1; i += step ) {
+            for (let i = 0; i < nbVertices - 1; i += step) {
 
-                let distSq = ray.distanceSqToSegment( vertices[ i ], vertices[ i + 1 ], interRay, interSegment );
+                let distSq = ray.distanceSqToSegment(vertices[i], vertices[i + 1], interRay, interSegment);
 
-                if ( distSq > precisionSq ) continue;
+                if (distSq > precisionSq) continue;
 
-                interRay.applyMatrix4( this.matrixWorld ); //Move back to world space for distance calculation
+                interRay.applyMatrix4(this.matrixWorld); //Move back to world space for distance calculation
 
-                let distance = raycaster.ray.origin.distanceTo( interRay );
+                let distance = raycaster.ray.origin.distanceTo(interRay);
 
-                if ( distance < raycaster.near || distance > raycaster.far ) continue;
+                if (distance < raycaster.near || distance > raycaster.far) continue;
 
-                intersects.push( {
+                intersects.push({
 
                     distance: distance,
                     // What do we want? intersection point on the ray or on the segment??
                     // point: raycaster.ray.at( distance ),
-                    point: interSegment.clone().applyMatrix4( this.matrixWorld ),
+                    point: interSegment.clone().applyMatrix4(this.matrixWorld),
                     index: i,
                     face: null,
                     faceIndex: null,
                     object: this
 
-                } );
+                });
 
             }
 
@@ -226,27 +226,27 @@ MeshLine.prototype.raycast = ( function () {
 
     };
 
-}() );
+}());
 
 
-MeshLine.prototype.compareV3 = function( a, b ) {
+MeshLine.prototype.compareV3 = function (a, b) {
 
     let aa = a * 6;
     let ab = b * 6;
-    return ( this.positions[ aa ] === this.positions[ ab ] ) &&
-        ( this.positions[ aa + 1 ] === this.positions[ ab + 1 ] ) &&
-        ( this.positions[ aa + 2 ] === this.positions[ ab + 2 ] );
+    return (this.positions[aa] === this.positions[ab]) &&
+        (this.positions[aa + 1] === this.positions[ab + 1]) &&
+        (this.positions[aa + 2] === this.positions[ab + 2]);
 
 };
 
-MeshLine.prototype.copyV3 = function( a ) {
+MeshLine.prototype.copyV3 = function (a) {
 
     let aa = a * 6;
-    return [ this.positions[ aa ], this.positions[ aa + 1 ], this.positions[ aa + 2 ] ];
+    return [this.positions[aa], this.positions[aa + 1], this.positions[aa + 2]];
 
 };
 
-MeshLine.prototype.process = function() {
+MeshLine.prototype.process = function () {
 
     let l = this.positions.length / 6;
 
@@ -257,69 +257,69 @@ MeshLine.prototype.process = function() {
     this.indices_array = [];
     this.uvs = [];
 
-    for( let j = 0; j < l; j++ ) {
-        this.side.push( 1 );
-        this.side.push( -1 );
+    for (let j = 0; j < l; j++) {
+        this.side.push(1);
+        this.side.push(-1);
     }
 
     let w;
-    for( let j = 0; j < l; j++ ) {
-        if( this.widthCallback ) w = this.widthCallback( j / ( l -1 ) );
+    for (let j = 0; j < l; j++) {
+        if (this.widthCallback) w = this.widthCallback(j / (l - 1));
         else w = 1;
-        this.width.push( w );
-        this.width.push( w );
+        this.width.push(w);
+        this.width.push(w);
     }
 
-    for( let j = 0; j < l; j++ ) {
-        this.uvs.push( j / ( l - 1 ), 0 );
-        this.uvs.push( j / ( l - 1 ), 1 );
+    for (let j = 0; j < l; j++) {
+        this.uvs.push(j / (l - 1), 0);
+        this.uvs.push(j / (l - 1), 1);
     }
 
     let v;
 
-    if( this.compareV3( 0, l - 1 ) ){
-        v = this.copyV3( l - 2 );
+    if (this.compareV3(0, l - 1)) {
+        v = this.copyV3(l - 2);
     } else {
-        v = this.copyV3( 0 );
+        v = this.copyV3(0);
     }
-    this.previous.push( v[ 0 ], v[ 1 ], v[ 2 ] );
-    this.previous.push( v[ 0 ], v[ 1 ], v[ 2 ] );
-    for( let j = 0; j < l - 1; j++ ) {
-        v = this.copyV3( j );
-        this.previous.push( v[ 0 ], v[ 1 ], v[ 2 ] );
-        this.previous.push( v[ 0 ], v[ 1 ], v[ 2 ] );
-    }
-
-    for( let j = 1; j < l; j++ ) {
-        v = this.copyV3( j );
-        this.next.push( v[ 0 ], v[ 1 ], v[ 2 ] );
-        this.next.push( v[ 0 ], v[ 1 ], v[ 2 ] );
+    this.previous.push(v[0], v[1], v[2]);
+    this.previous.push(v[0], v[1], v[2]);
+    for (let j = 0; j < l - 1; j++) {
+        v = this.copyV3(j);
+        this.previous.push(v[0], v[1], v[2]);
+        this.previous.push(v[0], v[1], v[2]);
     }
 
-    if( this.compareV3( l - 1, 0 ) ){
-        v = this.copyV3( 1 );
+    for (let j = 1; j < l; j++) {
+        v = this.copyV3(j);
+        this.next.push(v[0], v[1], v[2]);
+        this.next.push(v[0], v[1], v[2]);
+    }
+
+    if (this.compareV3(l - 1, 0)) {
+        v = this.copyV3(1);
     } else {
-        v = this.copyV3( l - 1 );
+        v = this.copyV3(l - 1);
     }
-    this.next.push( v[ 0 ], v[ 1 ], v[ 2 ] );
-    this.next.push( v[ 0 ], v[ 1 ], v[ 2 ] );
+    this.next.push(v[0], v[1], v[2]);
+    this.next.push(v[0], v[1], v[2]);
 
-    for( let j = 0; j < l - 1; j++ ) {
+    for (let j = 0; j < l - 1; j++) {
         let n = j * 2;
-        this.indices_array.push( n, n + 1, n + 2 );
-        this.indices_array.push( n + 2, n + 1, n + 3 );
+        this.indices_array.push(n, n + 1, n + 2);
+        this.indices_array.push(n + 2, n + 1, n + 3);
     }
 
     if (!this.attributes) {
         this.attributes = {
-            position: new BufferAttribute( new Float32Array( this.positions ), 3 ),
-            previous: new BufferAttribute( new Float32Array( this.previous ), 3 ),
-            next: new BufferAttribute( new Float32Array( this.next ), 3 ),
-            side: new BufferAttribute( new Float32Array( this.side ), 1 ),
-            width: new BufferAttribute( new Float32Array( this.width ), 1 ),
-            uv: new BufferAttribute( new Float32Array( this.uvs ), 2 ),
-            index: new BufferAttribute( new Uint16Array( this.indices_array ), 1 ),
-            counters: new BufferAttribute( new Float32Array( this.counters ), 1 )
+            position: new BufferAttribute(new Float32Array(this.positions), 3),
+            previous: new BufferAttribute(new Float32Array(this.previous), 3),
+            next: new BufferAttribute(new Float32Array(this.next), 3),
+            side: new BufferAttribute(new Float32Array(this.side), 1),
+            width: new BufferAttribute(new Float32Array(this.width), 1),
+            uv: new BufferAttribute(new Float32Array(this.uvs), 2),
+            index: new BufferAttribute(new Uint16Array(this.indices_array), 1),
+            counters: new BufferAttribute(new Float32Array(this.counters), 1)
         }
     } else {
         this.attributes.position.copyArray(new Float32Array(this.positions));
@@ -338,19 +338,19 @@ MeshLine.prototype.process = function() {
         this.attributes.index.needsUpdate = true;
     }
 
-    this.geometry.addAttribute( 'position', this.attributes.position );
-    this.geometry.addAttribute( 'previous', this.attributes.previous );
-    this.geometry.addAttribute( 'next', this.attributes.next );
-    this.geometry.addAttribute( 'side', this.attributes.side );
-    this.geometry.addAttribute( 'width', this.attributes.width );
-    this.geometry.addAttribute( 'uv', this.attributes.uv );
-    this.geometry.addAttribute( 'counters', this.attributes.counters );
+    this.geometry.addAttribute('position', this.attributes.position);
+    this.geometry.addAttribute('previous', this.attributes.previous);
+    this.geometry.addAttribute('next', this.attributes.next);
+    this.geometry.addAttribute('side', this.attributes.side);
+    this.geometry.addAttribute('width', this.attributes.width);
+    this.geometry.addAttribute('uv', this.attributes.uv);
+    this.geometry.addAttribute('counters', this.attributes.counters);
 
-    this.geometry.setIndex( this.attributes.index );
+    this.geometry.setIndex(this.attributes.index);
 
 };
 
-function memcpy (src, srcOffset, dst, dstOffset, length) {
+function memcpy(src, srcOffset, dst, dstOffset, length) {
     let i;
 
     src = src.subarray || src.slice ? src : src.buffer;
@@ -363,7 +363,7 @@ function memcpy (src, srcOffset, dst, dstOffset, length) {
     if (dst.set) {
         dst.set(src, dstOffset);
     } else {
-        for (i=0; i<src.length; i++) {
+        for (i = 0; i < src.length; i++) {
             dst[i + dstOffset] = src[i];
         }
     }
@@ -375,7 +375,7 @@ function memcpy (src, srcOffset, dst, dstOffset, length) {
  * Fast method to advance the line by one position.  The oldest position is removed.
  * @param position
  */
-MeshLine.prototype.advance = function(position) {
+MeshLine.prototype.advance = function (position) {
 
     let positions = this.attributes.position.array;
     let previous = this.attributes.previous.array;
@@ -383,10 +383,10 @@ MeshLine.prototype.advance = function(position) {
     let l = positions.length;
 
     // PREVIOUS
-    memcpy( positions, 0, previous, 0, l );
+    memcpy(positions, 0, previous, 0, l);
 
     // POSITIONS
-    memcpy( positions, 6, positions, 0, l - 6 );
+    memcpy(positions, 6, positions, 0, l - 6);
 
     positions[l - 6] = position.x;
     positions[l - 5] = position.y;
@@ -396,14 +396,14 @@ MeshLine.prototype.advance = function(position) {
     positions[l - 1] = position.z;
 
     // NEXT
-    memcpy( positions, 6, next, 0, l - 6 );
+    memcpy(positions, 6, next, 0, l - 6);
 
-    next[l - 6]  = position.x;
-    next[l - 5]  = position.y;
-    next[l - 4]  = position.z;
-    next[l - 3]  = position.x;
-    next[l - 2]  = position.y;
-    next[l - 1]  = position.z;
+    next[l - 6] = position.x;
+    next[l - 5] = position.y;
+    next[l - 4] = position.z;
+    next[l - 3] = position.x;
+    next[l - 2] = position.y;
+    next[l - 1] = position.z;
 
     this.attributes.position.needsUpdate = true;
     this.attributes.previous.needsUpdate = true;
@@ -411,8 +411,9 @@ MeshLine.prototype.advance = function(position) {
 
 };
 
-ShaderChunk[ 'meshline_vert' ] = [
+ShaderChunk['meshline_vert'] = [
     '',
+    ShaderChunk.clipping_planes_pars_vertex,
     ShaderChunk.logdepthbuf_pars_vertex,
     ShaderChunk.fog_pars_vertex,
     '',
@@ -494,13 +495,15 @@ ShaderChunk[ 'meshline_vert' ] = [
     ShaderChunk.logdepthbuf_vertex,
     ShaderChunk.fog_vertex && '    vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );',
     ShaderChunk.fog_vertex,
+    ShaderChunk.clipping_planes_vertex,
     '}'
-].join( '\r\n' );
+].join('\r\n');
 
-ShaderChunk[ 'meshline_frag' ] = [
+ShaderChunk['meshline_frag'] = [
     '',
     ShaderChunk.fog_pars_fragment,
     ShaderChunk.logdepthbuf_pars_fragment,
+    ShaderChunk.clipping_planes_pars_fragment,
     '',
     'uniform sampler2D map;',
     'uniform sampler2D alphaMap;',
@@ -520,6 +523,7 @@ ShaderChunk[ 'meshline_frag' ] = [
     '',
     'void main() {',
     '',
+    ShaderChunk.clipping_planes_fragment,
     ShaderChunk.logdepthbuf_fragment,
     '',
     '    vec4 c = vColor;',
@@ -534,32 +538,32 @@ ShaderChunk[ 'meshline_frag' ] = [
     '',
     ShaderChunk.fog_fragment,
     '}'
-].join( '\r\n' );
+].join('\r\n');
 
-function MeshLineMaterial( parameters ) {
+function MeshLineMaterial(parameters) {
 
-    ShaderMaterial.call( this, {
+    ShaderMaterial.call(this, {
         uniforms: Object.assign({},
             UniformsLib.fog,
             {
-                lineWidth: { value: 1 },
-                map: { value: null },
-                useMap: { value: 0 },
-                alphaMap: { value: null },
-                useAlphaMap: { value: 0 },
-                color: { value: new Color( 0xffffff ) },
-                opacity: { value: 1 },
-                resolution: { value: new Vector2( 1, 1 ) },
-                sizeAttenuation: { value: 1 },
-                near: { value: 1 },
-                far: { value: 1 },
-                dashArray: { value: 0 },
-                dashOffset: { value: 0 },
-                dashRatio: { value: 0.5 },
-                useDash: { value: 0 },
-                visibility: {value: 1 },
-                alphaTest: {value: 0 },
-                repeat: { value: new Vector2( 1, 1 ) },
+                lineWidth: {value: 1},
+                map: {value: null},
+                useMap: {value: 0},
+                alphaMap: {value: null},
+                useAlphaMap: {value: 0},
+                color: {value: new Color(0xffffff)},
+                opacity: {value: 1},
+                resolution: {value: new Vector2(1, 1)},
+                sizeAttenuation: {value: 1},
+                near: {value: 1},
+                far: {value: 1},
+                dashArray: {value: 0},
+                dashOffset: {value: 0},
+                dashRatio: {value: 0.5},
+                useDash: {value: 0},
+                visibility: {value: 1},
+                alphaTest: {value: 0},
+                repeat: {value: new Vector2(1, 1)},
             }
         ),
 
@@ -567,17 +571,17 @@ function MeshLineMaterial( parameters ) {
 
         fragmentShader: ShaderChunk.meshline_frag,
 
-    } );
+    });
 
     this.type = 'MeshLineMaterial';
 
-    Object.defineProperties( this, {
+    Object.defineProperties(this, {
         lineWidth: {
             enumerable: true,
             get: function () {
                 return this.uniforms.lineWidth.value;
             },
-            set: function ( value ) {
+            set: function (value) {
                 this.uniforms.lineWidth.value = value;
             }
         },
@@ -586,7 +590,7 @@ function MeshLineMaterial( parameters ) {
             get: function () {
                 return this.uniforms.map.value;
             },
-            set: function ( value ) {
+            set: function (value) {
                 this.uniforms.map.value = value;
             }
         },
@@ -595,7 +599,7 @@ function MeshLineMaterial( parameters ) {
             get: function () {
                 return this.uniforms.useMap.value;
             },
-            set: function ( value ) {
+            set: function (value) {
                 this.uniforms.useMap.value = value;
             }
         },
@@ -604,7 +608,7 @@ function MeshLineMaterial( parameters ) {
             get: function () {
                 return this.uniforms.alphaMap.value;
             },
-            set: function ( value ) {
+            set: function (value) {
                 this.uniforms.alphaMap.value = value;
             }
         },
@@ -613,7 +617,7 @@ function MeshLineMaterial( parameters ) {
             get: function () {
                 return this.uniforms.useAlphaMap.value;
             },
-            set: function ( value ) {
+            set: function (value) {
                 this.uniforms.useAlphaMap.value = value;
             }
         },
@@ -622,7 +626,7 @@ function MeshLineMaterial( parameters ) {
             get: function () {
                 return this.uniforms.color.value;
             },
-            set: function ( value ) {
+            set: function (value) {
                 this.uniforms.color.value = value;
             }
         },
@@ -631,7 +635,7 @@ function MeshLineMaterial( parameters ) {
             get: function () {
                 return this.uniforms.opacity.value;
             },
-            set: function ( value ) {
+            set: function (value) {
                 this.uniforms.opacity.value = value;
             }
         },
@@ -640,8 +644,8 @@ function MeshLineMaterial( parameters ) {
             get: function () {
                 return this.uniforms.resolution.value;
             },
-            set: function ( value ) {
-                this.uniforms.resolution.value.copy( value );
+            set: function (value) {
+                this.uniforms.resolution.value.copy(value);
             }
         },
         sizeAttenuation: {
@@ -649,7 +653,7 @@ function MeshLineMaterial( parameters ) {
             get: function () {
                 return this.uniforms.sizeAttenuation.value;
             },
-            set: function ( value ) {
+            set: function (value) {
                 this.uniforms.sizeAttenuation.value = value;
             }
         },
@@ -658,7 +662,7 @@ function MeshLineMaterial( parameters ) {
             get: function () {
                 return this.uniforms.near.value;
             },
-            set: function ( value ) {
+            set: function (value) {
                 this.uniforms.near.value = value;
             }
         },
@@ -667,7 +671,7 @@ function MeshLineMaterial( parameters ) {
             get: function () {
                 return this.uniforms.far.value;
             },
-            set: function ( value ) {
+            set: function (value) {
                 this.uniforms.far.value = value;
             }
         },
@@ -676,9 +680,9 @@ function MeshLineMaterial( parameters ) {
             get: function () {
                 return this.uniforms.dashArray.value;
             },
-            set: function ( value ) {
+            set: function (value) {
                 this.uniforms.dashArray.value = value;
-                this.useDash = ( value !== 0 ) ? 1 : 0
+                this.useDash = (value !== 0) ? 1 : 0
             }
         },
         dashOffset: {
@@ -686,7 +690,7 @@ function MeshLineMaterial( parameters ) {
             get: function () {
                 return this.uniforms.dashOffset.value;
             },
-            set: function ( value ) {
+            set: function (value) {
                 this.uniforms.dashOffset.value = value;
             }
         },
@@ -695,7 +699,7 @@ function MeshLineMaterial( parameters ) {
             get: function () {
                 return this.uniforms.dashRatio.value;
             },
-            set: function ( value ) {
+            set: function (value) {
                 this.uniforms.dashRatio.value = value;
             }
         },
@@ -704,7 +708,7 @@ function MeshLineMaterial( parameters ) {
             get: function () {
                 return this.uniforms.useDash.value;
             },
-            set: function ( value ) {
+            set: function (value) {
                 this.uniforms.useDash.value = value;
             }
         },
@@ -713,7 +717,7 @@ function MeshLineMaterial( parameters ) {
             get: function () {
                 return this.uniforms.visibility.value;
             },
-            set: function ( value ) {
+            set: function (value) {
                 this.uniforms.visibility.value = value;
             }
         },
@@ -722,7 +726,7 @@ function MeshLineMaterial( parameters ) {
             get: function () {
                 return this.uniforms.alphaTest.value;
             },
-            set: function ( value ) {
+            set: function (value) {
                 this.uniforms.alphaTest.value = value;
             }
         },
@@ -731,44 +735,44 @@ function MeshLineMaterial( parameters ) {
             get: function () {
                 return this.uniforms.repeat.value;
             },
-            set: function ( value ) {
-                this.uniforms.repeat.value.copy( value );
+            set: function (value) {
+                this.uniforms.repeat.value.copy(value);
             }
         },
     });
 
-    this.setValues( parameters );
+    this.setValues(parameters);
 }
 
-MeshLineMaterial.prototype = Object.create( ShaderMaterial.prototype );
+MeshLineMaterial.prototype = Object.create(ShaderMaterial.prototype);
 MeshLineMaterial.prototype.constructor = MeshLineMaterial;
 MeshLineMaterial.prototype.isMeshLineMaterial = true;
 
-MeshLineMaterial.prototype.copy = function ( source ) {
+MeshLineMaterial.prototype.copy = function (source) {
 
-    ShaderMaterial.prototype.copy.call( this, source );
+    ShaderMaterial.prototype.copy.call(this, source);
 
     this.lineWidth = source.lineWidth;
     this.map = source.map;
     this.useMap = source.useMap;
     this.alphaMap = source.alphaMap;
     this.useAlphaMap = source.useAlphaMap;
-    this.color.copy( source.color );
+    this.color.copy(source.color);
     this.opacity = source.opacity;
-    this.resolution.copy( source.resolution );
+    this.resolution.copy(source.resolution);
     this.sizeAttenuation = source.sizeAttenuation;
     this.near = source.near;
     this.far = source.far;
-    this.dashArray.copy( source.dashArray );
-    this.dashOffset.copy( source.dashOffset );
-    this.dashRatio.copy( source.dashRatio );
+    this.dashArray.copy(source.dashArray);
+    this.dashOffset.copy(source.dashOffset);
+    this.dashRatio.copy(source.dashRatio);
     this.useDash = source.useDash;
     this.visibility = source.visibility;
     this.alphaTest = source.alphaTest;
-    this.repeat.copy( source.repeat );
+    this.repeat.copy(source.repeat);
 
     return this;
 
 };
 
-export { MeshLineMaterial, MeshLine }
+export {MeshLineMaterial, MeshLine}

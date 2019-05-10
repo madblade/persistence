@@ -7,7 +7,7 @@ import {
     Line,
     LineBasicMaterial,
     Mesh,
-    MeshPhongMaterial,
+    MeshPhongMaterial, Plane,
     PlaneBufferGeometry, Quaternion,
     Vector3
 } from "three";
@@ -31,7 +31,8 @@ Plotter.prototype.make1dCurve = function(f, sampling, extent) {
         color: new Color('#4c72e2'),
         linewidth: 1,
         linecap: 'round', //ignored by WebGLRenderer
-        linejoin:  'round' //ignored by WebGLRenderer
+        linejoin:  'round', //ignored by WebGLRenderer
+        clippingPlanes: [new Plane(new Vector3(0, 1, 0), 0)]
     });
 
     let geometry = new Geometry();
@@ -55,6 +56,8 @@ Plotter.prototype.makeLarge1dCurve = function(f, sampling, extent)
     let lineMaterial = new MeshLineMaterial({
         color: new Color('#ffa765'),
         lineWidth: 0.5,
+        clipping: true,
+        clippingPlanes: [new Plane(new Vector3(0, 1, 0), 0)]
     });
 
     let geometry = new Geometry();
@@ -187,7 +190,7 @@ Plotter.prototype.makeAxisHelperZ = function() {
 };
 
 //
-// Transitions
+// Linear transitions
 //
 
 Plotter.prototype.getNumberOfTicks = function(time, startTime, maxTime)
@@ -197,17 +200,36 @@ Plotter.prototype.getNumberOfTicks = function(time, startTime, maxTime)
         (time + maxTime - startTime);
 };
 
-Plotter.prototype.stretchIn = function(axis, mesh, time, startTime, maxTime, maxTimeTransition)
+Plotter.prototype.clipIn = function(
+    axis, mesh, time, startTime, maxTime, maxTimeTransition)
 {
     let nbTicks =  this.getNumberOfTicks(time, startTime, maxTime);
-    // console.log(nbTicks + ' ( ' + time + ', ' + startTime + ' )');
+    let progress = nbTicks / maxTimeTransition;
+
+    return nbTicks === maxTimeTransition;
+};
+
+Plotter.prototype.clipOut = function(
+    axis, mesh, time, startTime, maxTime, maxTimeTransition)
+{
+    let nbTicks =  this.getNumberOfTicks(time, startTime, maxTime);
+    let progress = nbTicks / maxTimeTransition;
+
+    return nbTicks === maxTimeTransition;
+};
+
+Plotter.prototype.stretchIn = function(
+    axis, mesh, time, startTime, maxTime, maxTimeTransition)
+{
+    let nbTicks =  this.getNumberOfTicks(time, startTime, maxTime);
     let progress = nbTicks / maxTimeTransition;
 
     mesh.scale[axis] = Math.max(progress, 0.001);
     return nbTicks === maxTimeTransition;
 };
 
-Plotter.prototype.stretchOut = function(axis, mesh, time, startTime, maxTime, maxTimeTransition)
+Plotter.prototype.stretchOut = function(
+    axis, mesh, time, startTime, maxTime, maxTimeTransition)
 {
     let nbTicks =  this.getNumberOfTicks(time, startTime, maxTime);
     let progress = nbTicks / maxTimeTransition;
@@ -269,6 +291,9 @@ Plotter.prototype.fadeOut = function(
     return nbTicks === maxTimeTransition;
 };
 
+//
+// Non-linear transitions
+//
 Plotter.prototype.linear = function(progress) {
     return progress;
 };
