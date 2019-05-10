@@ -8,7 +8,7 @@ import {
     LineBasicMaterial,
     Mesh,
     MeshPhongMaterial,
-    PlaneBufferGeometry,
+    PlaneBufferGeometry, Quaternion,
     Vector3
 } from "three";
 import {MeshLine, MeshLineMaterial} from "./MeshLine";
@@ -277,10 +277,6 @@ Plotter.prototype.linearCamera = function(
 
     let initialPosition = backwards ? target.position2 : target.position1;
     let targetPosition  = backwards ? target.position1 : target.position2;
-
-    let initialFocus = backwards ? target.lookat2 : target.lookat1;
-    let targetFocus = backwards ? target.lookat1 : target.lookat2;
-
     let cameraPosition = camera.position;
 
     let dx = initialPosition.x + progress * (targetPosition.x - initialPosition.x);
@@ -291,9 +287,12 @@ Plotter.prototype.linearCamera = function(
     cameraPosition.y = dy;
     cameraPosition.z = dz;
 
+    let initialQuaternion = backwards ? target.lookat2 : target.lookat1;
+    let targetQuaternion = backwards ? target.lookat1 : target.lookat2;
     let cameraQuaternion = camera.quaternion;
-    console.log(cameraQuaternion);
-    cameraQuaternion.slerp(targetFocus, progress);
+    let result = new Quaternion();
+    Quaternion.slerp(initialQuaternion, targetQuaternion, result, progress);
+    cameraQuaternion.copy(result);
 
     return nbTicks === maxTimeTransition;
 };

@@ -143,7 +143,7 @@ function init() {
             target: {
                 position1: new Vector3(0, 0, 0), // Unimportant
                 position2: new Vector3(0, 0, 40),
-                lookat1: new Vector3(0, 0, 0), // Unimportant
+                lookat1: new Quaternion(), // Unimportant
                 lookat2: lookAt1
             },
             transition: linearCamera
@@ -153,7 +153,7 @@ function init() {
             target: {
                 position1: new Vector3(0, 0, 0), // Unimportant
                 position2: new Vector3(0, 0, 20),
-                lookat1: new Vector3(0, 0, 0), // Unimportant
+                lookat1: new Quaternion(), // Unimportant
                 lookat2: lookAt2
             },
             transition: linearCamera

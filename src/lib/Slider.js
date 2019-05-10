@@ -473,6 +473,7 @@ Slider.prototype.transitionIn = function(
         {
             console.log(newSlide.camera);
             newSlide.target.position1.copy(newSlide.camera.position);
+            newSlide.target.lookat1.copy(newSlide.camera.quaternion);
 
             // TODO manage camera interpolation (position + lookat)
             this.endInAnimationCallback = function() {
