@@ -457,16 +457,18 @@ Slider.prototype.transitionIn = function(
             isMakingTransitionIn = true;
             this.update();
         }
-        else if (newSlide.camera)
+        else if (newSlide.camera && !this.cameraIsOnTarget(newSlide))
         {
             console.log(newSlide.camera);
+            // Check if camera is already at the right position.
+
             newSlide.target.position1.copy(newSlide.camera.position);
-            newSlide.target.lookat1.copy(newSlide.camera.quaternion);
+            newSlide.target.quaternion1.copy(newSlide.camera.quaternion);
             if (newSlide.duration && newSlide.duration > 0) {
                 this.maxTimeCameraTransition = newSlide.duration;
             }
 
-            // TODO manage camera interpolation (position + lookat)
+            // TODO manage camera interpolation (position + quaternion)
             this.endInAnimationCallback = function() {
                 console.log('ending camera animation on ' + newSlideIndex + ', ' + newSlide);
                 this.endNewSlideTransition(newSlide, newSlideIndex);
@@ -485,6 +487,21 @@ Slider.prototype.transitionIn = function(
     }
 
     return isMakingTransitionIn;
+};
+
+Slider.prototype.cameraIsOnTarget = function(slide)
+{
+    let p1 = slide.camera.position;
+    let p2 = slide.target.position2;
+    if (p1.x !== p2.x || p1.y !== p2.y || p1.z !== p2.z)
+        return false;
+
+    let q1 = slide.camera.quaternion;
+    let q2 = slide.target.quaternion2;
+    if (q1.x !== q2.x || q1.y !== q2.y || q1.z !== q2.z || q1.w !== q2.w)
+        return false;
+
+    return true;
 };
 
 Slider.prototype.transitionStart = function(

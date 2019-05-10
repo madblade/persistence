@@ -97,7 +97,13 @@ function init() {
         return plotter.fadeOut(mesh, t, s, m, mx);
     };
     let linearCamera = function(t, s, m, mx, camera, target, backwards) {
-        return plotter.linearCamera(camera, target, t, s, m, mx, backwards);
+        return plotter.interpolateCamera(camera, target, t, s, m, mx, plotter.linear, backwards);
+    };
+    let smoothCamera = function(t, s, m, mx, camera, target, backwards) {
+        return plotter.interpolateCamera(camera, target, t, s, m, mx, plotter.smoothstep, backwards);
+    };
+    let smootherCamera = function(t, s, m, mx, camera, target, backwards) {
+        return plotter.interpolateCamera(camera, target, t, s, m, mx, plotter.perlinstep, backwards);
     };
 
 
@@ -129,7 +135,7 @@ function init() {
     );
 
     let lookAt1 = new Quaternion();
-    lookAt1.setFromAxisAngle(new Vector3(1, 0, 0), -Math.PI/8);
+    lookAt1.setFromAxisAngle(new Vector3(0, 1, 0), -Math.PI/8);
     let lookAt2 = new Quaternion();
     lookAt2.setFromAxisAngle(new Vector3(1, 0, 0), Math.PI/8);
 
@@ -143,10 +149,10 @@ function init() {
             target: {
                 position1: new Vector3(0, 0, 0), // Unimportant
                 position2: new Vector3(0, 0, 40),
-                lookat1: new Quaternion(), // Unimportant
-                lookat2: lookAt1
+                quaternion1: new Quaternion(), // Unimportant
+                quaternion2: lookAt1
             },
-            transition: linearCamera,
+            transition: smoothCamera,
             duration: 50,
         },
         {
@@ -154,10 +160,10 @@ function init() {
             target: {
                 position1: new Vector3(0, 0, 0), // Unimportant
                 position2: new Vector3(0, 0, 20),
-                lookat1: new Quaternion(), // Unimportant
-                lookat2: lookAt2
+                quaternion1: new Quaternion(), // Unimportant
+                quaternion2: lookAt2
             },
-            transition: linearCamera,
+            transition: smootherCamera,
             duration: 50,
         },
         {

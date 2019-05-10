@@ -269,11 +269,27 @@ Plotter.prototype.fadeOut = function(
     return nbTicks === maxTimeTransition;
 };
 
-Plotter.prototype.linearCamera = function(
-    camera, target, time, startTime, maxTime, maxTimeTransition, backwards)
+Plotter.prototype.linear = function(progress) {
+    return progress;
+};
+
+Plotter.prototype.smoothstep = function(progress) {
+    return progress < 0 ? 0 : progress > 1 ? 1 :
+        3 * Math.pow(progress, 2) - 2 * Math.pow(progress, 3);
+};
+
+Plotter.prototype.perlinstep = function(progress) {
+    return progress < 0 ? 0 : progress > 1 ? 1 :
+        6 * Math.pow(progress, 5) - 15 * Math.pow(progress, 4) + 10 * Math.pow(progress, 3);
+};
+
+Plotter.prototype.interpolateCamera = function(
+    camera, target, time, startTime, maxTime, maxTimeTransition,
+    interpolant,
+    backwards)
 {
     let nbTicks = this.getNumberOfTicks(time, startTime, maxTime);
-    let progress = nbTicks / maxTimeTransition;
+    let progress = interpolant(nbTicks / maxTimeTransition);
 
     let initialPosition = backwards ? target.position2 : target.position1;
     let targetPosition  = backwards ? target.position1 : target.position2;
@@ -287,8 +303,8 @@ Plotter.prototype.linearCamera = function(
     cameraPosition.y = dy;
     cameraPosition.z = dz;
 
-    let initialQuaternion = backwards ? target.lookat2 : target.lookat1;
-    let targetQuaternion = backwards ? target.lookat1 : target.lookat2;
+    let initialQuaternion = backwards ? target.quaternion2 : target.quaternion1;
+    let targetQuaternion = backwards ? target.quaternion1 : target.quaternion2;
     let cameraQuaternion = camera.quaternion;
     let result = new Quaternion();
     Quaternion.slerp(initialQuaternion, targetQuaternion, result, progress);
