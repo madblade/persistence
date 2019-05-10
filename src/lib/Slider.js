@@ -1,6 +1,6 @@
 "use strict";
 
-import {Object3D} from "three";
+import {Group, Object3D} from "three";
 
 function Slider(scene, camera, controls)
 {
@@ -294,9 +294,9 @@ Slider.prototype.removeMesh = function(mesh) {
 Slider.prototype.addMesh = function(mesh) {
     if (!(mesh instanceof Object3D))
         return;
+    console.log(mesh);
 
     // Reset mesh post-transition
-    console.log(mesh);
     this.resetMesh(mesh);
     this.scene.add(mesh);
     this.activeMeshes.push(mesh);
@@ -343,7 +343,8 @@ Slider.prototype.resetOpacity = function(mesh) {
 Slider.prototype.resetMesh = function(mesh) {
     if (!mesh) return;
     this.resetScale(mesh);
-    this.resetOpacity(mesh);
+    if (!(mesh instanceof Group))
+        this.resetOpacity(mesh);
 };
 
 //
@@ -551,7 +552,8 @@ Slider.prototype.update = function() {
         if (needO[i] && !backwards) {
             // console.log('out: ' + i);
             let finished = flat[i].animateOut(
-                this.time, this.startTime, this.maxTime, this.maxTimeTransition, flat[i].mesh
+                this.time, this.startTime, this.maxTime, this.maxTimeTransition, flat[i].mesh,
+                flat[i].opacityMax
             );
             if (finished) {
                 console.log('end animate out');
@@ -581,7 +583,8 @@ Slider.prototype.update = function() {
     for (let i = 0; i < needI.length; ++i) {
         if (needI[i] && !backwards) {
             let finished = flat[i].animateIn(
-                this.time, this.startTime, this.maxTime, this.maxTimeTransition, flat[i].mesh
+                this.time, this.startTime, this.maxTime, this.maxTimeTransition, flat[i].mesh,
+                flat[i].opacityMax
             );
             // console.log('in: ' + i);
             if (finished) {

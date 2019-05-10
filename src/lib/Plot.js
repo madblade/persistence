@@ -8,7 +8,7 @@ import {
     LineBasicMaterial,
     Mesh,
     MeshPhongMaterial, Plane,
-    PlaneBufferGeometry, Quaternion,
+    PlaneBufferGeometry, Quaternion, Sprite, SpriteMaterial, Texture,
     Vector3
 } from "three";
 import {MeshLine, MeshLineMaterial} from "./MeshLine";
@@ -26,7 +26,8 @@ Plotter.prototype.makeArrowHelper = function(dir, origin)
     return arrowHelper;
 };
 
-Plotter.prototype.make1dCurve = function(f, sampling, extent) {
+Plotter.prototype.make1dCurve = function(f, sampling, extent)
+{
     let material = new LineBasicMaterial({
         color: new Color('#4c72e2'),
         linewidth: 1,
@@ -49,6 +50,51 @@ Plotter.prototype.make1dCurve = function(f, sampling, extent) {
 
     let line = new Line(geometry, material);
     return line;
+};
+
+// What = 'min'
+// index = which one
+Plotter.prototype.makeSprite1d = function(vector)
+{
+    let canvasTexture = document.createElement('canvas');
+    let size = 256;
+    canvasTexture.width = size;
+    canvasTexture.height = size;
+    let context = canvasTexture.getContext('2d');
+    context.beginPath();
+    context.fillStyle = "#ff0000";
+    context.arc(size / 2, size / 2, size / 2, 0, 2 * Math.PI, true);
+    context.fill();
+    context.stroke();
+
+    let threeTexture = new Texture(canvasTexture);
+    threeTexture.needsUpdate = true;
+
+    let material = new SpriteMaterial({
+        map: threeTexture,
+        color: 0xffffff
+    });
+    let sprite = new Sprite(material);
+    sprite.position.x = vector[0];
+    sprite.position.y = vector[1];
+    sprite.position.z = -0.05;
+    sprite.scale.set(10, 10, 1);
+    return sprite;
+};
+
+Plotter.prototype.findGlobalMin1d = function(f, sampling, extent) {
+    let xMin = extent.x[0]; let zMin = extent.z[0];
+    let xMax = extent.x[1]; let zMax = extent.z[1];
+    let xRan = xMax - xMin; let zRan = zMax - zMin;
+    let globalMin = [0, Number.POSITIVE_INFINITY];
+    for (let i = 0; i < sampling; ++i) {
+        let x = xMin + xRan * (i / sampling);
+        let z = zRan * f(x) / 2;
+        if (z < globalMin[1]) {
+            globalMin = [x, z];
+        }
+    }
+    return globalMin;
 };
 
 Plotter.prototype.makeLarge1dCurve = function(f, sampling, extent)
@@ -291,22 +337,24 @@ Plotter.prototype.setOpacity = function(mesh, opacity) {
 // Returns false if animation in progress
 // Return true if animation finished
 Plotter.prototype.fadeIn = function(
-    mesh, time, startTime, maxTime, maxTimeTransition)
+    mesh, time, startTime, maxTime, maxTimeTransition, opacityMax)
 {
     let nbTicks = this.getNumberOfTicks(time, startTime, maxTime);
     let progress = nbTicks / maxTimeTransition;
     // console.log(nbTicks + ' ( ' + time + ', ' + startTime + ' )');
 
+    if (opacityMax !== undefined) progress *= opacityMax;
     this.setOpacity(mesh, progress);
     return nbTicks === maxTimeTransition;
 };
 
 Plotter.prototype.fadeOut = function(
-    mesh, time, startTime, maxTime, maxTimeTransition)
+    mesh, time, startTime, maxTime, maxTimeTransition, opacityMax)
 {
     let nbTicks = this.getNumberOfTicks(time, startTime, maxTime);
     let progress = nbTicks / maxTimeTransition;
 
+    if (opacityMax !== undefined) progress *= opacityMax;
     this.setOpacity(mesh, 1 - progress);
     return nbTicks === maxTimeTransition;
 };
