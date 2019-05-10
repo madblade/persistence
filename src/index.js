@@ -245,10 +245,14 @@ function init() {
         new Plane(new Vector3(0, 0, 1), 15)
     ];
 
-    let sampling2d = 64;
+    let sampling2d = 128;
     let curve2d = plotter.make2dCurve(plotter.generatorCurve2d.bind(plotter), sampling2d, extent);
     curve2d.material.clippingPlanes = [
         new Plane(new Vector3(0, 0, 1), 15)
+    ];
+    let curve2d2 = plotter.make2dCurve(plotter.generatorCurve2d.bind(plotter), sampling2d, extent);
+    curve2d2.material.clippingPlanes = [
+        new Plane(new Vector3(0, -1, 0), 15)
     ];
     let curve2dt = plotter.make2dCurve(plotter.generatorCurve2d.bind(plotter), sampling2d, extent);
 
@@ -280,7 +284,22 @@ function init() {
         [{
             mesh: curve2d,
             animateIn: swipeInBack,
-            duration: 50 
+            duration: 50
+        }],
+        [{
+            mesh: curve2d2,
+            animateIn: swipeInUp({y: [-15, 0]}),
+            duration: 90
+        },
+        {
+            mesh: curve2d2,
+            animateIn: swipeInUp({y: [0, 5]}),
+            duration: 90
+        },
+        {
+            mesh: curve2d2,
+            animateIn: swipeInUp({y: [5, 15]}),
+            duration: 90
         }],
         {
             mesh: curve2dt,
