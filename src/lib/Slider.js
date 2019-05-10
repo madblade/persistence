@@ -43,6 +43,8 @@ function Slider(scene, camera, controls)
     this.time = 0;
     this.maxTime = 100;
     this.startTime = 0;
+
+    this.defaultMaxTimeTransition = 10;
     this.maxTimeTransition = 10;
     this.maxTimeCameraTransition = 10;
     this.endOutAnimationCallback = null;
@@ -379,6 +381,14 @@ Slider.prototype.endNewSlideTransition = function(newSlide, newSlideIndex)
     }
 };
 
+Slider.prototype.updateDuration = function(slide) {
+    if (slide.duration && slide.duration > 0 && slide.duration < this.maxTime) {
+        this.maxTimeTransition = slide.duration;
+    } else {
+        this.maxTimeTransition = this.defaultMaxTimeTransition;
+    }
+};
+
 Slider.prototype.transitionOut = function(
     oldSlideIndex, newSlideIndex, backwards)
 {
@@ -395,6 +405,8 @@ Slider.prototype.transitionOut = function(
         // console.log('## bounds ##');
         // console.log(bounds);
         // console.log(oldSlideIndex);
+
+        this.updateDuration(oldSlide);
 
         if (oldSlide.animate) {
             this.needAnimation[oldSlideIndex] = false;
@@ -446,6 +458,8 @@ Slider.prototype.transitionIn = function(
         } else {
             this.addMesh(newSlide.mesh);
         }
+
+        this.updateDuration(newSlide);
 
         if (newSlide.animateIn && !backwards) {
             this.endInAnimationCallback = function() {
@@ -599,7 +613,7 @@ Slider.prototype.update = function() {
         if (needCam[i]) {
             // TODO manage forward and backwards
             let finished = flat[i].transition(
-                this.time, this.startTime, this.maxTime, this.maxTimeCameraTransition,
+                this.time, this.startTime, this.maxTime, this.maxTimeTransition,
                 flat[i].camera, flat[i].target, false // backwards
             );
             if (finished) {

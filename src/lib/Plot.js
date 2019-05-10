@@ -32,7 +32,7 @@ Plotter.prototype.make1dCurve = function(f, sampling, extent) {
         linewidth: 1,
         linecap: 'round', //ignored by WebGLRenderer
         linejoin:  'round', //ignored by WebGLRenderer
-        clippingPlanes: [new Plane(new Vector3(0, 1, 0), 0)]
+        clippingPlanes: [new Plane(new Vector3(-1, 0, 0), 15)]
     });
 
     let geometry = new Geometry();
@@ -55,9 +55,9 @@ Plotter.prototype.makeLarge1dCurve = function(f, sampling, extent)
 {
     let lineMaterial = new MeshLineMaterial({
         color: new Color('#ffa765'),
-        lineWidth: 0.5,
+        lineWidth: 0.25,
         clipping: true,
-        clippingPlanes: [new Plane(new Vector3(0, 1, 0), 0)]
+        clippingPlanes: [new Plane(new Vector3(0, -1, 0), 30)]
     });
 
     let geometry = new Geometry();
@@ -68,7 +68,7 @@ Plotter.prototype.makeLarge1dCurve = function(f, sampling, extent)
         let x = xMin + xRan * (i / sampling);
         let z = zRan * f(x) / 2;
         geometry.vertices.push(
-            new Vector3(x, z, -0.01)
+            new Vector3(x, z, -0.05)
         );
     }
 
@@ -200,20 +200,40 @@ Plotter.prototype.getNumberOfTicks = function(time, startTime, maxTime)
         (time + maxTime - startTime);
 };
 
-Plotter.prototype.clipIn = function(
-    axis, mesh, time, startTime, maxTime, maxTimeTransition)
+Plotter.prototype.swipeIn = function(
+    axis, mesh, time, startTime, maxTime, maxTimeTransition, extent)
 {
     let nbTicks =  this.getNumberOfTicks(time, startTime, maxTime);
     let progress = nbTicks / maxTimeTransition;
+
+    let cp = mesh.material.clippingPlanes;
+    if (!cp || !cp[0]) return true;
+
+    let plane = cp[0];
+    let start = extent[axis][0];
+    let end = extent[axis][1];
+    let p = start + progress * (end - start); // lerp
+    plane.constant = p;
+    plane.needsUpdate = true;
 
     return nbTicks === maxTimeTransition;
 };
 
-Plotter.prototype.clipOut = function(
-    axis, mesh, time, startTime, maxTime, maxTimeTransition)
+Plotter.prototype.swipeOut = function(
+    axis, mesh, time, startTime, maxTime, maxTimeTransition, extent)
 {
     let nbTicks =  this.getNumberOfTicks(time, startTime, maxTime);
-    let progress = nbTicks / maxTimeTransition;
+    let progress = 1 - (nbTicks / maxTimeTransition);
+
+    let cp = mesh.material.clippingPlanes;
+    if (!cp || !cp[0]) return true;
+
+    let plane = cp[0];
+    let start = extent[axis][0];
+    let end = extent[axis][1];
+    let p = start + progress * (end - start); // lerp
+    plane.constant = p;
+    plane.needsUpdate = true;
 
     return nbTicks === maxTimeTransition;
 };

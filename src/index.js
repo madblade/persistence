@@ -82,7 +82,7 @@ function init() {
     window.addEventListener('keydown', slider.onKeyDown.bind(slider), false);
     plotter = new Plotter();
 
-    // Helpers
+    // Transitions
     let stretchIn = function(t, s, m, mx, mesh) {
         return plotter.stretchIn('y', mesh, t, s, m, mx);
     };
@@ -144,45 +144,33 @@ function init() {
             mesh: xyHelper,
             animateIn: fadeIn,
         },
-        {
-            camera: camera,
-            target: {
-                position1: new Vector3(0, 0, 0), // Unimportant
-                position2: new Vector3(0, 0, 40),
-                quaternion1: new Quaternion(), // Unimportant
-                quaternion2: lookAt1
-            },
-            transition: smoothCamera,
-            duration: 50,
-        },
-        {
-            camera: camera,
-            target: {
-                position1: new Vector3(0, 0, 0), // Unimportant
-                position2: new Vector3(0, 0, 20),
-                quaternion1: new Quaternion(), // Unimportant
-                quaternion2: lookAt2
-            },
-            transition: smootherCamera,
-            duration: 50,
-        },
+        // {
+        //     camera: camera,
+        //     target: {
+        //         position1: new Vector3(0, 0, 0), // Unimportant
+        //         position2: new Vector3(0, 0, 40),
+        //         quaternion1: new Quaternion(), // Unimportant
+        //         quaternion2: lookAt1
+        //     },
+        //     transition: smoothCamera,
+        //     duration: 50,
+        // },
+        // {
+        //     camera: camera,
+        //     target: {
+        //         position1: new Vector3(0, 0, 0), // Unimportant
+        //         position2: new Vector3(0, 0, 20),
+        //         quaternion1: new Quaternion(), // Unimportant
+        //         quaternion2: lookAt2
+        //     },
+        //     transition: smootherCamera,
+        //     duration: 50,
+        // },
         {
             mesh: xzHelper,
         }]
     );
 
-    // for (let i = 0; i < 16; ++i)
-    // {
-    //     console.log(slider.computeBounds(
-    //         [[[
-    //             1, 2, [0, 1, 2], [2, 1, [3, 4, 5, 6], 3, 4, 5], 4, 5
-    //         ]]],
-    //         i));
-    // }
-
-    // slider.addSlide({
-    //     clear: true
-    // });
 
     // AXES RED GREEN BLUE
     let axesHelper = new AxesHelper(5);
@@ -203,18 +191,52 @@ function init() {
     let redZ = 0.5;
     let extent = {x: [-15, 15], y: [0, 60 * redY], z: [-15 * redZ, 15 * redZ]};
 
+    let swipeInRight = function(t, s, m, mx, mesh) {
+        return plotter.swipeIn('x', mesh, t, s, m, mx, extent);
+    };
+
+    let swipeInUp = function(extent) {
+        return function(t, s, m, mx, mesh) {
+            return plotter.swipeIn('y', mesh, t, s, m, mx, extent);
+        };
+    };
+    let swipeOutUp = function(extent) {
+        return function(t, s, m, mx, mesh) {
+            return plotter.swipeOut('y', mesh, t, s, m, mx, extent);
+        }
+    };
+
     let curve1d = plotter.make1dCurve(plotter.generatorCurve1d.bind(plotter), sampling1d, extent);
     slider.addSlide(
         {
-            mesh: curve1d
+            mesh: curve1d,
+            animateIn: swipeInRight,
+            duration: 45
         }
     );
 
     let largeCurve1d = plotter.makeLarge1dCurve(plotter.generatorCurve1d.bind(plotter), sampling1d, extent);
     slider.addSlide(
-        {
-            mesh: largeCurve1d
-        }
+        [{
+            mesh: largeCurve1d,
+            animateIn: swipeInUp({y: [-15, 15]}),
+            animateOut: swipeOutUp({y: [-15, 15]}),
+            duration: 90
+        }]
+    );
+    slider.addSlide(
+        [{
+            mesh: largeCurve1d,
+            animateIn: swipeInUp({y: [-15, -5]}),
+            duration: 90
+        }]
+    );
+    slider.addSlide(
+        [{
+            mesh: largeCurve1d,
+            animateIn: swipeInUp({y: [-5, 0]}),
+            duration: 90
+        }]
     );
 
     let sampling2d = 64;
@@ -240,6 +262,15 @@ function init() {
     // for (let i = 0; i < 9; ++i)
     // {
     //     console.log(slider.computeBounds(slider.slides, i));
+    // }
+
+    // for (let i = 0; i < 16; ++i)
+    // {
+    //     console.log(slider.computeBounds(
+    //         [[[
+    //             1, 2, [0, 1, 2], [2, 1, [3, 4, 5, 6], 3, 4, 5], 4, 5
+    //         ]]],
+    //         i));
     // }
 }
 
