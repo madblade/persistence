@@ -120,8 +120,7 @@ Plotter.prototype.makeLarge1dCurve = function(f, sampling, extent)
 
     let line = new MeshLine();
     line.setGeometry(geometry);
-    var mesh = new Mesh(line.geometry, lineMaterial);
-    return mesh;
+    return new Mesh(line.geometry, lineMaterial);
 };
 
 Plotter.prototype.make2dCurve = function(f, sampling, extent) {

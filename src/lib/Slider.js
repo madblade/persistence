@@ -341,7 +341,7 @@ Slider.prototype.resetOpacity = function(mesh) {
 };
 
 Slider.prototype.resetMesh = function(mesh) {
-    if (!mesh) return;
+    if (!mesh || mesh.dontReset) return;
     this.resetScale(mesh);
     if (!(mesh instanceof Group))
         this.resetOpacity(mesh);

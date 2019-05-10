@@ -37,6 +37,13 @@ module.exports =
             {
                 test: /\.glsl$/,
                 use: 'raw-loader'
+            },
+            {
+                test: /\.json$/,
+                use: [{
+                        loader: 'file-loader',
+                        options: {},
+                    }]
             }
         ]
     },

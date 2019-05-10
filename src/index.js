@@ -5,11 +5,11 @@ import {
     AxesHelper,
     BoxBufferGeometry,
     Color,
-    DirectionalLight, Group,
+    DirectionalLight, DoubleSide, Font, FontLoader, Group, LineBasicMaterial,
     Mesh,
     MeshBasicMaterial, Object3D,
     PerspectiveCamera, Plane, Quaternion,
-    Scene, Vector3,
+    Scene, ShapeBufferGeometry, Vector3,
     WebGLRenderer
 } from "three";
 // import dat from "dat.gui";
@@ -17,6 +17,7 @@ import OrbitControls from './lib/OrbitControls';
 import Stats from 'stats.js/src/Stats'
 import Plotter from './lib/Plot';
 import Slider from "./lib/Slider";
+import Helvetiker from './lib/helvetiker.js';
 
 let container, stats;
 // let gui;
@@ -164,6 +165,36 @@ function init() {
 
     lookAt2.multiply(lookAt3);
 
+    let domainText = null;
+    {
+        let xMid, text;
+        let color = 0x006699;
+        let matDark = new LineBasicMaterial({
+            color: color,
+            side: DoubleSide
+        });
+        let matLite = new MeshBasicMaterial({
+            color: color,
+            transparent: true,
+            opacity: 0.4,
+            side: DoubleSide
+        });
+        let message = "domain";
+        let shapes = fontGenerator.generateShapes(message, 100);
+        let geometry = new ShapeBufferGeometry(shapes);
+        geometry.computeBoundingBox();
+        xMid = -0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
+        geometry.translate(xMid, 0, 0);
+        // make shape ( N.B. edge view not visible )
+        text = new Mesh(geometry, matLite);
+        text.position.z = 0;
+        text.position.y = -19;
+        text.position.x = 10;
+        text.scale.copy(new Vector3(0.02, 0.02, 0.05));
+        text.dontReset = true;
+        domainText = text;
+    }
+
     slider.addSlide([
         {
             mesh: xyHelper,
@@ -185,6 +216,9 @@ function init() {
             mesh: xHelper,
             animateIn: stretchIn,
             // animateOut: stretchOut
+        },
+        {
+            mesh: domainText
         },
         {
             mesh: yHelper,
@@ -325,5 +359,19 @@ function init() {
     // }
 }
 
-init();
-animate();
+let fontGenerator = null;
+function loadFont()
+{
+    // try {
+    //     json = JSON.parse( text );
+    // } catch ( e ) {
+    //     console.warn( 'THREE.FontLoader: typeface.js support is being deprecated. Use typeface.json instead.' );
+    //     json = JSON.parse( text.substring( 65, text.length - 2 ) );
+    // }
+
+    fontGenerator = new Font(Helvetiker);
+    init();
+    animate();
+}
+
+loadFont();
