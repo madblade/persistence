@@ -146,7 +146,8 @@ function init() {
                 lookat1: new Quaternion(), // Unimportant
                 lookat2: lookAt1
             },
-            transition: linearCamera
+            transition: linearCamera,
+            duration: 50,
         },
         {
             camera: camera,
@@ -156,7 +157,8 @@ function init() {
                 lookat1: new Quaternion(), // Unimportant
                 lookat2: lookAt2
             },
-            transition: linearCamera
+            transition: linearCamera,
+            duration: 50,
         },
         {
             mesh: xzHelper,

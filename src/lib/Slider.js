@@ -44,6 +44,7 @@ function Slider(scene, camera, controls)
     this.maxTime = 100;
     this.startTime = 0;
     this.maxTimeTransition = 10;
+    this.maxTimeCameraTransition = 10;
     this.endOutAnimationCallback = null;
     this.endInAnimationCallback = null;
     this.backwards = false;
@@ -412,18 +413,6 @@ Slider.prototype.transitionOut = function(
             isManagingTransitionIn = true;
 
         }
-        // else if (oldSlide.camera && (backwards !== this.lastBackwards))
-        // {
-        //     this.endOutAnimationCallback = function() {
-        //         console.log('ending out camera on ' + oldSlideIndex + ', ' + oldSlide);
-        //         this.endOldSlideTransition(oldSlide, oldSlideIndex, bounds, backwards);
-        //
-        //         this.transitionIn(newSlideIndex, backwards);
-        //     }.bind(this);
-        //
-        //     this.needCam[oldSlideIndex] = true;
-        //     isManagingTransitionIn = true;
-        // }
         else
         {
             this.endOldSlideTransition(oldSlide, oldSlideIndex, bounds, backwards);
@@ -468,12 +457,14 @@ Slider.prototype.transitionIn = function(
             isMakingTransitionIn = true;
             this.update();
         }
-        else if (newSlide.camera // && (backwards === this.lastBackwards)
-                )
+        else if (newSlide.camera)
         {
             console.log(newSlide.camera);
             newSlide.target.position1.copy(newSlide.camera.position);
             newSlide.target.lookat1.copy(newSlide.camera.quaternion);
+            if (newSlide.duration && newSlide.duration > 0) {
+                this.maxTimeCameraTransition = newSlide.duration;
+            }
 
             // TODO manage camera interpolation (position + lookat)
             this.endInAnimationCallback = function() {
@@ -591,7 +582,7 @@ Slider.prototype.update = function() {
         if (needCam[i]) {
             // TODO manage forward and backwards
             let finished = flat[i].transition(
-                this.time, this.startTime, this.maxTime, this.maxTimeTransition,
+                this.time, this.startTime, this.maxTime, this.maxTimeCameraTransition,
                 flat[i].camera, flat[i].target, false // backwards
             );
             if (finished) {
@@ -603,6 +594,8 @@ Slider.prototype.update = function() {
             break;
         }
     }
+    if (numberActiveTransitions > 0)
+        return;
 
     // No active transition at this point
     this.transiting = false;
