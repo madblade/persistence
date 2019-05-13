@@ -56,29 +56,30 @@ function Slider(scene, camera, controls)
 
 Slider.prototype.flatten = function(array)
 {
-    let toString = Object.prototype.toString;
-    let arrayTypeStr = '[object Array]';
-
-    let result = [];
-    let nodes = array.slice();
-    let node;
-
-    if (!array.length) {
-        return result;
-    }
-
-    node = nodes.pop();
-
-    do {
-        if (toString.call(node) === arrayTypeStr) {
-            nodes.push.apply(nodes, node);
-        } else {
-            result.push(node);
-        }
-    } while (nodes.length && (node = nodes.pop()) !== undefined);
-
-    result.reverse(); // we reverse result to restore the original order
-    return result;
+    return this.slides;
+    // let toString = Object.prototype.toString;
+    // let arrayTypeStr = '[object Array]';
+    //
+    // let result = [];
+    // let nodes = array.slice();
+    // let node;
+    //
+    // if (!array.length) {
+    //     return result;
+    // }
+    //
+    // node = nodes.pop();
+    //
+    // do {
+    //     if (toString.call(node) === arrayTypeStr) {
+    //         nodes.push.apply(nodes, node);
+    //     } else {
+    //         result.push(node);
+    //     }
+    // } while (nodes.length && (node = nodes.pop()) !== undefined);
+    //
+    // result.reverse(); // we reverse result to restore the original order
+    // return result;
 };
 
 Slider.prototype.computeBounds = function(array, index)
@@ -204,21 +205,25 @@ Slider.prototype.computeBounds = function(array, index)
 
 Slider.prototype.computeNbSlides = function()
 {
-    let slides = this.slides;
-    let flat = this.flatten(slides);
-    return flat.length;
+    // let slides = this.slides;
+    // let flat = this.flatten(slides);
+    // return flat.length;
+    return this.slides.length;
 };
 
 Slider.prototype.getSlideAt = function(index)
 {
-    let slides = this.slides;
-    let flat = this.flatten(slides);
-    return flat[index];
+    // let slides = this.slides;
+    // let flat = this.flatten(slides);
+    // return flat[index];
+    return this.slides[index];
 };
 
+// TODO redo
 Slider.prototype.addSlide = function(slide)
 {
-    this.slides[0][0].push(slide);
+    // this.slides[0][0].push(slide);
+    this.slides.push(slide);
 
     // Reset needs.
     let nbSlides = this.computeNbSlides();
@@ -232,6 +237,18 @@ Slider.prototype.addSlide = function(slide)
         this.needIn.push(false);
         this.needOut.push(false);
         this.needCam.push(false);
+    }
+};
+
+Slider.prototype.addSlides = function(slideArray)
+{
+    if (slideArray.length < 1) {
+        throw Error('[Slider] addSlides must take an array of [slide object] as an input.');
+        return;
+    }
+
+    for (let i = 0; i < slideArray.length; ++i) {
+        this.addSlide(slideArray[i]);
     }
 };
 
@@ -294,6 +311,10 @@ Slider.prototype.removeMesh = function(mesh) {
 Slider.prototype.addMesh = function(mesh) {
     if (!(mesh instanceof Object3D))
         return;
+    if (this.activeMeshes.indexOf(mesh) > -1) {
+        console.log('[Slider] trying to add a mesh that is already present (aborted).');
+        return;
+    }
     console.log(mesh);
 
     // Reset mesh post-transition
@@ -351,6 +372,7 @@ Slider.prototype.resetMesh = function(mesh) {
 // Transition animations.
 //
 
+// TODO properly remove mesh
 Slider.prototype.endOldSlideTransition = function(oldSlide, oldSlideIndex, bounds, backwards)
 {
     if (oldSlideIndex === bounds[1] && !backwards) {
@@ -413,7 +435,6 @@ Slider.prototype.transitionOut = function(
             this.needAnimation[oldSlideIndex] = false;
         }
 
-        // TODO make transition out
         if (oldSlide.animateOut && !backwards) {
             this.endOutAnimationCallback = function() {
                 console.log('ending out animation on ' + oldSlideIndex + ', ' + oldSlide);
@@ -483,7 +504,6 @@ Slider.prototype.transitionIn = function(
                 this.maxTimeCameraTransition = newSlide.duration;
             }
 
-            // TODO manage camera interpolation (position + quaternion)
             this.endInAnimationCallback = function() {
                 console.log('ending camera animation on ' + newSlideIndex + ', ' + newSlide);
                 this.endNewSlideTransition(newSlide, newSlideIndex);
@@ -614,7 +634,6 @@ Slider.prototype.update = function() {
     // Then update cam-transitions
     for (let i = 0; i < needCam.length; ++i) {
         if (needCam[i]) {
-            // TODO manage forward and backwards
             let finished = flat[i].transition(
                 this.time, this.startTime, this.maxTime, this.maxTimeTransition,
                 flat[i].camera, flat[i].target, false // backwards

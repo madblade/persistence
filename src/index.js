@@ -169,7 +169,7 @@ function init() {
     let rangeText = plotter.makeText('range', fontGenerator, new Vector3(-20, 15, 0), '#006699');
     let dataText = plotter.makeText('data', fontGenerator, new Vector3(20, 0, -4), '#0011aa');
 
-    slider.addSlide([
+    slider.addSlides([
         {
             mesh: xyHelper,
             animateIn: fadeIn,
@@ -224,16 +224,16 @@ function init() {
         {
             mesh: spriteMinimum1
         },
-        [{
+        {
             mesh: largeCurve1d,
             animateIn: swipeInUp({y: [-15, -5]}),
-            duration: 90
-        }],
-        [{
+            duration: 90,
+        },
+        {
             mesh: largeCurve1d,
             animateIn: swipeInUp({y: [-5, -4]}),
             duration: 20
-        }],
+        },
         {
             mesh: largeCurve1d,
             animateIn: swipeInUp({y: [-4, 0]}),
