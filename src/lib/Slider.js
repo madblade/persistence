@@ -20,25 +20,12 @@ function Slider(scene, camera, controls)
 
     this.transiting = false;
 
-    this.activeMeshes = [
+    this.activeMeshes = [];
 
-    ];
-
-    this.needAnimation = [
-
-    ];
-
-    this.needIn = [
-
-    ];
-
-    this.needOut = [
-
-    ];
-
-    this.needCam = [
-
-    ];
+    this.needAnimation = [];
+    this.needIn = [];
+    this.needOut = [];
+    this.needCam = [];
 
     this.time = 0;
     this.maxTime = 100;
@@ -373,8 +360,12 @@ Slider.prototype.resetMesh = function(mesh) {
 //
 
 // TODO properly remove mesh
-Slider.prototype.endOldSlideTransition = function(oldSlide, oldSlideIndex, bounds, backwards)
+Slider.prototype.endOldSlideTransition = function(
+    oldSlide, oldSlideIndex, backwards)
 {
+    let slides = this.slides;
+    let bounds = this.computeBounds(slides, oldSlideIndex);
+
     if (oldSlideIndex === bounds[1] && !backwards) {
         for (let slideId = bounds[0]; slideId <= bounds[1]; ++slideId) {
             this.removeMesh(this.getSlideAt(slideId).mesh);
@@ -385,6 +376,21 @@ Slider.prototype.endOldSlideTransition = function(oldSlide, oldSlideIndex, bound
 
     if (this.needOut[oldSlideIndex]) {
         this.needOut[oldSlideIndex] = false;
+    }
+};
+
+Slider.prototype.startNewSlideTransistion = function(
+    newSlideIndex, newSlide, backwards)
+{
+    let slides = this.slides;
+    let bounds = this.computeBounds(slides, newSlideIndex);
+
+    if (newSlideIndex === bounds[1] && backwards) {
+        for (let slideId = bounds[0]; slideId <= bounds[1]; ++slideId) {
+            this.addMesh(this.getSlideAt(slideId).mesh);
+        }
+    } else {
+        this.addMesh(newSlide.mesh);
     }
 };
 
@@ -405,9 +411,14 @@ Slider.prototype.endNewSlideTransition = function(newSlide, newSlideIndex)
 };
 
 Slider.prototype.updateDuration = function(slide) {
-    if (slide.duration && slide.duration > 0 && slide.duration < this.maxTime) {
+    if (slide.duration &&
+        slide.duration > 0 &&
+        slide.duration < this.maxTime)
+    {
         this.maxTimeTransition = slide.duration;
-    } else {
+    }
+    else
+    {
         this.maxTimeTransition = this.defaultMaxTimeTransition;
     }
 };
@@ -423,12 +434,6 @@ Slider.prototype.transitionOut = function(
     {
         this.startTime = this.time;
 
-        let slides = this.slides;
-        let bounds = this.computeBounds(slides, oldSlideIndex);
-        // console.log('## bounds ##');
-        // console.log(bounds);
-        // console.log(oldSlideIndex);
-
         this.updateDuration(oldSlide);
 
         if (oldSlide.animate) {
@@ -438,7 +443,9 @@ Slider.prototype.transitionOut = function(
         if (oldSlide.animateOut && !backwards) {
             this.endOutAnimationCallback = function() {
                 console.log('ending out animation on ' + oldSlideIndex + ', ' + oldSlide);
-                this.endOldSlideTransition(oldSlide, oldSlideIndex, bounds, backwards);
+                this.endOldSlideTransition(
+                    oldSlide, oldSlideIndex, backwards
+                );
 
                 this.transitionIn(newSlideIndex, backwards);
             }.bind(this);
@@ -449,7 +456,9 @@ Slider.prototype.transitionOut = function(
         }
         else
         {
-            this.endOldSlideTransition(oldSlide, oldSlideIndex, bounds, backwards);
+            this.endOldSlideTransition(
+                oldSlide, oldSlideIndex, backwards
+            );
             isManagingTransitionIn = false;
         }
 
@@ -470,16 +479,9 @@ Slider.prototype.transitionIn = function(
     {
         this.startTime = this.time;
 
-        let slides = this.slides;
-        let bounds = this.computeBounds(slides, newSlideIndex);
-
-        if (newSlideIndex === bounds[1] && backwards) {
-            for (let slideId = bounds[0]; slideId <= bounds[1]; ++slideId) {
-                this.addMesh(this.getSlideAt(slideId).mesh);
-            }
-        } else {
-            this.addMesh(newSlide.mesh);
-        }
+        this.startNewSlideTransistion(
+            newSlideIndex, newSlide, backwards
+        );
 
         this.updateDuration(newSlide);
 
@@ -546,7 +548,8 @@ Slider.prototype.transitionStart = function(
 
     this.backwards = backwards;
 
-    let isManagingTransitionIn = this.transitionOut(oldSlideIndex, newSlideIndex, backwards);
+    let isManagingTransitionIn =
+        this.transitionOut(oldSlideIndex, newSlideIndex, backwards);
     if (!isManagingTransitionIn) {
         this.transitionIn(newSlideIndex, backwards);
     }
@@ -572,7 +575,8 @@ Slider.prototype.update = function() {
         if (needO[i] && !backwards) {
             // console.log('out: ' + i);
             let finished = flat[i].animateOut(
-                this.time, this.startTime, this.maxTime, this.maxTimeTransition, flat[i].mesh,
+                this.time, this.startTime, this.maxTime,
+                this.maxTimeTransition, flat[i].mesh,
                 flat[i].opacityMax
             );
             if (finished) {
@@ -603,7 +607,8 @@ Slider.prototype.update = function() {
     for (let i = 0; i < needI.length; ++i) {
         if (needI[i] && !backwards) {
             let finished = flat[i].animateIn(
-                this.time, this.startTime, this.maxTime, this.maxTimeTransition, flat[i].mesh,
+                this.time, this.startTime, this.maxTime,
+                this.maxTimeTransition, flat[i].mesh,
                 flat[i].opacityMax
             );
             // console.log('in: ' + i);
@@ -635,7 +640,8 @@ Slider.prototype.update = function() {
     for (let i = 0; i < needCam.length; ++i) {
         if (needCam[i]) {
             let finished = flat[i].transition(
-                this.time, this.startTime, this.maxTime, this.maxTimeTransition,
+                this.time, this.startTime, this.maxTime,
+                this.maxTimeTransition,
                 flat[i].camera, flat[i].target, false // backwards
             );
             if (finished) {

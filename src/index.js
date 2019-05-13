@@ -3,13 +3,13 @@ import './styles.css';
 import {
     AmbientLight,
     AxesHelper,
-    BoxBufferGeometry,
     Color,
-    DirectionalLight, DoubleSide, Font, FontLoader, Group, LineBasicMaterial,
-    Mesh,
-    MeshBasicMaterial, Object3D,
+    DirectionalLight,
+    Font,
+    Group,
     PerspectiveCamera, Plane, Quaternion,
-    Scene, ShapeBufferGeometry, Vector3,
+    Scene,
+    Vector3,
     WebGLRenderer
 } from "three";
 // import dat from "dat.gui";
@@ -22,7 +22,6 @@ import Helvetiker from './lib/helvetiker.js';
 let container, stats;
 // let gui;
 let camera, scene, renderer;
-let mouseHelper;
 let slider;
 
 function onWindowResize() {
@@ -64,14 +63,17 @@ function init() {
     // Scene, Camera, Controls, Lights
     scene = new Scene();
     scene.background = new Color(0xffffff);
-    camera = new PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 2000);
+    camera = new PerspectiveCamera(
+        45, window.innerWidth / window.innerHeight,
+        1, 2000);
     camera.position.x = 0;
     camera.position.y = 0;
     camera.position.z = 100;
     let controls = new OrbitControls(camera, renderer.domElement);
     controls.enablePan = false;
     controls.target.copy(new Vector3(0, 0, -15));
-    window.addEventListener('resize', onWindowResize, false);
+    window.addEventListener(
+        'resize', onWindowResize, false);
 
     let ambient = new AmbientLight(0x666666);
     scene.add(ambient);
@@ -88,55 +90,85 @@ function init() {
 
     // Slides
     slider = new Slider(scene, camera, controls);
-    window.addEventListener('keydown', slider.onKeyDown.bind(slider), false);
+    window.addEventListener(
+        'keydown', slider.onKeyDown.bind(slider), false
+    );
     plotter = new Plotter();
 
     // Transitions
-    let stretchIn = function(t, s, m, mx, mesh) {
+    let stretchIn = function(t, s, m, mx, mesh)
+    {
         return plotter.stretchIn('y', mesh, t, s, m, mx);
     };
-    let stretchOut = function(t, s, m, mx, mesh) {
+    let stretchOut = function(t, s, m, mx, mesh)
+    {
         return plotter.stretchOut('y', mesh, t, s, m, mx);
         // return true; //
     };
-    let fadeIn = function(t, s, m, mx, mesh, opacityMax) {
+    let fadeIn = function(t, s, m, mx, mesh, opacityMax)
+    {
         return plotter.fadeIn(mesh, t, s, m, mx, opacityMax);
     };
-    let fadeOut = function(t, s, m, mx, mesh) {
+    let fadeOut = function(t, s, m, mx, mesh)
+    {
         return plotter.fadeOut(mesh, t, s, m, mx);
     };
-    let linearCamera = function(t, s, m, mx, camera, target, backwards) {
-        return plotter.interpolateCamera(camera, target, t, s, m, mx, plotter.linear, backwards);
+    let linearCamera = function(
+        t, s, m, mx, camera, target, backwards)
+    {
+        return plotter.interpolateCamera(
+            camera, target, t, s, m, mx, plotter.linear,
+            backwards);
     };
-    let smoothCamera = function(t, s, m, mx, camera, target, backwards) {
-        return plotter.interpolateCamera(camera, target, t, s, m, mx, plotter.smoothstep, backwards);
+    let smoothCamera = function(
+        t, s, m, mx, camera, target, backwards)
+    {
+        return plotter.interpolateCamera(
+            camera, target, t, s, m, mx, plotter.smoothstep,
+            backwards);
     };
-    let smootherCamera = function(t, s, m, mx, camera, target, backwards) {
-        return plotter.interpolateCamera(camera, target, t, s, m, mx, plotter.perlinstep, backwards);
+    let smootherCamera = function(
+        t, s, m, mx, camera, target, backwards)
+    {
+        return plotter.interpolateCamera(
+            camera, target, t, s, m, mx, plotter.perlinstep,
+            backwards);
     };
 
     let sampling1d = 200;
     let redX = 0.5;
     let redY = 0.5;
     let redZ = 0.5;
-    let extent = {x: [-15, 15], y: [0, 60 * redY], z: [-15 * redZ, 15 * redZ]};
+    let extent = {
+        x: [-15, 15],
+        y: [0, 60 * redY],
+        z: [-15 * redZ, 15 * redZ]
+    };
 
     let swipeInBack =  function(t, s, m, mx, mesh) {
-        return plotter.swipeIn('z', mesh, t, s, m, mx, {z: [0, 30]});
+        return plotter.swipeIn(
+            'z', mesh, t, s, m, mx, {z: [0, 30]}
+            );
     };
 
     let swipeInRight = function(t, s, m, mx, mesh) {
-        return plotter.swipeIn('x', mesh, t, s, m, mx, extent);
+        return plotter.swipeIn(
+            'x', mesh, t, s, m, mx, extent
+        );
     };
 
     let swipeInUp = function(extent) {
         return function(t, s, m, mx, mesh) {
-            return plotter.swipeIn('y', mesh, t, s, m, mx, extent);
+            return plotter.swipeIn(
+                'y', mesh, t, s, m, mx, extent
+            );
         };
     };
     let swipeOutUp = function(extent) {
         return function(t, s, m, mx, mesh) {
-            return plotter.swipeOut('y', mesh, t, s, m, mx, extent);
+            return plotter.swipeOut(
+                'y', mesh, t, s, m, mx, extent
+            );
         }
     };
 
@@ -145,11 +177,17 @@ function init() {
     let yHelper = plotter.makeAxisHelperY();
     let zHelper = plotter.makeAxisHelperZ();
 
-    let minimum1d1 = plotter.findGlobalMin1d(plotter.generatorCurve1d.bind(plotter), sampling1d, extent);
+    let minimum1d1 = plotter.findGlobalMin1d(
+        plotter.generatorCurve1d.bind(plotter), sampling1d, extent
+    );
     let spriteMinimum1 = plotter.makeSprite1d(minimum1d1);
 
-    let curve1d = plotter.make1dCurve(plotter.generatorCurve1d.bind(plotter), sampling1d, extent);
-    let largeCurve1d = plotter.makeLarge1dCurve(plotter.generatorCurve1d.bind(plotter), sampling1d, extent);
+    let curve1d = plotter.make1dCurve(
+        plotter.generatorCurve1d.bind(plotter), sampling1d, extent
+    );
+    let largeCurve1d = plotter.makeLarge1dCurve(
+        plotter.generatorCurve1d.bind(plotter), sampling1d, extent
+    );
 
     let lookAt1 = new Quaternion();
     let upv1 = new Vector3(0, 1, 0);
@@ -165,9 +203,18 @@ function init() {
 
     lookAt2.multiply(lookAt3);
 
-    let domainText = plotter.makeText('domain', fontGenerator, new Vector3(10, -19, 0), '#006699');
-    let rangeText = plotter.makeText('range', fontGenerator, new Vector3(-20, 15, 0), '#006699');
-    let dataText = plotter.makeText('data', fontGenerator, new Vector3(20, 0, -4), '#0011aa');
+    let domainText = plotter.makeText(
+        'domain', fontGenerator,
+        new Vector3(10, -19, 0), '#006699'
+    );
+    let rangeText = plotter.makeText(
+        'range', fontGenerator,
+        new Vector3(-20, 15, 0), '#006699'
+    );
+    let dataText = plotter.makeText(
+        'data', fontGenerator,
+        new Vector3(20, 0, -4), '#0011aa'
+    );
 
     slider.addSlides([
         {
@@ -178,7 +225,7 @@ function init() {
         {
             camera: camera,
             target: {
-                position1: new Vector3(0, 0, 0), // Unimportant
+                position1: new Vector3(), // Unimportant
                 position2: new Vector3(0, 0, 50),
                 quaternion1: new Quaternion(), // Unimportant
                 quaternion2: lookAt1
@@ -249,7 +296,9 @@ function init() {
 
     let group = new Group();
     let xyHelper2 = plotter.makeAxisHelperXY();
-    let curve1d2 = plotter.make1dCurve(plotter.generatorCurve1d.bind(plotter), sampling1d, extent);
+    let curve1d2 = plotter.make1dCurve(
+        plotter.generatorCurve1d.bind(plotter), sampling1d, extent
+    );
     plotter.setOpacity(xyHelper2, 0.5);
     group.add(xyHelper2);
     group.add(curve1d2);
@@ -260,15 +309,21 @@ function init() {
     ];
 
     let sampling2d = 128;
-    let curve2d = plotter.make2dCurve(plotter.generatorCurve2d.bind(plotter), sampling2d, extent);
+    let curve2d = plotter.make2dCurve(
+        plotter.generatorCurve2d.bind(plotter), sampling2d, extent
+    );
     curve2d.material.clippingPlanes = [
         new Plane(new Vector3(0, 0, 1), 15)
     ];
-    let curve2d2 = plotter.make2dCurve(plotter.generatorCurve2d.bind(plotter), sampling2d, extent);
+    let curve2d2 = plotter.make2dCurve(
+        plotter.generatorCurve2d.bind(plotter), sampling2d, extent
+    );
     curve2d2.material.clippingPlanes = [
         new Plane(new Vector3(0, -1, 0), 15)
     ];
-    let curve2dt = plotter.make2dCurve(plotter.generatorCurve2d.bind(plotter), sampling2d, extent);
+    let curve2dt = plotter.make2dCurve(
+        plotter.generatorCurve2d.bind(plotter), sampling2d, extent
+    );
 
     slider.addSlide([
         {
@@ -277,9 +332,9 @@ function init() {
         {
             camera: camera,
             target: {
-                position1: new Vector3(0, 0, 0), // Unimportant
+                position1: new Vector3(), // reset by slider
                 position2: new Vector3(50, 20, -15),
-                quaternion1: new Quaternion(), // Unimportant
+                quaternion1: new Quaternion(), // reset by slider
                 quaternion2: lookAt2
             },
             transition: smootherCamera,
@@ -317,10 +372,13 @@ function init() {
         }],
         {
             mesh: curve2dt,
-            animate:
-                function(time, maxTime, mesh) {
-                    plotter.updateCurve2dt(mesh, time, maxTime, plotter.generatorCurve2d.bind(plotter), sampling2d)
-                }
+            animate: function(time, maxTime, mesh) {
+                plotter.updateCurve2dt(
+                    mesh, time, maxTime,
+                    plotter.generatorCurve2d.bind(plotter),
+                    sampling2d
+                );
+            }
         }
     ]);
 
@@ -333,7 +391,8 @@ function init() {
     // {
     //     console.log(slider.computeBounds(
     //         [[[
-    //             1, 2, [0, 1, 2], [2, 1, [3, 4, 5, 6], 3, 4, 5], 4, 5
+    //             1, 2, [0, 1, 2], [2, 1, [3, 4, 5, 6], 3, 4, 5],
+    //             4, 5
     //         ]]],
     //         i));
     // }

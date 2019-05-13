@@ -36,7 +36,8 @@ Plotter.prototype.makeText = function(
     let shapes = fontGenerator.generateShapes(message, 100);
     let geometry = new ShapeBufferGeometry(shapes);
     geometry.computeBoundingBox();
-    xMid = -0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
+    xMid = -0.5 * (geometry.boundingBox.max.x -
+        geometry.boundingBox.min.x);
     geometry.translate(xMid, 0, 0);
     // make shape ( N.B. edge view not visible )
     text = new Mesh(geometry, matLite);
@@ -50,7 +51,9 @@ Plotter.prototype.makeArrowHelper = function(dir, origin)
 {
     let length = 30;
     let hex = new Color('#000000');
-    let arrowHelper = new ArrowHelper(dir, origin, length, hex, 1, 1);
+    let arrowHelper = new ArrowHelper(
+        dir, origin, length, hex, 1, 1
+    );
     return arrowHelper;
 };
 
@@ -61,7 +64,10 @@ Plotter.prototype.make1dCurve = function(f, sampling, extent)
         linewidth: 1,
         linecap: 'round', //ignored by WebGLRenderer
         linejoin:  'round', //ignored by WebGLRenderer
-        clippingPlanes: [new Plane(new Vector3(-1, 0, 0), 15)]
+        clippingPlanes: [ new Plane(
+            new Vector3(-1, 0, 0),
+            15)
+        ]
     });
 
     let geometry = new Geometry();
@@ -91,7 +97,12 @@ Plotter.prototype.makeSprite1d = function(vector)
     let context = canvasTexture.getContext('2d');
     context.beginPath();
     context.fillStyle = "#ff0000";
-    context.arc(size / 2, size / 2, size / 2, 0, 2 * Math.PI, true);
+    context.arc(
+        size / 2, size / 2,
+        size / 2,
+        0, 2 * Math.PI,
+        true
+    );
     context.fill();
     context.stroke();
 
@@ -110,7 +121,9 @@ Plotter.prototype.makeSprite1d = function(vector)
     return sprite;
 };
 
-Plotter.prototype.findGlobalMin1d = function(f, sampling, extent) {
+Plotter.prototype.findGlobalMin1d = function(
+    f, sampling, extent)
+{
     let xMin = extent.x[0]; let zMin = extent.z[0];
     let xMax = extent.x[1]; let zMax = extent.z[1];
     let xRan = xMax - xMin; let zRan = zMax - zMin;
@@ -125,13 +138,17 @@ Plotter.prototype.findGlobalMin1d = function(f, sampling, extent) {
     return globalMin;
 };
 
-Plotter.prototype.makeLarge1dCurve = function(f, sampling, extent)
+Plotter.prototype.makeLarge1dCurve = function(
+    f, sampling, extent)
 {
     let lineMaterial = new MeshLineMaterial({
         color: new Color('#ffa765'),
         lineWidth: 0.25,
         clipping: true,
-        clippingPlanes: [new Plane(new Vector3(0, -1, 0), 30)]
+        clippingPlanes: [new Plane(
+            new Vector3(0, -1, 0),
+            30)
+        ]
     });
 
     let geometry = new Geometry();
@@ -151,12 +168,18 @@ Plotter.prototype.makeLarge1dCurve = function(f, sampling, extent)
     return new Mesh(line.geometry, lineMaterial);
 };
 
-Plotter.prototype.make2dCurve = function(f, sampling, extent) {
-    let geometry = new PlaneBufferGeometry(15, 15, sampling, sampling);
+Plotter.prototype.make2dCurve = function(
+    f, sampling, extent)
+{
+    let geometry = new PlaneBufferGeometry(
+        15, 15, sampling, sampling);
 
-    let xMin = extent.x[0]; let yMin = extent.y[0]; let zMin = extent.z[0];
-    let xMax = extent.x[1]; let yMax = extent.y[1]; let zMax = extent.z[1];
-    let xRan = xMax - xMin; let yRan = yMax - yMin; let zRan = zMax - zMin;
+    let xMin = extent.x[0]; let yMin = extent.y[0];
+    let zMin = extent.z[0];
+    let xMax = extent.x[1]; let yMax = extent.y[1];
+    let zMax = extent.z[1];
+    let xRan = xMax - xMin; let yRan = yMax - yMin;
+    let zRan = zMax - zMin;
 
     let pAttribute = geometry.getAttribute('position');
     for (let i = 0; i <= sampling; ++i) {
@@ -176,7 +199,8 @@ Plotter.prototype.make2dCurve = function(f, sampling, extent) {
         color: new Color('#4c72e2'),
         side: DoubleSide
     });
-    var plane = new Mesh(geometry, material);
+
+    let plane = new Mesh(geometry, material);
     plane.rotation.x = - Math.PI / 2;
     plane.position.z = 0;
 
@@ -185,12 +209,14 @@ Plotter.prototype.make2dCurve = function(f, sampling, extent) {
 
 // HARD CODED BELOW
 
-Plotter.prototype.generatorCurve1d = function(t) {
+Plotter.prototype.generatorCurve1d = function(t)
+{
     let x = 1.0 * t - 7;
     return Math.sin(x) * Math.cos(x * 0.2) + Math.cos(0.3 * x);
 };
 
-Plotter.prototype.generatorCurve2d = function(t1, t2, t3) {
+Plotter.prototype.generatorCurve2d = function(t1, t2, t3)
+{
     let firstOrderCurve = this.generatorCurve1d(t1);
     let cx = 0;
     let cy = 15;
@@ -198,20 +224,33 @@ Plotter.prototype.generatorCurve2d = function(t1, t2, t3) {
     let dy2 = Math.pow(t2 - cy, 2);
     return 1.5 * Math.exp(-(dx2+dy2) / 25.0)
         + firstOrderCurve *
-        (Math.exp(-t2 / 20) * Math.cos(0.5 * t2 * (1.0)) * Math.cos(0.2 * t2 + t3))
+            (Math.exp(-t2 / 20) *
+            Math.cos(0.5 * t2 * (1.0)) *
+            Math.cos(0.2 * t2 + t3))
         ;
 };
 
-Plotter.prototype.updateCurve2dt = function(surface2D, time, maxTime, f, sampling) {
+Plotter.prototype.updateCurve2dt = function(
+    surface2D, time, maxTime, f, sampling)
+{
     let pt = time / maxTime;
     let geometry = surface2D.geometry;
     let pAttribute = geometry.getAttribute('position');
     let redY = 0.5;
     let redZ = 0.5;
-    let extent = {x: [-15, 15], y: [0, 60 * redY], z: [-15 * redZ, 15 * redZ]};
-    let xMin = extent.x[0]; let yMin = extent.y[0]; let zMin = extent.z[0];
-    let xMax = extent.x[1]; let yMax = extent.y[1]; let zMax = extent.z[1];
-    let xRan = xMax - xMin; let yRan = yMax - yMin; let zRan = zMax - zMin;
+    let extent = {
+        x: [-15, 15],
+        y: [0, 60 * redY],
+        z: [-15 * redZ, 15 * redZ]
+    };
+
+    let xMin = extent.x[0]; let yMin = extent.y[0];
+    let zMin = extent.z[0];
+    let xMax = extent.x[1]; let yMax = extent.y[1];
+    let zMax = extent.z[1];
+    let xRan = xMax - xMin; let yRan = yMax - yMin;
+    let zRan = zMax - zMin;
+
     for (let i = 0; i <= sampling; ++i) {
         let x = xMin + xRan * (i / sampling);
         for (let j = 0; j <= sampling; ++j) {
@@ -227,35 +266,40 @@ Plotter.prototype.updateCurve2dt = function(surface2D, time, maxTime, f, samplin
     geometry.computeVertexNormals();
 };
 
-Plotter.prototype.makeAxisHelperXY = function() {
+Plotter.prototype.makeAxisHelperXY = function()
+{
     let gridHelper = new GridHelper(30, 10);
     gridHelper.position.y = 0;
     gridHelper.rotation.x = Math.PI/2;
     return gridHelper;
 };
 
-Plotter.prototype.makeAxisHelperXZ = function() {
+Plotter.prototype.makeAxisHelperXZ = function()
+{
     let gridHelper = new GridHelper(30, 10);
     gridHelper.position.y = -15;
     gridHelper.position.z = -15;
     return gridHelper;
 };
 
-Plotter.prototype.makeAxisHelperX = function() {
+Plotter.prototype.makeAxisHelperX = function()
+{
     let dir = new Vector3(1, 0, 0);
     dir.normalize();
     let origin = new Vector3(-15, -16, 0);
     return this.makeArrowHelper(dir, origin)
 };
 
-Plotter.prototype.makeAxisHelperY = function() {
+Plotter.prototype.makeAxisHelperY = function()
+{
     let dir = new Vector3(0, 1, 0);
     dir.normalize();
     let origin = new Vector3(-16, -15, 0);
     return this.makeArrowHelper(dir, origin)
 };
 
-Plotter.prototype.makeAxisHelperZ = function() {
+Plotter.prototype.makeAxisHelperZ = function()
+{
     let dir = new Vector3(0, 0, -1);
     dir.normalize();
     let origin = new Vector3(-16, -16, 0);
@@ -266,7 +310,8 @@ Plotter.prototype.makeAxisHelperZ = function() {
 // Linear transitions
 //
 
-Plotter.prototype.getNumberOfTicks = function(time, startTime, maxTime)
+Plotter.prototype.getNumberOfTicks = function(
+    time, startTime, maxTime)
 {
     return (time > startTime) ?
         (time - startTime) :
@@ -274,7 +319,9 @@ Plotter.prototype.getNumberOfTicks = function(time, startTime, maxTime)
 };
 
 Plotter.prototype.swipeIn = function(
-    axis, mesh, time, startTime, maxTime, maxTimeTransition, extent)
+    axis, mesh,
+    time, startTime, maxTime, maxTimeTransition,
+    extent)
 {
     let nbTicks =  this.getNumberOfTicks(time, startTime, maxTime);
     let progress = nbTicks / maxTimeTransition;
@@ -293,7 +340,9 @@ Plotter.prototype.swipeIn = function(
 };
 
 Plotter.prototype.swipeOut = function(
-    axis, mesh, time, startTime, maxTime, maxTimeTransition, extent)
+    axis, mesh,
+    time, startTime, maxTime, maxTimeTransition,
+    extent)
 {
     let nbTicks =  this.getNumberOfTicks(time, startTime, maxTime);
     let progress = 1 - (nbTicks / maxTimeTransition);
@@ -312,7 +361,8 @@ Plotter.prototype.swipeOut = function(
 };
 
 Plotter.prototype.stretchIn = function(
-    axis, mesh, time, startTime, maxTime, maxTimeTransition)
+    axis, mesh,
+    time, startTime, maxTime, maxTimeTransition)
 {
     let nbTicks =  this.getNumberOfTicks(time, startTime, maxTime);
     let progress = nbTicks / maxTimeTransition;
@@ -322,7 +372,8 @@ Plotter.prototype.stretchIn = function(
 };
 
 Plotter.prototype.stretchOut = function(
-    axis, mesh, time, startTime, maxTime, maxTimeTransition)
+    axis, mesh,
+    time, startTime, maxTime, maxTimeTransition)
 {
     let nbTicks =  this.getNumberOfTicks(time, startTime, maxTime);
     let progress = nbTicks / maxTimeTransition;
@@ -331,7 +382,8 @@ Plotter.prototype.stretchOut = function(
     return nbTicks === maxTimeTransition;
 };
 
-Plotter.prototype.setOpacity = function(mesh, opacity) {
+Plotter.prototype.setOpacity = function(mesh, opacity)
+{
     let material = null;
 
     if (mesh.material) {
@@ -364,7 +416,9 @@ Plotter.prototype.setOpacity = function(mesh, opacity) {
 // Returns false if animation in progress
 // Return true if animation finished
 Plotter.prototype.fadeIn = function(
-    mesh, time, startTime, maxTime, maxTimeTransition, opacityMax)
+    mesh,
+    time, startTime, maxTime, maxTimeTransition,
+    opacityMax)
 {
     let nbTicks = this.getNumberOfTicks(time, startTime, maxTime);
     let progress = nbTicks / maxTimeTransition;
@@ -376,7 +430,9 @@ Plotter.prototype.fadeIn = function(
 };
 
 Plotter.prototype.fadeOut = function(
-    mesh, time, startTime, maxTime, maxTimeTransition, opacityMax)
+    mesh,
+    time, startTime, maxTime, maxTimeTransition,
+    opacityMax)
 {
     let nbTicks = this.getNumberOfTicks(time, startTime, maxTime);
     let progress = nbTicks / maxTimeTransition;
@@ -389,45 +445,61 @@ Plotter.prototype.fadeOut = function(
 //
 // Non-linear transitions
 //
-Plotter.prototype.linear = function(progress) {
+Plotter.prototype.linear = function(progress)
+{
     return progress;
 };
 
-Plotter.prototype.smoothstep = function(progress) {
+Plotter.prototype.smoothstep = function(progress)
+{
     return progress < 0 ? 0 : progress > 1 ? 1 :
-        3 * Math.pow(progress, 2) - 2 * Math.pow(progress, 3);
+        3 * Math.pow(progress, 2) -
+        2 * Math.pow(progress, 3);
 };
 
-Plotter.prototype.perlinstep = function(progress) {
+Plotter.prototype.perlinstep = function(progress)
+{
     return progress < 0 ? 0 : progress > 1 ? 1 :
-        6 * Math.pow(progress, 5) - 15 * Math.pow(progress, 4) + 10 * Math.pow(progress, 3);
+        6 * Math.pow(progress, 5) -
+        15 * Math.pow(progress, 4) +
+        10 * Math.pow(progress, 3);
 };
 
 Plotter.prototype.interpolateCamera = function(
-    camera, target, time, startTime, maxTime, maxTimeTransition,
+    camera, target,
+    time, startTime, maxTime, maxTimeTransition,
     interpolant,
     backwards)
 {
     let nbTicks = this.getNumberOfTicks(time, startTime, maxTime);
     let progress = interpolant(nbTicks / maxTimeTransition);
 
-    let initialPosition = backwards ? target.position2 : target.position1;
-    let targetPosition  = backwards ? target.position1 : target.position2;
+    let initialPosition = backwards ?
+        target.position2 : target.position1;
+    let targetPosition  = backwards ?
+        target.position1 : target.position2;
     let cameraPosition = camera.position;
 
-    let dx = initialPosition.x + progress * (targetPosition.x - initialPosition.x);
-    let dy = initialPosition.y + progress * (targetPosition.y - initialPosition.y);
-    let dz = initialPosition.z + progress * (targetPosition.z - initialPosition.z);
+    let dx = initialPosition.x +
+        progress * (targetPosition.x - initialPosition.x);
+    let dy = initialPosition.y +
+        progress * (targetPosition.y - initialPosition.y);
+    let dz = initialPosition.z +
+        progress * (targetPosition.z - initialPosition.z);
 
     cameraPosition.x = dx;
     cameraPosition.y = dy;
     cameraPosition.z = dz;
 
-    let initialQuaternion = backwards ? target.quaternion2 : target.quaternion1;
-    let targetQuaternion = backwards ? target.quaternion1 : target.quaternion2;
+    let initialQuaternion = backwards ?
+        target.quaternion2 : target.quaternion1;
+    let targetQuaternion =  backwards ?
+        target.quaternion1 : target.quaternion2;
     let cameraQuaternion = camera.quaternion;
     let result = new Quaternion();
-    Quaternion.slerp(initialQuaternion, targetQuaternion, result, progress);
+    Quaternion.slerp(
+        initialQuaternion, targetQuaternion, result, progress
+    );
     cameraQuaternion.copy(result);
 
     return nbTicks === maxTimeTransition;
