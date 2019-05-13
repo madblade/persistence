@@ -4,7 +4,7 @@ import {
     AmbientLight,
     AxesHelper,
     Color,
-    DirectionalLight,
+    DirectionalLight, Euler,
     Font,
     Group,
     PerspectiveCamera, Plane, Quaternion,
@@ -288,7 +288,7 @@ function init() {
             animateIn: swipeInUp({y: [-4, 0]}),
             duration: 50,
             removeAfter: [
-                xyHelper, xHelper, yHelper, rangeText, domainText, dataText,
+                xyHelper, xHelper, rangeText, domainText, dataText,
                 curve1d, largeCurve1d, spriteMinimum1
             ]
         }
@@ -331,9 +331,27 @@ function init() {
         plotter.generatorCurve2d.bind(plotter), sampling2d, extent
     );
 
+    let domain2Text = plotter.makeText(
+        'domain', fontGenerator,
+        new Vector3(8, -15, -31), '#006600',
+        new Euler(-Math.PI / 2, 0, 0, 'XYZ') // rotation
+    );
+    let range2Text = plotter.makeText(
+        'range', fontGenerator,
+        new Vector3(-16, 15, 4), '#006600',
+        new Euler(0, Math.PI / 2, 0, 'XYZ') // rotation
+    );
+    let groupText = new Group();
+    groupText.add(domain2Text);
+    groupText.add(range2Text);
+
+    let curve2dTransparent = plotter.make2dCurve(
+        plotter.generatorCurve2d.bind(plotter), sampling2d, extent
+    );
+
     slider.addSlides([
         {
-            mesh: group
+            mesh: curve1d2
         },
         {
             camera: camera,
@@ -346,21 +364,29 @@ function init() {
             transition: smootherCamera,
             duration: 50,
         },
-        {
-            mesh: zHelper,
-            animateIn: stretchIn,
-            // animateOut: stretchOut
-        },
+        // {
+        //     mesh: zHelper,
+        //     animateIn: stretchIn,
+        //     // animateOut: stretchOut
+        // },
         {
             mesh: xzHelper,
             animateIn: swipeInBack,
-            opacityMax: 0.5 // TODO fix that
+            opacityMax: 0.5, // TODO fix that
+            // removeAfter: [zHelper]
+        },
+        {
+            mesh: groupText
         },
         {
             mesh: curve2d,
-            animateIn: swipeInBack,
+            animateIn: swipeInBack, // left-to-right camera
             duration: 50,
-            removeAfter: [curve2d]
+            removeAfter: [curve2d, curve1d2]
+        },
+        {
+            mesh: curve2dTransparent,
+            opacityMax: 0.1
         },
         {
             mesh: curve2d2,
@@ -378,7 +404,7 @@ function init() {
             mesh: curve2d2,
             animateIn: swipeInUp({y: [5, 15]}),
             duration: 90,
-            removeAfter: [curve2d2]
+            removeAfter: [curve2d2, curve2dTransparent]
         },
         {
             mesh: curve2dt,

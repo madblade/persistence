@@ -44,6 +44,11 @@ Plotter.prototype.makeText = function(
     text.position.copy(position);
     text.scale.copy(new Vector3(0.02, 0.02, 0.02));
     text.dontReset = true;
+
+    if (rotation) {
+        text.rotation.copy(rotation);
+    }
+
     return text;
 };
 

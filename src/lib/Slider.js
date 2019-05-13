@@ -152,7 +152,7 @@ Slider.prototype.removeMesh = function(mesh) {
     }
 };
 
-Slider.prototype.addMesh = function(mesh) {
+Slider.prototype.addMesh = function(mesh, opacityMax) {
     if (!mesh) return; // e.g. camera
     if (!(mesh instanceof Object3D))
         return;
@@ -167,7 +167,7 @@ Slider.prototype.addMesh = function(mesh) {
         console.log(mesh);
 
     // Reset mesh post-transition
-    this.resetMesh(mesh);
+    this.resetMesh(mesh, opacityMax);
     this.scene.add(mesh);
     this.activeMeshes.push(mesh.uuid);
 };
@@ -180,8 +180,10 @@ Slider.prototype.resetScale = function(mesh) {
     }
 };
 
-Slider.prototype.resetOpacity = function(mesh) {
+Slider.prototype.resetOpacity = function(mesh, opacityMax)
+{
     let material = null;
+    let newOpacity = opacityMax ? opacityMax : 1;
 
     if (mesh.material) {
         material = mesh.material;
@@ -197,7 +199,7 @@ Slider.prototype.resetOpacity = function(mesh) {
             let m = c[i].material;
             if (m && m.opacity) {
                 m.transparent = true;
-                m.opacity = 1;
+                m.opacity = newOpacity;
                 m.needsUpdate = true;
             }
         }
@@ -205,16 +207,16 @@ Slider.prototype.resetOpacity = function(mesh) {
 
     if (material) {
         material.transparent = true;
-        material.opacity = 1;
+        material.opacity = newOpacity;
         material.needsUpdate = true;
     }
 };
 
-Slider.prototype.resetMesh = function(mesh) {
+Slider.prototype.resetMesh = function(mesh, opacityMax) {
     if (!mesh || mesh.dontReset) return;
     this.resetScale(mesh);
     if (!(mesh instanceof Group))
-        this.resetOpacity(mesh);
+        this.resetOpacity(mesh, opacityMax);
 };
 
 //
@@ -277,7 +279,7 @@ Slider.prototype.startNewSlideTransistion = function(
             this.addMesh(addBefore);
         }
 
-        this.addMesh(newSlide.mesh);
+        this.addMesh(newSlide.mesh, newSlide.opacityMax);
     }
 };
 
