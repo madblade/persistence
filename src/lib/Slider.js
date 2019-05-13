@@ -53,10 +53,8 @@ Slider.prototype.getSlideAt = function(index)
     return this.slides[index];
 };
 
-// TODO redo
 Slider.prototype.addSlide = function(slide)
 {
-    // this.slides[0][0].push(slide);
     this.slides.push(slide);
 
     // Reset needs.
