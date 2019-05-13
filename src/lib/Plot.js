@@ -202,7 +202,8 @@ Plotter.prototype.make2dCurve = function(
 
     let material = new MeshPhongMaterial({
         color: new Color('#4c72e2'),
-        side: DoubleSide
+        side: DoubleSide,
+        shininess: 100,
     });
 
     let plane = new Mesh(geometry, material);
