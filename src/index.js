@@ -275,16 +275,22 @@ function init() {
             mesh: largeCurve1d,
             animateIn: swipeInUp({y: [-15, -5]}),
             duration: 90,
+            removeAfter: [largeCurve1d]
         },
         {
             mesh: largeCurve1d,
             animateIn: swipeInUp({y: [-5, -4]}),
-            duration: 20
+            duration: 20,
+            removeAfter: [largeCurve1d]
         },
         {
             mesh: largeCurve1d,
             animateIn: swipeInUp({y: [-4, 0]}),
-            duration: 50
+            duration: 50,
+            removeAfter: [
+                xyHelper, xHelper, yHelper, rangeText, domainText, dataText,
+                curve1d, largeCurve1d, spriteMinimum1
+            ]
         }
         // {
         //     mesh: largeCurve1d,
@@ -325,7 +331,7 @@ function init() {
         plotter.generatorCurve2d.bind(plotter), sampling2d, extent
     );
 
-    slider.addSlide([
+    slider.addSlides([
         {
             mesh: group
         },
@@ -350,26 +356,30 @@ function init() {
             animateIn: swipeInBack,
             opacityMax: 0.5 // TODO fix that
         },
-        [{
+        {
             mesh: curve2d,
             animateIn: swipeInBack,
-            duration: 50
-        }],
-        [{
+            duration: 50,
+            removeAfter: [curve2d]
+        },
+        {
             mesh: curve2d2,
             animateIn: swipeInUp({y: [-15, 0]}),
-            duration: 90
+            duration: 90,
+            removeAfter: [curve2d2]
         },
         {
             mesh: curve2d2,
             animateIn: swipeInUp({y: [0, 5]}),
-            duration: 90
+            duration: 90,
+            removeAfter: [curve2d2]
         },
         {
             mesh: curve2d2,
             animateIn: swipeInUp({y: [5, 15]}),
-            duration: 90
-        }],
+            duration: 90,
+            removeAfter: [curve2d2]
+        },
         {
             mesh: curve2dt,
             animate: function(time, maxTime, mesh) {
