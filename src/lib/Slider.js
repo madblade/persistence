@@ -40,7 +40,7 @@ function Slider(scene, camera, controls)
 
     this.lastBackwards = false;
 
-    this.debug = false;
+    this.debug = true;
 }
 
 Slider.prototype.computeNbSlides = function()
@@ -370,6 +370,23 @@ Slider.prototype.transitionOut = function(
     return isManagingTransitionIn;
 };
 
+Slider.prototype.getStartingCamera = function(newSlideIndex)
+{
+    let slide = this.getSlideAt(newSlideIndex);
+    if (!slide || !(slide.mesh instanceof Object3D))
+        return -1;
+
+    // Search next camera.
+    for (let i = newSlideIndex - 1; i >= 0; --i) {
+        let checkSlide = this.getSlideAt(i);
+        if (checkSlide && checkSlide.camera) {
+            return i; // !this.cameraIsOnTarget(checkSlide);
+        }
+    }
+
+    return -1;
+};
+
 Slider.prototype.transitionIn = function(
     newSlideIndex, backwards)
 {
@@ -382,15 +399,48 @@ Slider.prototype.transitionIn = function(
     {
         this.startTime = this.time;
 
+        // camera reset
+        let startCameraSlideIndex = this.getStartingCamera(newSlideIndex);
+        if (!newSlide.camera &&
+            startCameraSlideIndex > -1 &&
+            !this.cameraIsOnTarget(this.getSlideAt(startCameraSlideIndex)))
+        {
+            console.log('need to animate camera');
+            let startCameraSlide = this.getSlideAt(startCameraSlideIndex);
+
+            this.updateDuration(startCameraSlide);
+
+            startCameraSlide.target.position1.copy(startCameraSlide.camera.position);
+            startCameraSlide.target.quaternion1.copy(startCameraSlide.camera.quaternion);
+            if (startCameraSlide.duration && startCameraSlide.duration > 0) {
+                this.maxTimeCameraTransition = startCameraSlide.duration;
+            }
+
+            // looping back to transition to next slide
+            this.endInAnimationCallback = function() {
+                if (this.debug) {
+                    console.log(
+                        'ending camera animation on ' + newSlideIndex + ', ' + newSlide
+                    );
+                }
+                this.needCam[startCameraSlideIndex] = false;
+                this.transitionIn(newSlideIndex, backwards);
+            }.bind(this);
+
+            this.needCam[startCameraSlideIndex] = true;
+            isMakingTransitionIn = true;
+            this.update();
+            return isMakingTransitionIn;
+        }
+
         this.startNewSlideTransistion(
             newSlideIndex, newSlide, backwards
         );
 
         this.updateDuration(newSlide);
 
-        // camera reset
-
-        if (newSlide.animateIn && !backwards) {
+        if (newSlide.animateIn && !backwards)
+        {
             this.endInAnimationCallback = function() {
                 if (this.debug) {
                     console.log(
