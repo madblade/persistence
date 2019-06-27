@@ -93,7 +93,7 @@ Plotter.prototype.make1dCurve = function(f, sampling, extent)
 
 // What = 'min'
 // index = which one
-Plotter.prototype.makeSprite1d = function(vector)
+Plotter.prototype.makeSprite1d = function(v, fillStyle)
 {
     let canvasTexture = document.createElement('canvas');
     let size = 256;
@@ -101,7 +101,7 @@ Plotter.prototype.makeSprite1d = function(vector)
     canvasTexture.height = size;
     let context = canvasTexture.getContext('2d');
     context.beginPath();
-    context.fillStyle = "#ff0000";
+    context.fillStyle = fillStyle;
     context.arc(
         size / 2, size / 2,
         size / 2,
@@ -119,8 +119,8 @@ Plotter.prototype.makeSprite1d = function(vector)
         color: 0xffffff
     });
     let sprite = new Sprite(material);
-    sprite.position.x = vector[0];
-    sprite.position.y = vector[1];
+    sprite.position.x = v[0];
+    sprite.position.y = v[1];
     sprite.position.z = -0.05;
     sprite.scale.set(10, 10, 1);
     return sprite;
@@ -143,12 +143,68 @@ Plotter.prototype.findGlobalMin1d = function(
     return globalMin;
 };
 
+Plotter.prototype.findLocalMinima = function(
+    f, sampling, extent)
+{
+    let xMin = extent.x[0]; let zMin = extent.z[0];
+    let xMax = extent.x[1]; let zMax = extent.z[1];
+    let xRan = xMax - xMin; let zRan = zMax - zMin;
+
+    let localMins = [];
+    for (let i = 0; i < sampling; ++i) {
+        let x = xMin + xRan * (i / sampling);
+        let xm = xMin + xRan * ((i-1) / sampling);
+        let xp = xMin + xRan * ((i+1) / sampling);
+        let z = zRan * f(x) / 2;
+        let zm = i < 1 ? z + 1 : zRan * f(xm) / 2;
+        let zp = i > sampling - 2 ? z + 1 : zRan * f(xp) / 2;
+        if (z < zm && z < zp) {
+            localMins.push([x, z]);
+        }
+    }
+
+    return localMins;
+};
+
+Plotter.prototype.findLocalMaxima = function(
+    f, sampling, extent)
+{
+    let xMin = extent.x[0]; let zMin = extent.z[0];
+    let xMax = extent.x[1]; let zMax = extent.z[1];
+    let xRan = xMax - xMin; let zRan = zMax - zMin;
+
+    let localMaxs = [];
+    for (let i = 0; i < sampling; ++i) {
+        let x = xMin + xRan * (i / sampling);
+        let xm = xMin + xRan * ((i-1) / sampling);
+        let xp = xMin + xRan * ((i+1) / sampling);
+        let z = zRan * f(x) / 2;
+        let zm = i < 1 ? z - 1 : zRan * f(xm) / 2;
+        let zp = i > sampling - 2 ? z - 1 : zRan * f(xp) / 2;
+        if (z > zm && z > zp) {
+            localMaxs.push([x, z]);
+        }
+    }
+
+    return localMaxs;
+};
+
 Plotter.prototype.makeLarge1dCurve = function(
     f, sampling, extent)
 {
+
+    let colors = [
+        new Color('#ffa765'),
+        new Color('#68cfff'),
+        new Color('#b75bff'),
+        new Color('#539d60'),
+        new Color('#fff34c'),
+        new Color('#ff6452')
+    ];
+
     let lineMaterial = new MeshLineMaterial({
-        color: new Color('#ffa765'),
-        lineWidth: 0.25,
+        color: colors[5],
+        lineWidth: 0.5,
         clipping: true,
         clippingPlanes: [new Plane(
             new Vector3(0, -1, 0),

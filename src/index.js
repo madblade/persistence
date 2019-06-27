@@ -58,7 +58,7 @@ function init() {
     // Stats, GUI
     // gui = new dat.GUI();
     stats = new Stats();
-    container.appendChild(stats.dom);
+    // container.appendChild(stats.dom);
 
     // Scene, Camera, Controls, Lights
     scene = new Scene();
@@ -70,7 +70,7 @@ function init() {
     camera.position.y = 0;
     camera.position.z = 100;
     let controls = new OrbitControls(camera, renderer.domElement);
-    controls.enablePan = false;
+    // controls.enablePan = false;
     controls.target.copy(new Vector3(0, 0, -15));
     window.addEventListener(
         'resize', onWindowResize, false);
@@ -86,7 +86,7 @@ function init() {
     axesHelper.position.y = -15;
     axesHelper.position.x = 16;
     axesHelper.position.z = 0;
-    scene.add(axesHelper);
+    // scene.add(axesHelper);
 
     // Slides
     slider = new Slider(scene, camera, controls);
@@ -180,7 +180,33 @@ function init() {
     let minimum1d1 = plotter.findGlobalMin1d(
         plotter.generatorCurve1d.bind(plotter), sampling1d, extent
     );
-    let spriteMinimum1 = plotter.makeSprite1d(minimum1d1);
+    let spriteMinimum1 = plotter.makeSprite1d(minimum1d1, "#ff0000");
+
+    let minimad1 = plotter.findLocalMinima(
+        plotter.generatorCurve1d.bind(plotter), sampling1d, extent
+    );
+    minimad1.sort(function (a, b) {
+        return a[1] - b[1];
+    });
+    let smin1 = plotter.makeSprite1d(minimad1[0], "#ff0000");
+    let smin2 = plotter.makeSprite1d(minimad1[1], "#ff0000");
+    let smin3 = plotter.makeSprite1d(minimad1[2], "#ff0000");
+    let smin4 = plotter.makeSprite1d(minimad1[3], "#ff0000");
+    let smin5 = plotter.makeSprite1d(minimad1[4], "#ff0000");
+    let smin6 = plotter.makeSprite1d(minimad1[5], "#ff0000");
+
+    let maximad1 = plotter.findLocalMaxima(
+        plotter.generatorCurve1d.bind(plotter), sampling1d, extent
+    );
+    maximad1.sort(function (a, b) {
+        return a[1] - b[1];
+    });
+    let smax1 = plotter.makeSprite1d(maximad1[0], "#0000ff");
+    let smax2 = plotter.makeSprite1d(maximad1[1], "#0000ff");
+    let smax3 = plotter.makeSprite1d(maximad1[2], "#0000ff");
+    let smax4 = plotter.makeSprite1d(maximad1[3], "#0000ff");
+    let smax5 = plotter.makeSprite1d(maximad1[4], "#0000ff");
+
 
     let curve1d = plotter.make1dCurve(
         plotter.generatorCurve1d.bind(plotter), sampling1d, extent
@@ -238,17 +264,17 @@ function init() {
             animateIn: stretchIn,
             // animateOut: stretchOut
         },
-        {
-            mesh: domainText
-        },
+        // {
+        //     mesh: domainText
+        // },
         {
             mesh: yHelper,
             animateIn: stretchIn,
             // animateOut: stretchOut
         },
-        {
-            mesh: rangeText
-        },
+        // {
+        //     mesh: rangeText
+        // },
         // {
         //     camera: camera,
         //     target: {
@@ -265,27 +291,67 @@ function init() {
             animateIn: swipeInRight,
             duration: 45
         },
-        {
-            mesh: dataText
-        },
-        {
-            mesh: spriteMinimum1
-        },
+        // {
+        //     mesh: dataText
+        // },
+
+        {   mesh: smin1   },
         {
             mesh: largeCurve1d,
             animateIn: swipeInUp({y: [-15, -5]}),
-            duration: 90,
-            removeAfter: [largeCurve1d]
+            duration: 90
         },
+
+        {   mesh: smin2, removeAfter:  [largeCurve1d]   },
         {
             mesh: largeCurve1d,
             animateIn: swipeInUp({y: [-5, -4]}),
-            duration: 20,
-            removeAfter: [largeCurve1d]
+            duration: 20
         },
+
+        {   mesh: smin3, removeAfter:  [largeCurve1d]    },
         {
             mesh: largeCurve1d,
-            animateIn: swipeInUp({y: [-4, 0]}),
+            animateIn: swipeInUp({y: [-4, -3.2]}),
+            duration: 20
+        },
+        {   mesh: smin4, removeAfter:  [largeCurve1d]  },
+        {
+            mesh: largeCurve1d,
+            animateIn: swipeInUp({y: [-3.2, -2.3]}),
+            duration: 20
+        },
+
+        {   mesh: smax1, removeAfter:  [largeCurve1d]   },
+        {
+            mesh: largeCurve1d,
+            animateIn: swipeInUp({y: [-2.3, 0]}),
+            duration: 20
+        },
+        {   mesh: smin5, removeAfter:  [largeCurve1d]   },
+        {
+            mesh: largeCurve1d,
+            animateIn: swipeInUp({y: [0, 4.2]}),
+            duration: 20
+        },
+        {   mesh: smax2, removeAfter:  [largeCurve1d]   },
+        {
+            mesh: largeCurve1d,
+            animateIn: swipeInUp({y: [4.2, 6.8]}),
+            duration: 20
+        },
+        {   mesh: smax3, removeAfter:  [largeCurve1d]   },
+        {
+            mesh: largeCurve1d,
+            animateIn: swipeInUp({y: [6.8, 12]}),
+            duration: 20
+        },
+        {   mesh: smin6   },
+        {   mesh: smax4   },
+        {   mesh: smax5, removeAfter:  [largeCurve1d]   },
+        {
+            mesh: largeCurve1d,
+            animateIn: swipeInUp({y: [0, 15]}),
             duration: 50,
             removeAfter: [
                 xyHelper, xHelper, rangeText, domainText, dataText,
