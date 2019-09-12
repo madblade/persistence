@@ -264,17 +264,17 @@ function init() {
             animateIn: stretchIn,
             // animateOut: stretchOut
         },
-        // {
-        //     mesh: domainText
-        // },
+        {
+            mesh: domainText
+        },
         {
             mesh: yHelper,
             animateIn: stretchIn,
             // animateOut: stretchOut
         },
-        // {
-        //     mesh: rangeText
-        // },
+        {
+            mesh: rangeText
+        },
         // {
         //     camera: camera,
         //     target: {
@@ -291,9 +291,9 @@ function init() {
             animateIn: swipeInRight,
             duration: 45
         },
-        // {
-        //     mesh: dataText
-        // },
+        {
+            mesh: dataText
+        },
 
         {   mesh: smin1   },
         {
@@ -355,7 +355,9 @@ function init() {
             duration: 50,
             removeAfter: [
                 xyHelper, xHelper, rangeText, domainText, dataText,
-                curve1d, largeCurve1d, spriteMinimum1
+                curve1d, largeCurve1d, spriteMinimum1,
+                smin1, smin2, smin3, smin4, smin5, smin6,
+                smax1, smax2, smax3, smax4, smax5
             ]
         }
         // {
