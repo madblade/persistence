@@ -93,6 +93,16 @@ function init() {
     window.addEventListener(
         'keydown', slider.onKeyDown.bind(slider), false
     );
+    document
+        .getElementById('rightbutton')
+        .addEventListener('click',
+        () => slider.onKeyDown({keyCode: 39}), false);
+    document
+        .getElementById('leftbutton')
+        .addEventListener('click',
+        () => slider.onKeyDown({keyCode: 37}), false);
+
+
     plotter = new Plotter();
 
     // Transitions
@@ -351,11 +361,11 @@ function init() {
         {   mesh: smax5, removeAfter:  [largeCurve1d]   },
         {
             mesh: largeCurve1d,
-            animateIn: swipeInUp({y: [0, 15]}),
+            animateIn: swipeInUp({y: [12, 15]}),
             duration: 50,
             removeAfter: [
                 xyHelper, xHelper, rangeText, domainText, dataText,
-                curve1d, largeCurve1d, spriteMinimum1,
+                curve1d, largeCurve1d,
                 smin1, smin2, smin3, smin4, smin5, smin6,
                 smax1, smax2, smax3, smax4, smax5
             ]

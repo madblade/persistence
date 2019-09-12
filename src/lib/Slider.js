@@ -87,7 +87,9 @@ Slider.prototype.onKeyDown = function(event)
 {
     if (this.transiting) return;
     this.lastBackwards = this.backwards;
-    event.preventDefault();
+    if (event.preventDefault) {
+        event.preventDefault();
+    }
 
     switch (event.keyCode) {
         case 33: // page up
