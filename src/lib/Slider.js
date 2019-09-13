@@ -101,9 +101,11 @@ Slider.prototype.onKeyDown = function(event)
         case 33: // page up
         case 37: // left arrow
         case 81: // q
+        case 65: // a
             this.transiting = true;
             this.previous();
             break;
+
         case 34: // page down
         case 39: // right arrow
         case 68: // d

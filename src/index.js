@@ -225,6 +225,13 @@ function init() {
     let largeCurve1d = plotter.makeLarge1dCurve(
         plotter.generatorCurve1d.bind(plotter), sampling1d, extent
     );
+    let largeCurve1d2 = plotter.makeLarge1dCurve(
+        plotter.generatorCurve1d.bind(plotter), sampling1d, extent, 3,
+        [
+            new Plane(new Vector3(1, 0, 0), -13.2),
+            // new Plane(new Vector3(-1, 0, 0), 5),
+        ]
+    );
 
     let lookAt1 = new Quaternion();
     let upv1 = new Vector3(0, 1, 0);
@@ -254,6 +261,15 @@ function init() {
     );
 
     slider.addSlides([
+        {
+            mesh: largeCurve1d2,
+            animateIn: swipeInUp({y: [-15, 15]}),
+            explainText: '',
+        },
+
+        {   mesh: smin2, removeAfter:  [largeCurve1d2],
+            explainText: '',   },
+
         {
             mesh: xyHelper,
             animateIn: fadeIn,
@@ -326,13 +342,13 @@ function init() {
         {   mesh: smin2, removeAfter:  [largeCurve1d],
             explainText: '',   },
         {
-            mesh: largeCurve1d,
+            mesh: largeCurve1d2,
             animateIn: swipeInUp({y: [-5, -4]}),
             duration: 20,
             explainText: '',
         },
 
-        {   mesh: smin3, removeAfter:  [largeCurve1d],
+        {   mesh: smin3, removeAfter:  [largeCurve1d2],
             explainText: '',    },
         {
             mesh: largeCurve1d,

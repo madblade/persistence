@@ -190,26 +190,33 @@ Plotter.prototype.findLocalMaxima = function(
 };
 
 Plotter.prototype.makeLarge1dCurve = function(
-    f, sampling, extent)
+    f, sampling, extent, colorIndex, clippingPlanes)
 {
+    if (!colorIndex) colorIndex = 0;
 
     let colors = [
+        new Color('#ff6452'),
         new Color('#ffa765'),
         new Color('#68cfff'),
         new Color('#b75bff'),
         new Color('#539d60'),
-        new Color('#fff34c'),
-        new Color('#ff6452')
+        new Color('#fff34c')
     ];
 
+    let materialClippingPlanes = [
+        new Plane(new Vector3(0, -1, 0),30)
+    ];
+    if (clippingPlanes && clippingPlanes.length > 0)
+    {
+        console.log('I added a clipping plane');
+        materialClippingPlanes.push(...clippingPlanes);
+    }
+
     let lineMaterial = new MeshLineMaterial({
-        color: colors[5],
+        color: colors[colorIndex],
         lineWidth: 0.5,
         clipping: true,
-        clippingPlanes: [new Plane(
-            new Vector3(0, -1, 0),
-            30)
-        ]
+        clippingPlanes: materialClippingPlanes
     });
 
     let geometry = new Geometry();
