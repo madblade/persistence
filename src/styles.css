@@ -40,16 +40,29 @@ i {
 
 #rightbutton {
     height: 100%;
-    width: 100px;
+    width: 30px;
     position: absolute;
     bottom: 0;
     right: 0;
+    z-index: 3;
 }
 
 #leftbutton {
     height: 100%;
-    width: 100px;
+    width: 30px;
     position: absolute;
     bottom: 0;
     left: 0;
+    z-index: 3;
+}
+
+#explainer {
+    position: absolute;
+    z-index: 2;
+    width: 100%;
+    bottom: 0;
+}
+
+#explainer-text {
+    text-align: center;
 }

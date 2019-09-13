@@ -40,6 +40,8 @@ function Slider(scene, camera, controls)
 
     this.lastBackwards = false;
 
+    this.explainerElement = null;
+
     this.debug = true;
 }
 
@@ -72,10 +74,14 @@ Slider.prototype.addSlide = function(slide)
     }
 };
 
-Slider.prototype.addSlides = function(slideArray)
+Slider.prototype.addSlides = function(slideArray, explainerElement)
 {
     if (slideArray.length < 1) {
         throw Error('[Slider] addSlides must take an array of [slide object] as an input.');
+    }
+
+    if (explainerElement) {
+        this.explainerElement = explainerElement;
     }
 
     for (let i = 0; i < slideArray.length; ++i) {
@@ -308,6 +314,10 @@ Slider.prototype.endNewSlideTransition = function(
 
     if (this.needCam[newSlideIndex]) {
         this.needCam[newSlideIndex] = false;
+    }
+
+    if (this.explainerElement) {
+        this.explainerElement.innerHTML = !newSlide.explainText ? '' : newSlide.explainText;
     }
 };
 

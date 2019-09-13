@@ -102,6 +102,7 @@ function init() {
         .addEventListener('click',
         () => slider.onKeyDown({keyCode: 37}), false);
 
+    let explainerElement = document.getElementById('explainer-text');
 
     plotter = new Plotter();
 
@@ -256,34 +257,40 @@ function init() {
         {
             mesh: xyHelper,
             animateIn: fadeIn,
-            opacityMax: 0.5
+            opacityMax: 0.5,
+            explainText: '1-dimensional persistent homology on an example',
         },
         {
             camera: camera,
             target: {
                 position1: new Vector3(), // Unimportant
-                position2: new Vector3(0, 0, 50),
+                position2: new Vector3(0, 0, 100),
                 quaternion1: new Quaternion(), // Unimportant
                 quaternion2: lookAt1
             },
             transition: smootherCamera,
             duration: 50,
+            explainText: 'Let us consider a 1-dimensional domain',
         },
         {
             mesh: xHelper,
             animateIn: stretchIn,
-            // animateOut: stretchOut
+            // animateOut: stretchOut,
+            explainText: 'The domain is represented by the x-axis',
         },
         {
-            mesh: domainText
+            mesh: domainText,
+            explainText: 'The domain is represented by the x-axis',
         },
         {
             mesh: yHelper,
             animateIn: stretchIn,
-            // animateOut: stretchOut
+            // animateOut: stretchOut,
+            explainText: 'A 1-dimensional range is represented on the y-axis',
         },
         {
-            mesh: rangeText
+            mesh: rangeText,
+            explainText: '(Explanations to be continued)',
         },
         // {
         //     camera: camera,
@@ -299,66 +306,87 @@ function init() {
         {
             mesh: curve1d,
             animateIn: swipeInRight,
-            duration: 45
+            duration: 45,
+            explainText: '',
         },
         {
-            mesh: dataText
+            mesh: dataText,
+            explainText: '',
         },
 
-        {   mesh: smin1   },
+        {   mesh: smin1,
+            explainText: '',   },
         {
             mesh: largeCurve1d,
             animateIn: swipeInUp({y: [-15, -5]}),
-            duration: 90
+            duration: 90,
+            explainText: '',
         },
 
-        {   mesh: smin2, removeAfter:  [largeCurve1d]   },
+        {   mesh: smin2, removeAfter:  [largeCurve1d],
+            explainText: '',   },
         {
             mesh: largeCurve1d,
             animateIn: swipeInUp({y: [-5, -4]}),
-            duration: 20
+            duration: 20,
+            explainText: '',
         },
 
-        {   mesh: smin3, removeAfter:  [largeCurve1d]    },
+        {   mesh: smin3, removeAfter:  [largeCurve1d],
+            explainText: '',    },
         {
             mesh: largeCurve1d,
             animateIn: swipeInUp({y: [-4, -3.2]}),
-            duration: 20
+            duration: 20,
+            explainText: '',
         },
-        {   mesh: smin4, removeAfter:  [largeCurve1d]  },
+        {   mesh: smin4, removeAfter:  [largeCurve1d],
+            explainText: '',  },
         {
             mesh: largeCurve1d,
             animateIn: swipeInUp({y: [-3.2, -2.3]}),
-            duration: 20
+            duration: 20,
+            explainText: '',
         },
 
-        {   mesh: smax1, removeAfter:  [largeCurve1d]   },
+        {   mesh: smax1, removeAfter:  [largeCurve1d],
+            explainText: '',   },
         {
             mesh: largeCurve1d,
             animateIn: swipeInUp({y: [-2.3, 0]}),
-            duration: 20
+            duration: 20,
+            explainText: '',
         },
-        {   mesh: smin5, removeAfter:  [largeCurve1d]   },
+        {   mesh: smin5, removeAfter:  [largeCurve1d],
+            explainText: '',   },
         {
             mesh: largeCurve1d,
             animateIn: swipeInUp({y: [0, 4.2]}),
-            duration: 20
+            duration: 20,
+            explainText: '',
         },
-        {   mesh: smax2, removeAfter:  [largeCurve1d]   },
+        {   mesh: smax2, removeAfter:  [largeCurve1d],
+            explainText: '',   },
         {
             mesh: largeCurve1d,
             animateIn: swipeInUp({y: [4.2, 6.8]}),
-            duration: 20
+            duration: 20,
+            explainText: '',
         },
-        {   mesh: smax3, removeAfter:  [largeCurve1d]   },
+        {   mesh: smax3, removeAfter:  [largeCurve1d],
+            explainText: '',   },
         {
             mesh: largeCurve1d,
             animateIn: swipeInUp({y: [6.8, 12]}),
-            duration: 20
+            duration: 20,
+            explainText: '',
         },
-        {   mesh: smin6   },
-        {   mesh: smax4   },
-        {   mesh: smax5, removeAfter:  [largeCurve1d]   },
+        {   mesh: smin6,
+            explainText: '',   },
+        {   mesh: smax4,
+            explainText: '',   },
+        {   mesh: smax5, removeAfter:  [largeCurve1d],
+            explainText: '',   },
         {
             mesh: largeCurve1d,
             animateIn: swipeInUp({y: [12, 15]}),
@@ -368,7 +396,8 @@ function init() {
                 curve1d, largeCurve1d,
                 smin1, smin2, smin3, smin4, smin5, smin6,
                 smax1, smax2, smax3, smax4, smax5
-            ]
+            ],
+            explainText: '',
         }
         // {
         //     mesh: largeCurve1d,
@@ -376,7 +405,7 @@ function init() {
         //     // animateOut: swipeOutUp({y: [-15, 15]}),
         //     duration: 90
         // }
-    ]);
+    ], explainerElement);
 
     let group = new Group();
     let xyHelper2 = plotter.makeAxisHelperXY();
