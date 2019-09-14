@@ -225,11 +225,29 @@ function init() {
     let largeCurve1d = plotter.makeLarge1dCurve(
         plotter.generatorCurve1d.bind(plotter), sampling1d, extent
     );
+
+    // Right join
     let largeCurve1d2 = plotter.makeLarge1dCurve(
         plotter.generatorCurve1d.bind(plotter), sampling1d, extent, 3,
         [
-            new Plane(new Vector3(1, 0, 0), -13.2),
+            new Plane(new Vector3(1, 0, 0), -13.2), // left cut
             // new Plane(new Vector3(-1, 0, 0), 5),
+        ]
+    );
+    let largeCurve1d3 = plotter.makeLarge1dCurve(
+        plotter.generatorCurve1d.bind(plotter), sampling1d, extent, 4,
+        [
+            new Plane(new Vector3(-1, 0, 0), 13.2), // right cut
+            new Plane(new Vector3(1, 0, 0), -11.3), // left cut
+        ]
+    );
+
+    // Middle join
+    let largeCurve1d4 = plotter.makeLarge1dCurve(
+        plotter.generatorCurve1d.bind(plotter), sampling1d, extent, 2,
+        [
+            new Plane(new Vector3(-1, 0, 0), 11.3), // right cut
+            new Plane(new Vector3(1, 0, 0), 15), // left cut
         ]
     );
 
@@ -266,8 +284,18 @@ function init() {
             animateIn: swipeInUp({y: [-15, 15]}),
             explainText: '',
         },
+        {
+            mesh: largeCurve1d3,
+            animateIn: swipeInUp({y: [-15, 15]}),
+            explainText: '',
+        },
+        {
+            mesh: largeCurve1d4,
+            animateIn: swipeInUp({y: [-15, 15]}),
+            explainText: '',
+        },
 
-        {   mesh: smin2, removeAfter:  [largeCurve1d2],
+        {   mesh: smin2, removeAfter:  [largeCurve1d2, largeCurve1d3],
             explainText: '',   },
 
         {
