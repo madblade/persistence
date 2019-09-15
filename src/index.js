@@ -228,7 +228,7 @@ function init() {
 
     // Right join
     let largeCurve1d2 = plotter.makeLarge1dCurve(
-        plotter.generatorCurve1d.bind(plotter), sampling1d, extent, 3,
+        plotter.generatorCurve1d.bind(plotter), sampling1d, extent, 2,
         [
             new Plane(new Vector3(1, 0, 0), -13.2), // left cut
             // new Plane(new Vector3(-1, 0, 0), 5),
@@ -244,10 +244,24 @@ function init() {
 
     // Middle join
     let largeCurve1d4 = plotter.makeLarge1dCurve(
-        plotter.generatorCurve1d.bind(plotter), sampling1d, extent, 2,
+        plotter.generatorCurve1d.bind(plotter), sampling1d, extent, 1,
         [
-            new Plane(new Vector3(-1, 0, 0), 11.3), // right cut
-            new Plane(new Vector3(1, 0, 0), 15), // left cut
+            new Plane(new Vector3(-1, 0, 0), -0.3), // right cut
+            new Plane(new Vector3(1, 0, 0), 5.70), // left cut
+        ]
+    );
+    let largeCurve1d5 = plotter.makeLarge1dCurve(
+        plotter.generatorCurve1d.bind(plotter), sampling1d, extent, 1,
+        [
+            new Plane(new Vector3(-1, 0, 0), 0.52), // right cut
+            new Plane(new Vector3(1, 0, 0), 5.95), // left cut
+        ]
+    );
+    let largeCurve1d6 = plotter.makeLarge1dCurve(
+        plotter.generatorCurve1d.bind(plotter), sampling1d, extent, 3,
+        [
+            new Plane(new Vector3(-1, 0, 0), -9.38), // right cut
+            new Plane(new Vector3(1, 0, 0), 10.48), // left cut
         ]
     );
 
@@ -280,17 +294,23 @@ function init() {
 
     slider.addSlides([
         {
-            mesh: largeCurve1d2,
-            animateIn: swipeInUp({y: [-15, 15]}),
-            explainText: '',
+            mesh: xyHelper,
+            animateIn: fadeIn,
+            opacityMax: 0.5,
+            explainText: '1-dimensional persistent homology on an example',
         },
+        // {
+        //     mesh: largeCurve1d2,
+        //     animateIn: swipeInUp({y: [-15, 15]}),
+        //     explainText: '',
+        // },
+        // {
+        //     mesh: largeCurve1d3,
+        //     animateIn: swipeInUp({y: [-15, 15]}),
+        //     explainText: '',
+        // },
         {
-            mesh: largeCurve1d3,
-            animateIn: swipeInUp({y: [-15, 15]}),
-            explainText: '',
-        },
-        {
-            mesh: largeCurve1d4,
+            mesh: largeCurve1d6,
             animateIn: swipeInUp({y: [-15, 15]}),
             explainText: '',
         },
@@ -298,12 +318,6 @@ function init() {
         {   mesh: smin2, removeAfter:  [largeCurve1d2, largeCurve1d3],
             explainText: '',   },
 
-        {
-            mesh: xyHelper,
-            animateIn: fadeIn,
-            opacityMax: 0.5,
-            explainText: '1-dimensional persistent homology on an example',
-        },
         {
             camera: camera,
             target: {
