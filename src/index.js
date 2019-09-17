@@ -293,6 +293,13 @@ function init() {
             // new Plane(new Vector3(-1, 0, 0), 5),
         ]
     );
+    let lightBlueCurve6 = plotter.makeLarge1dCurve(
+        plotter.generatorCurve1d.bind(plotter), sampling1d, extent, 2,
+        [
+            new Plane(new Vector3(1, 0, 0), -10.18), // left cut
+            // new Plane(new Vector3(-1, 0, 0), 5),
+        ]
+    );
 
     // Green
     let greenCurve1 = plotter.makeLarge1dCurve(
@@ -300,6 +307,13 @@ function init() {
         [
             new Plane(new Vector3(-1, 0, 0), 13.2), // right cut
             new Plane(new Vector3(1, 0, 0), -11.3), // left cut
+        ]
+    );
+    let greenCurve2 = plotter.makeLarge1dCurve(
+        plotter.generatorCurve1d.bind(plotter), sampling1d, extent, 4,
+        [
+            new Plane(new Vector3(-1, 0, 0), 6.52), // right cut
+            new Plane(new Vector3(1, 0, 0), -3.95), // left cut
         ]
     );
 
@@ -339,6 +353,13 @@ function init() {
             new Plane(new Vector3(1, 0, 0), 6.35), // left cut
         ]
     );
+    let orangeCurve6 = plotter.makeLarge1dCurve(
+        plotter.generatorCurve1d.bind(plotter), sampling1d, extent, 1,
+        [
+            new Plane(new Vector3(-1, 0, 0), 1.92), // right cut
+            new Plane(new Vector3(1, 0, 0), 7.5), // left cut
+        ]
+    );
 
     // Purple
     let purpleCurve1 = plotter.makeLarge1dCurve(
@@ -360,6 +381,13 @@ function init() {
         [
             new Plane(new Vector3(-1, 0, 0), -8.74), // right cut
             new Plane(new Vector3(1, 0, 0), 11.02), // left cut
+        ]
+    );
+    let purpleCurve4 = plotter.makeLarge1dCurve(
+        plotter.generatorCurve1d.bind(plotter), sampling1d, extent, 3,
+        [
+            new Plane(new Vector3(-1, 0, 0), -7.5), // right cut
+            new Plane(new Vector3(1, 0, 0), 11.62), // left cut
         ]
     );
 
@@ -387,6 +415,12 @@ function init() {
     groupOrangePurpleLightBlue3.add(orangeCurve5);
     groupOrangePurpleLightBlue3.add(lightBlueCurve5);
     groupOrangePurpleLightBlue3.add(purpleCurve3);
+
+    let groupOrangePurpleLightBlueGreen2 = plotter.makeGroup();
+    groupOrangePurpleLightBlueGreen2.add(orangeCurve6);
+    groupOrangePurpleLightBlueGreen2.add(purpleCurve4);
+    groupOrangePurpleLightBlueGreen2.add(greenCurve2);
+    groupOrangePurpleLightBlueGreen2.add(lightBlueCurve6);
 
     slider.addSlides([
         {
@@ -441,6 +475,15 @@ function init() {
         {
             mesh: groupOrangePurpleLightBlue3,
             removeAfter: [groupOrangePurpleLightBlue2],
+            // animateIn: swipeInUp({y: [-15, 0]}),
+            explainText: '',
+        },
+
+
+        // Group 6
+        {
+            mesh: groupOrangePurpleLightBlueGreen2,
+            removeAfter: [groupOrangePurpleLightBlue3],
             // animateIn: swipeInUp({y: [-15, 0]}),
             explainText: '',
         },
