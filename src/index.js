@@ -309,6 +309,8 @@ function init() {
         //     animateIn: swipeInUp({y: [-15, 15]}),
         //     explainText: '',
         // },
+        // TODO [HIGH]: group meshes for simultaneous entry
+
         {
             mesh: largeCurve1d6,
             animateIn: swipeInUp({y: [-15, 15]}),

@@ -387,6 +387,19 @@ Plotter.prototype.getNumberOfTicks = function(
         (time + maxTime - startTime);
 };
 
+Plotter.prototype.updatePlane = function(
+    mesh, extent, axis, progress)
+{
+    let cp = mesh.material.clippingPlanes;
+    if (!cp || !cp[0]) return true;
+
+    let plane = cp[0];
+    let start = extent[axis][0];
+    let end = extent[axis][1];
+    plane.constant = start + progress * (end - start); // lerp
+    plane.needsUpdate = true;
+};
+
 Plotter.prototype.swipeIn = function(
     axis, mesh,
     time, startTime, maxTime, maxTimeTransition,
@@ -395,15 +408,15 @@ Plotter.prototype.swipeIn = function(
     let nbTicks =  this.getNumberOfTicks(time, startTime, maxTime);
     let progress = nbTicks / maxTimeTransition;
 
-    let cp = mesh.material.clippingPlanes;
-    if (!cp || !cp[0]) return true;
-
-    let plane = cp[0];
-    let start = extent[axis][0];
-    let end = extent[axis][1];
-    let p = start + progress * (end - start); // lerp
-    plane.constant = p;
-    plane.needsUpdate = true;
+    if (mesh.isGroup) {
+        // Supported: 1-level traversal
+        let children = mesh.children;
+        for (let i = 0; i < children.length; ++i) {
+            this.updatePlane(children[i], extent, axis, progress);
+        }
+    } else {
+        this.updatePlane(mesh, extent, axis, progress);
+    }
 
     return nbTicks === maxTimeTransition;
 };
@@ -416,15 +429,15 @@ Plotter.prototype.swipeOut = function(
     let nbTicks =  this.getNumberOfTicks(time, startTime, maxTime);
     let progress = 1 - (nbTicks / maxTimeTransition);
 
-    let cp = mesh.material.clippingPlanes;
-    if (!cp || !cp[0]) return true;
-
-    let plane = cp[0];
-    let start = extent[axis][0];
-    let end = extent[axis][1];
-    let p = start + progress * (end - start); // lerp
-    plane.constant = p;
-    plane.needsUpdate = true;
+    if (mesh.isGroup) {
+        // Supported: 1-level traversal
+        let children = mesh.children;
+        for (let i = 0; i < children.length; ++i) {
+            this.updatePlane(children[i], extent, axis, progress);
+        }
+    } else {
+        this.updatePlane(mesh, extent, axis, progress);
+    }
 
     return nbTicks === maxTimeTransition;
 };
