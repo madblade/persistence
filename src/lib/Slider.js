@@ -254,6 +254,7 @@ Slider.prototype.endOldSlideTransition = function(
 {
     if (backwards) {
         let newSlide = this.getSlideAt(newSlideIndex);
+        if (!newSlide) return;
         let addBefore = newSlide.removeAfter;
         if (addBefore && addBefore.length > 0) {
             this.addMeshArray(addBefore, newSlide.mesh);

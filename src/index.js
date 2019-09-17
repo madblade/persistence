@@ -300,6 +300,13 @@ function init() {
             // new Plane(new Vector3(-1, 0, 0), 5),
         ]
     );
+    let lightBlueCurve7 = plotter.makeLarge1dCurve(
+        plotter.generatorCurve1d.bind(plotter), sampling1d, extent, 2,
+        [
+            new Plane(new Vector3(1, 0, 0), -9.85), // left cut
+            // new Plane(new Vector3(-1, 0, 0), 5),
+        ]
+    );
 
     // Green
     let greenCurve1 = plotter.makeLarge1dCurve(
@@ -314,6 +321,13 @@ function init() {
         [
             new Plane(new Vector3(-1, 0, 0), 6.52), // right cut
             new Plane(new Vector3(1, 0, 0), -3.95), // left cut
+        ]
+    );
+    let greenCurve3 = plotter.makeLarge1dCurve(
+        plotter.generatorCurve1d.bind(plotter), sampling1d, extent, 4,
+        [
+            new Plane(new Vector3(-1, 0, 0), 6.89), // right cut
+            new Plane(new Vector3(1, 0, 0), -2.9), // left cut
         ]
     );
 
@@ -360,6 +374,20 @@ function init() {
             new Plane(new Vector3(1, 0, 0), 7.5), // left cut
         ]
     );
+    let orangeCurve7 = plotter.makeLarge1dCurve(
+        plotter.generatorCurve1d.bind(plotter), sampling1d, extent, 1,
+        [
+            new Plane(new Vector3(-1, 0, 0), 1.92), // right cut
+            new Plane(new Vector3(1, 0, 0), 11.62), // left cut
+        ]
+    );
+    let orangeCurve8 = plotter.makeLarge1dCurve(
+        plotter.generatorCurve1d.bind(plotter), sampling1d, extent, 1,
+        [
+            new Plane(new Vector3(-1, 0, 0), 2.9), // right cut
+            new Plane(new Vector3(1, 0, 0), 11.92), // left cut
+        ]
+    );
 
     // Purple
     let purpleCurve1 = plotter.makeLarge1dCurve(
@@ -392,35 +420,49 @@ function init() {
     );
 
     let groupOrangeLightBlue1 = plotter.makeGroup();
-    groupOrangeLightBlue1.add(lightBlueCurve2);
-    groupOrangeLightBlue1.add(orangeCurve3);
+    groupOrangeLightBlue1.add(lightBlueCurve2.clone());
+    groupOrangeLightBlue1.add(orangeCurve3.clone());
 
     let groupOrangePurpleLightBlue1 = plotter.makeGroup();
-    groupOrangePurpleLightBlue1.add(orangeCurve2);
-    groupOrangePurpleLightBlue1.add(lightBlueCurve3);
-    groupOrangePurpleLightBlue1.add(purpleCurve1);
+    groupOrangePurpleLightBlue1.add(orangeCurve2.clone());
+    groupOrangePurpleLightBlue1.add(lightBlueCurve3.clone());
+    groupOrangePurpleLightBlue1.add(purpleCurve1.clone());
 
     let groupOrangePurpleLightBlueGreen1 = plotter.makeGroup();
-    groupOrangePurpleLightBlueGreen1.add(lightBlueCurve1);
-    groupOrangePurpleLightBlueGreen1.add(greenCurve1);
-    groupOrangePurpleLightBlueGreen1.add(orangeCurve4);
-    groupOrangePurpleLightBlueGreen1.add(purpleCurve2);
+    groupOrangePurpleLightBlueGreen1.add(lightBlueCurve1.clone());
+    groupOrangePurpleLightBlueGreen1.add(greenCurve1.clone());
+    groupOrangePurpleLightBlueGreen1.add(orangeCurve4.clone());
+    groupOrangePurpleLightBlueGreen1.add(purpleCurve2.clone());
 
+    // Fusion
     let groupOrangePurpleLightBlue2 = plotter.makeGroup();
-    groupOrangePurpleLightBlue2.add(lightBlueCurve4);
+    groupOrangePurpleLightBlue2.add(lightBlueCurve4.clone());
     groupOrangePurpleLightBlue2.add(orangeCurve4.clone());
     groupOrangePurpleLightBlue2.add(purpleCurve2.clone());
+    groupOrangePurpleLightBlue2.position.z += 0.01;
 
     let groupOrangePurpleLightBlue3 = plotter.makeGroup();
-    groupOrangePurpleLightBlue3.add(orangeCurve5);
-    groupOrangePurpleLightBlue3.add(lightBlueCurve5);
-    groupOrangePurpleLightBlue3.add(purpleCurve3);
+    groupOrangePurpleLightBlue3.add(orangeCurve5.clone());
+    groupOrangePurpleLightBlue3.add(lightBlueCurve5.clone());
+    groupOrangePurpleLightBlue3.add(purpleCurve3.clone());
 
     let groupOrangePurpleLightBlueGreen2 = plotter.makeGroup();
-    groupOrangePurpleLightBlueGreen2.add(orangeCurve6);
-    groupOrangePurpleLightBlueGreen2.add(purpleCurve4);
-    groupOrangePurpleLightBlueGreen2.add(greenCurve2);
-    groupOrangePurpleLightBlueGreen2.add(lightBlueCurve6);
+    groupOrangePurpleLightBlueGreen2.add(orangeCurve6.clone());
+    groupOrangePurpleLightBlueGreen2.add(purpleCurve4.clone());
+    groupOrangePurpleLightBlueGreen2.add(greenCurve2.clone());
+    groupOrangePurpleLightBlueGreen2.add(lightBlueCurve6.clone());
+
+    // Fusion
+    let groupOrangeGreenLightBlue1 = plotter.makeGroup();
+    groupOrangeGreenLightBlue1.add(orangeCurve7.clone());
+    groupOrangeGreenLightBlue1.add(greenCurve2.clone());
+    groupOrangeGreenLightBlue1.add(lightBlueCurve6.clone());
+    groupOrangeGreenLightBlue1.position.z += 0.01;
+
+    let groupOrangeGreenLightBlue2 = plotter.makeGroup();
+    groupOrangeGreenLightBlue2.add(orangeCurve8);
+    groupOrangeGreenLightBlue2.add(greenCurve3);
+    groupOrangeGreenLightBlue2.add(lightBlueCurve7);
 
     slider.addSlides([
         {
@@ -431,7 +473,8 @@ function init() {
         },
         {
             mesh: orangeCurve1,
-            animateIn: swipeInUp({y: [-15, 0]}),
+            removeAfter: [],
+            animateIn: swipeInUp({y: [-15, 15]}),
             explainText: '',
         },
 
@@ -440,7 +483,7 @@ function init() {
         {
             mesh: groupOrangeLightBlue1,
             removeAfter: [orangeCurve1],
-            animateIn: swipeInUp({y: [-15, 0]}),
+            animateIn: swipeInUp({y: [-15, 15]}),
             explainText: '',
         },
 
@@ -449,7 +492,7 @@ function init() {
         {
             mesh: groupOrangePurpleLightBlue1,
             removeAfter: [groupOrangeLightBlue1],
-            animateIn: swipeInUp({y: [-15, 0]}),
+            animateIn: swipeInUp({y: [-15, 15]}),
             explainText: '',
         },
 
@@ -458,11 +501,11 @@ function init() {
         {
             mesh: groupOrangePurpleLightBlueGreen1,
             removeAfter: [groupOrangePurpleLightBlue1],
-            animateIn: swipeInUp({y: [-15, 0]}),
+            animateIn: swipeInUp({y: [-15, 15]}),
             explainText: '',
         },
 
-        // Group 4
+        // Group 4 JOIN
         {
             mesh: groupOrangePurpleLightBlue2,
             removeAfter: [groupOrangePurpleLightBlueGreen1],
@@ -475,7 +518,7 @@ function init() {
         {
             mesh: groupOrangePurpleLightBlue3,
             removeAfter: [groupOrangePurpleLightBlue2],
-            // animateIn: swipeInUp({y: [-15, 0]}),
+            animateIn: swipeInUp({y: [-15, 15]}),
             explainText: '',
         },
 
@@ -484,12 +527,35 @@ function init() {
         {
             mesh: groupOrangePurpleLightBlueGreen2,
             removeAfter: [groupOrangePurpleLightBlue3],
+            animateIn: swipeInUp({y: [-15, 15]}),
+            explainText: '',
+        },
+
+        // Group 7 JOIN
+        {
+            mesh: groupOrangeGreenLightBlue1,
+            removeAfter: [groupOrangePurpleLightBlueGreen2],
+            // animateIn: swipeInUp({y: [-15, 15]}),
+            explainText: '',
+        },
+
+        // Group 8
+        {
+            mesh: groupOrangeGreenLightBlue2,
+            removeAfter: [groupOrangeGreenLightBlue1],
+            animateIn: swipeInUp({y: [-15, 15]}),
+            explainText: '',
+        },
+
+
+        {
+            mesh: smin2,
             // animateIn: swipeInUp({y: [-15, 0]}),
             explainText: '',
         },
 
 
-        {   mesh: smin2,
+        {   removeAfter: [groupOrangeGreenLightBlue2],
             explainText: '',   },
 
         {
