@@ -258,17 +258,24 @@ function init() {
     // Curves mess
 
     // Light Blue
-    let lightBlueCurve1 = plotter.makeLarge1dCurve(
-        plotter.generatorCurve1d.bind(plotter), sampling1d, extent, 2,
-        [
-            new Plane(new Vector3(1, 0, 0), -13.2), // left cut
-            // new Plane(new Vector3(-1, 0, 0), 5),
-        ]
-    );
     let lightBlueCurve2 = plotter.makeLarge1dCurve(
         plotter.generatorCurve1d.bind(plotter), sampling1d, extent, 2,
         [
             new Plane(new Vector3(1, 0, 0), -14.3), // left cut
+            // new Plane(new Vector3(-1, 0, 0), 5),
+        ]
+    );
+    let lightBlueCurve3 = plotter.makeLarge1dCurve(
+        plotter.generatorCurve1d.bind(plotter), sampling1d, extent, 2,
+        [
+            new Plane(new Vector3(1, 0, 0), -14.05), // left cut
+            // new Plane(new Vector3(-1, 0, 0), 5),
+        ]
+    );
+    let lightBlueCurve1 = plotter.makeLarge1dCurve(
+        plotter.generatorCurve1d.bind(plotter), sampling1d, extent, 2,
+        [
+            new Plane(new Vector3(1, 0, 0), -13.2), // left cut
             // new Plane(new Vector3(-1, 0, 0), 5),
         ]
     );
@@ -290,6 +297,13 @@ function init() {
             new Plane(new Vector3(1, 0, 0), 5.70), // left cut
         ]
     );
+    let orangeCurve3 = plotter.makeLarge1dCurve(
+        plotter.generatorCurve1d.bind(plotter), sampling1d, extent, 1,
+        [
+            new Plane(new Vector3(-1, 0, 0), 0.30), // right cut
+            new Plane(new Vector3(1, 0, 0), 5.87), // left cut
+        ]
+    );
     let orangeCurve2 = plotter.makeLarge1dCurve(
         plotter.generatorCurve1d.bind(plotter), sampling1d, extent, 1,
         [
@@ -297,11 +311,11 @@ function init() {
             new Plane(new Vector3(1, 0, 0), 5.95), // left cut
         ]
     );
-    let orangeCurve3 = plotter.makeLarge1dCurve(
+    let orangeCurve4 = plotter.makeLarge1dCurve(
         plotter.generatorCurve1d.bind(plotter), sampling1d, extent, 1,
         [
-            new Plane(new Vector3(-1, 0, 0), 0.30), // right cut
-            new Plane(new Vector3(1, 0, 0), 5.87), // left cut
+            new Plane(new Vector3(-1, 0, 0), 0.72), // right cut
+            new Plane(new Vector3(1, 0, 0), 6.05), // left cut
         ]
     );
 
@@ -313,10 +327,28 @@ function init() {
             new Plane(new Vector3(1, 0, 0), 10.48), // left cut
         ]
     );
+    let purpleCurve2 = plotter.makeLarge1dCurve(
+        plotter.generatorCurve1d.bind(plotter), sampling1d, extent, 3,
+        [
+            new Plane(new Vector3(-1, 0, 0), -9.18), // right cut
+            new Plane(new Vector3(1, 0, 0), 10.65), // left cut
+        ]
+    );
 
     let groupOrangeLightBlue1 = plotter.makeGroup();
     groupOrangeLightBlue1.add(lightBlueCurve2);
     groupOrangeLightBlue1.add(orangeCurve3);
+
+    let groupOrangePurpleLightBlue1 = plotter.makeGroup();
+    groupOrangePurpleLightBlue1.add(orangeCurve2);
+    groupOrangePurpleLightBlue1.add(lightBlueCurve3);
+    groupOrangePurpleLightBlue1.add(purpleCurve1);
+
+    let groupOrangePurpleLightBlueGreen1 = plotter.makeGroup();
+    groupOrangePurpleLightBlueGreen1.add(lightBlueCurve1);
+    groupOrangePurpleLightBlueGreen1.add(greenCurve1);
+    groupOrangePurpleLightBlueGreen1.add(orangeCurve4);
+    groupOrangePurpleLightBlueGreen1.add(purpleCurve2);
 
     slider.addSlides([
         {
@@ -332,6 +364,7 @@ function init() {
         },
 
 
+        // Group 1
         {
             mesh: groupOrangeLightBlue1,
             animateIn: swipeInUp({y: [-15, 0]}),
@@ -339,31 +372,21 @@ function init() {
         },
 
 
+        // Group 2
         {
-            mesh: orangeCurve2,
+            mesh: groupOrangePurpleLightBlue1,
             animateIn: swipeInUp({y: [-15, 0]}),
             explainText: '',
         },
 
 
-
+        // Group 3
         {
-            mesh: lightBlueCurve1,
-            animateIn: swipeInUp({y: [-15, 15]}),
-            explainText: '',
-        },
-        {
-            mesh: greenCurve1,
-            animateIn: swipeInUp({y: [-15, 15]}),
+            mesh: groupOrangePurpleLightBlueGreen1,
+            animateIn: swipeInUp({y: [-15, 0]}),
             explainText: '',
         },
 
-
-        {
-            mesh: purpleCurve1,
-            animateIn: swipeInUp({y: [-15, 15]}),
-            explainText: '',
-        },
 
         {   mesh: smin2, removeAfter:  [lightBlueCurve1, greenCurve1],
             explainText: '',   },
