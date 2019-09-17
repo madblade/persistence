@@ -205,6 +205,12 @@ function init() {
     let smin4 = plotter.makeSprite1d(minimad1[3], "#ff0000");
     let smin5 = plotter.makeSprite1d(minimad1[4], "#ff0000");
     let smin6 = plotter.makeSprite1d(minimad1[5], "#ff0000");
+    smin1.position.z += 0.05;
+    smin2.position.z += 0.05;
+    smin3.position.z += 0.05;
+    smin4.position.z += 0.05;
+    smin5.position.z += 0.05;
+    smin6.position.z += 0.05;
 
     let maximad1 = plotter.findLocalMaxima(
         plotter.generatorCurve1d.bind(plotter), sampling1d, extent
@@ -217,6 +223,11 @@ function init() {
     let smax3 = plotter.makeSprite1d(maximad1[2], "#0000ff");
     let smax4 = plotter.makeSprite1d(maximad1[3], "#0000ff");
     let smax5 = plotter.makeSprite1d(maximad1[4], "#0000ff");
+    smax1.position.z += 0.05;
+    smax2.position.z += 0.05;
+    smax3.position.z += 0.05;
+    smax4.position.z += 0.05;
+    smax5.position.z += 0.05;
 
 
     let curve1d = plotter.make1dCurve(
@@ -252,7 +263,6 @@ function init() {
         'data', fontGenerator,
         new Vector3(20, 0, -4), '#0011aa'
     );
-
 
 
     // Curves mess
@@ -388,6 +398,16 @@ function init() {
             new Plane(new Vector3(1, 0, 0), 11.92), // left cut
         ]
     );
+    let orangeCurve9 = plotter.makeLarge1dCurve(
+        plotter.generatorCurve1d.bind(plotter), sampling1d, extent, 1,
+        [
+            new Plane(new Vector3(-1, 0, 0), 6.89), // right cut
+            new Plane(new Vector3(1, 0, 0), 11.92), // left cut
+        ]
+    );
+    let orangeCurve10 = plotter.makeLarge1dCurve(
+        plotter.generatorCurve1d.bind(plotter), sampling1d, extent, 1,
+    );
 
     // Purple
     let purpleCurve1 = plotter.makeLarge1dCurve(
@@ -460,9 +480,14 @@ function init() {
     groupOrangeGreenLightBlue1.position.z += 0.01;
 
     let groupOrangeGreenLightBlue2 = plotter.makeGroup();
-    groupOrangeGreenLightBlue2.add(orangeCurve8);
-    groupOrangeGreenLightBlue2.add(greenCurve3);
-    groupOrangeGreenLightBlue2.add(lightBlueCurve7);
+    groupOrangeGreenLightBlue2.add(orangeCurve8.clone());
+    groupOrangeGreenLightBlue2.add(greenCurve3.clone());
+    groupOrangeGreenLightBlue2.add(lightBlueCurve7.clone());
+
+    let groupOrangeLightBlue2 = plotter.makeGroup();
+    groupOrangeLightBlue2.add(orangeCurve9.clone());
+    groupOrangeLightBlue2.add(lightBlueCurve7.clone());
+    groupOrangeLightBlue2.position.z += 0.01;
 
     slider.addSlides([
         {
@@ -471,93 +496,6 @@ function init() {
             opacityMax: 0.5,
             explainText: '1-dimensional persistent homology on an example',
         },
-        {
-            mesh: orangeCurve1,
-            removeAfter: [],
-            animateIn: swipeInUp({y: [-15, 15]}),
-            explainText: '',
-        },
-
-
-        // Group 1
-        {
-            mesh: groupOrangeLightBlue1,
-            removeAfter: [orangeCurve1],
-            animateIn: swipeInUp({y: [-15, 15]}),
-            explainText: '',
-        },
-
-
-        // Group 2
-        {
-            mesh: groupOrangePurpleLightBlue1,
-            removeAfter: [groupOrangeLightBlue1],
-            animateIn: swipeInUp({y: [-15, 15]}),
-            explainText: '',
-        },
-
-
-        // Group 3
-        {
-            mesh: groupOrangePurpleLightBlueGreen1,
-            removeAfter: [groupOrangePurpleLightBlue1],
-            animateIn: swipeInUp({y: [-15, 15]}),
-            explainText: '',
-        },
-
-        // Group 4 JOIN
-        {
-            mesh: groupOrangePurpleLightBlue2,
-            removeAfter: [groupOrangePurpleLightBlueGreen1],
-            // animateIn: swipeInUp({y: [-15, 0]}),
-            explainText: '',
-        },
-
-
-        // Group 5
-        {
-            mesh: groupOrangePurpleLightBlue3,
-            removeAfter: [groupOrangePurpleLightBlue2],
-            animateIn: swipeInUp({y: [-15, 15]}),
-            explainText: '',
-        },
-
-
-        // Group 6
-        {
-            mesh: groupOrangePurpleLightBlueGreen2,
-            removeAfter: [groupOrangePurpleLightBlue3],
-            animateIn: swipeInUp({y: [-15, 15]}),
-            explainText: '',
-        },
-
-        // Group 7 JOIN
-        {
-            mesh: groupOrangeGreenLightBlue1,
-            removeAfter: [groupOrangePurpleLightBlueGreen2],
-            // animateIn: swipeInUp({y: [-15, 15]}),
-            explainText: '',
-        },
-
-        // Group 8
-        {
-            mesh: groupOrangeGreenLightBlue2,
-            removeAfter: [groupOrangeGreenLightBlue1],
-            animateIn: swipeInUp({y: [-15, 15]}),
-            explainText: '',
-        },
-
-
-        {
-            mesh: smin2,
-            // animateIn: swipeInUp({y: [-15, 0]}),
-            explainText: '',
-        },
-
-
-        {   removeAfter: [groupOrangeGreenLightBlue2],
-            explainText: '',   },
-
         {
             camera: camera,
             target: {
@@ -590,17 +528,6 @@ function init() {
             mesh: rangeText,
             explainText: '(Explanations to be continued)',
         },
-        // {
-        //     camera: camera,
-        //     target: {
-        //         position1: new Vector3(0, 0, 0), // Unimportant
-        //         position2: new Vector3(0, 0, 40),
-        //         quaternion1: new Quaternion(), // Unimportant
-        //         quaternion2: lookAt2
-        //     },
-        //     transition: smoothCamera,
-        //     duration: 50,
-        // },
         {
             mesh: curve1d,
             animateIn: swipeInRight,
@@ -612,97 +539,170 @@ function init() {
             explainText: '',
         },
 
-        {   mesh: smin1,
-            explainText: '',   },
+        // START MESS
+
         {
-            mesh: largeCurve1d,
+            mesh: smin1,
+            explainText: '',
+        },
+        // {
+        //     mesh: largeCurve1d,
+        //     animateIn: swipeInUp({y: [-15, -5]}),
+        //     duration: 90,
+        //     explainText: '',
+        // },
+        {
+            mesh: orangeCurve1,
+            removeAfter: [],
             animateIn: swipeInUp({y: [-15, -5]}),
-            duration: 90,
+            duration: 20,
+            explainText: '',
+        },
+        {
+            mesh: smin2,
             explainText: '',
         },
 
-        {   mesh: smin2, removeAfter:  [largeCurve1d],
-            explainText: '',   },
+        // Group 1
         {
-            mesh: lightBlueCurve1,
+            mesh: groupOrangeLightBlue1,
+            removeAfter: [orangeCurve1],
             animateIn: swipeInUp({y: [-5, -4]}),
             duration: 20,
             explainText: '',
         },
-
-        {   mesh: smin3, removeAfter:  [lightBlueCurve1],
-            explainText: '',    },
         {
-            mesh: largeCurve1d,
+            mesh: smin3,
+            explainText: '',
+        },
+
+
+        // Group 2
+        {
+            mesh: groupOrangePurpleLightBlue1,
+            removeAfter: [groupOrangeLightBlue1],
             animateIn: swipeInUp({y: [-4, -3.2]}),
             duration: 20,
             explainText: '',
         },
-        {   mesh: smin4, removeAfter:  [largeCurve1d],
-            explainText: '',  },
         {
-            mesh: largeCurve1d,
+            mesh: smin4,
+            explainText: '',
+        },
+
+        // Group 3
+        {
+            mesh: groupOrangePurpleLightBlueGreen1,
+            removeAfter: [groupOrangePurpleLightBlue1],
             animateIn: swipeInUp({y: [-3.2, -2.3]}),
             duration: 20,
             explainText: '',
         },
-
-        {   mesh: smax1, removeAfter:  [largeCurve1d],
-            explainText: '',   },
         {
-            mesh: largeCurve1d,
+            mesh: smax1,
+            explainText: '',
+        },
+
+        // Group 4 JOIN
+        {
+            mesh: groupOrangePurpleLightBlue2,
+            removeAfter: [groupOrangePurpleLightBlueGreen1],
+            explainText: '',
+        },
+
+
+        // Group 5
+        {
+            mesh: groupOrangePurpleLightBlue3,
+            removeAfter: [groupOrangePurpleLightBlue2],
             animateIn: swipeInUp({y: [-2.3, 0]}),
             duration: 20,
             explainText: '',
         },
-        {   mesh: smin5, removeAfter:  [largeCurve1d],
-            explainText: '',   },
         {
-            mesh: largeCurve1d,
+            mesh: smin5,
+            explainText: '',
+        },
+
+
+        // Group 6
+        {
+            mesh: groupOrangePurpleLightBlueGreen2,
+            removeAfter: [groupOrangePurpleLightBlue3],
             animateIn: swipeInUp({y: [0, 4.2]}),
             duration: 20,
             explainText: '',
         },
-        {   mesh: smax2, removeAfter:  [largeCurve1d],
-            explainText: '',   },
         {
-            mesh: largeCurve1d,
+            mesh: smax2,
+            explainText: '',
+        },
+
+        // Group 7 JOIN
+        {
+            mesh: groupOrangeGreenLightBlue1,
+            removeAfter: [groupOrangePurpleLightBlueGreen2],
+            explainText: '',
+        },
+
+        // Group 8
+        {
+            mesh: groupOrangeGreenLightBlue2,
+            removeAfter: [groupOrangeGreenLightBlue1],
             animateIn: swipeInUp({y: [4.2, 6.8]}),
             duration: 20,
             explainText: '',
         },
-        {   mesh: smax3, removeAfter:  [largeCurve1d],
-            explainText: '',   },
         {
-            mesh: largeCurve1d,
-            animateIn: swipeInUp({y: [6.8, 12]}),
+            mesh: smax3,
+            explainText: '',
+        },
+
+        // Group 9 JOIN
+        {
+            mesh: groupOrangeLightBlue2,
+            removeAfter: [groupOrangeGreenLightBlue2, groupOrangeLightBlue2],
+            explainText: '',
+        },
+
+        // end of line (at last)
+        {
+            mesh: orangeCurve10,
+            animateIn: swipeInUp({y: [6.8, 15]}),
             duration: 20,
             explainText: '',
         },
-        {   mesh: smin6,
-            explainText: '',   },
-        {   mesh: smax4,
-            explainText: '',   },
-        {   mesh: smax5, removeAfter:  [largeCurve1d],
-            explainText: '',   },
         {
-            mesh: largeCurve1d,
+            mesh: smin6,
+            explainText: '',
+        },
+        {
+            mesh: smax4,
+            explainText: '',
+        },
+
+        {
+            mesh: smax5,
             animateIn: swipeInUp({y: [12, 15]}),
             duration: 50,
             removeAfter: [
                 xyHelper, xHelper, rangeText, domainText, dataText,
-                curve1d, largeCurve1d,
+                curve1d, orangeCurve10,
                 smin1, smin2, smin3, smin4, smin5, smin6,
                 smax1, smax2, smax3, smax4, smax5
             ],
             explainText: '',
         }
+
+        /// END MESS
+
         // {
         //     mesh: largeCurve1d,
         //     animateIn: swipeInUp({y: [-15, 15]}),
         //     // animateOut: swipeOutUp({y: [-15, 15]}),
         //     duration: 90
         // }
+
     ], explainerElement);
 
     let group = new Group();
