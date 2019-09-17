@@ -1,3 +1,7 @@
+/**
+ * Author: madblade, sept 2019
+ */
+
 "use strict";
 
 import {Group, Object3D} from "three";

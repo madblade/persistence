@@ -1,3 +1,7 @@
+/**
+ * Author: madblade, sept 2019
+ */
+
 "use strict";
 
 import {
@@ -93,7 +97,7 @@ Plotter.prototype.make1dCurve = function(f, sampling, extent)
 
 // What = 'min'
 // index = which one
-Plotter.prototype.makeSprite1d = function(v, fillStyle)
+Plotter.prototype.makeSprite1d = function(v, fillStyle, is3D)
 {
     let canvasTexture = document.createElement('canvas');
     let size = 256;
@@ -119,10 +123,16 @@ Plotter.prototype.makeSprite1d = function(v, fillStyle)
         color: 0xffffff
     });
     let sprite = new Sprite(material);
-    sprite.position.x = v[0];
-    sprite.position.y = v[1];
-    sprite.position.z = -0.05;
-    sprite.scale.set(10, 10, 1);
+    if (is3D) {
+        sprite.position.x = v[0];
+        sprite.position.z = v[1];
+        sprite.position.y = v[2];
+    } else {
+        sprite.position.x = v[0];
+        sprite.position.y = v[1];
+        sprite.position.z = -0.05;
+        sprite.scale.set(10, 10, 1);
+    }
     return sprite;
 };
 
@@ -208,7 +218,7 @@ Plotter.prototype.makeLarge1dCurve = function(
     ];
     if (clippingPlanes && clippingPlanes.length > 0)
     {
-        console.log('I added a clipping plane');
+        // console.log('I added a clipping plane');
         materialClippingPlanes.push(...clippingPlanes);
     }
 
@@ -282,6 +292,50 @@ Plotter.prototype.generatorCurve1d = function(t)
 {
     let x = 1.0 * t - 7;
     return Math.sin(x) * Math.cos(x * 0.2) + Math.cos(0.3 * x);
+};
+
+Plotter.prototype.evaluateFromExpressionAndExtent2d = function(
+    expression, extent, samplingX, samplingY)
+{
+    let xMin = extent.x[0];
+    let xMax = extent.x[1];
+    let xRan = xMax - xMin;
+    let yMin = extent.y[0];
+    let yMax = extent.y[1];
+    let yRan = yMax - yMin;
+    let zMin = extent.z[0];
+    let zMax = extent.z[1];
+    let zRan = zMax - zMin;
+
+    return function(i, j) {
+        let f = expression;
+        let x = xMin + xRan * (i / samplingX);
+        let y = yMin + yRan * (j / samplingY);
+        return zRan * f(x, y, 0) / 2;
+    };
+};
+
+
+Plotter.prototype.evaluatePointFromExpressionAndExtent2d = function(
+    expression, extent, samplingX, samplingY)
+{
+    let xMin = extent.x[0];
+    let xMax = extent.x[1];
+    let xRan = xMax - xMin;
+    let yMin = extent.y[0];
+    let yMax = extent.y[1];
+    let yRan = yMax - yMin;
+    let zMin = extent.z[0];
+    let zMax = extent.z[1];
+    let zRan = zMax - zMin;
+
+    return function(i, j) {
+        let f = expression;
+        let x = xMin + xRan * (i / samplingX);
+        let y = yMin + yRan * (j / samplingY);
+        let z = zRan * f(x, y, 0) / 2;
+        return [x, -y, z];
+    };
 };
 
 Plotter.prototype.generatorCurve2d = function(t1, t2, t3)

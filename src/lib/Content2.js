@@ -4,13 +4,13 @@ import {
     Plane, Quaternion,
     Vector3,
 } from "three";
+import Topology from "./Topology";
 
 function Content1() {}
 
 Content1.prototype.getSlides = function(
     plotter, camera, fontGenerator)
 {
-
 
     let lookAt2 = new Quaternion();
     let upv2 = new Vector3(0, 1, 0);
@@ -154,10 +154,60 @@ Content1.prototype.getSlides = function(
         plotter.generatorCurve2d.bind(plotter), sampling2d, extent
     );
 
+    let topology = new Topology();
+
+    let generator = plotter.generatorCurve2d.bind(plotter);
+    let evaluator = plotter.evaluateFromExpressionAndExtent2d;
+    let pointEvaluator = plotter.evaluatePointFromExpressionAndExtent2d;
+    let persistenceDiagram = topology.computePersistenceDiagram(
+        sampling2d+1, sampling2d+1,
+        evaluator(generator, extent, sampling2d+1, sampling2d+1)
+    );
+    let criticalPoints = persistenceDiagram[0];
+    let persistencePairs = persistenceDiagram[1];
+
+    // Find critical points
+    let min = [];
+    let max = [];
+    let sad = [];
+    for (let i = 0; i < criticalPoints.length; ++i) {
+        let c = criticalPoints[i];
+        let point = pointEvaluator(generator, extent, sampling2d+1, sampling2d+1)(c[0], c[1]);
+        switch (c[2]) {
+            case 'min': min.push(point); break;
+            case 'max': max.push(point); break;
+            case 'sad': sad.push(point); break;
+            default: break;
+        }
+    }
+    let minMesh = new Group();
+    let maxMesh = new Group();
+    let sadMesh = new Group();
+    console.log(min);
+    console.log(max);
+    console.log(sad);
+    for (let i = 0; i < min.length; ++i) {
+        minMesh.add(plotter.makeSprite1d(min[i], "#ff0000", true));
+    }
+    for (let i = 0; i < max.length; ++i) {
+        maxMesh.add(plotter.makeSprite1d(max[i], "#0000ff", true));
+    }
+    for (let i = 0; i < sad.length; ++i) {
+        sadMesh.add(plotter.makeSprite1d(sad[i], "#ffffff", true));
+    }
 
     return [
         {
             mesh: curve1d2
+        },
+        {
+            mesh: minMesh,
+        },
+        {
+            mesh: maxMesh,
+        },
+        {
+            mesh: sadMesh,
         },
         {
             camera: camera,
