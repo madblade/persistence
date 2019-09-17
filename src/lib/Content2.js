@@ -153,6 +153,10 @@ Content1.prototype.getSlides = function(
     let curve2dTransparent = plotter.make2dCurve(
         plotter.generatorCurve2d.bind(plotter), sampling2d, extent
     );
+    let curve2dWireframe = plotter.make2dCurveWireframeColor(
+        plotter.generatorCurve2d.bind(plotter), sampling2d, extent,
+        0
+    );
 
     let topology = new Topology();
 
@@ -160,8 +164,8 @@ Content1.prototype.getSlides = function(
     let evaluator = plotter.evaluateFromExpressionAndExtent2d;
     let pointEvaluator = plotter.evaluatePointFromExpressionAndExtent2d;
     let persistenceDiagram = topology.computePersistenceDiagram(
-        sampling2d+1, sampling2d+1,
-        evaluator(generator, extent, sampling2d+1, sampling2d+1)
+        sampling2d, sampling2d,
+        evaluator(generator, extent, sampling2d, sampling2d)
     );
     let criticalPoints = persistenceDiagram[0];
     let persistencePairs = persistenceDiagram[1];
@@ -172,7 +176,7 @@ Content1.prototype.getSlides = function(
     let sad = [];
     for (let i = 0; i < criticalPoints.length; ++i) {
         let c = criticalPoints[i];
-        let point = pointEvaluator(generator, extent, sampling2d+1, sampling2d+1)(c[0], c[1]);
+        let point = pointEvaluator(generator, extent, sampling2d, sampling2d)(c[0], c[1]);
         switch (c[2]) {
             case 'min': min.push(point); break;
             case 'max': max.push(point); break;
@@ -183,9 +187,6 @@ Content1.prototype.getSlides = function(
     let minMesh = new Group();
     let maxMesh = new Group();
     let sadMesh = new Group();
-    console.log(min);
-    console.log(max);
-    console.log(sad);
     for (let i = 0; i < min.length; ++i) {
         minMesh.add(plotter.makeSprite1d(min[i], "#ff0000", true));
     }
@@ -198,7 +199,7 @@ Content1.prototype.getSlides = function(
 
     return [
         {
-            mesh: curve1d2
+            mesh: curve2dWireframe
         },
         {
             mesh: minMesh,
@@ -208,6 +209,9 @@ Content1.prototype.getSlides = function(
         },
         {
             mesh: sadMesh,
+        },
+        {
+            mesh: curve1d2
         },
         {
             camera: camera,

@@ -2,10 +2,11 @@
  * Author: madblade, sept 2019
  */
 
+
 "use strict";
 
 import {
-    ArrowHelper,
+    ArrowHelper, BufferAttribute,
     Color, DoubleSide,
     Geometry, GridHelper, Group,
     Line,
@@ -13,7 +14,7 @@ import {
     Mesh, MeshBasicMaterial,
     MeshPhongMaterial, Plane,
     PlaneBufferGeometry, Quaternion, ShapeBufferGeometry, Sprite, SpriteMaterial, Texture,
-    Vector3
+    Vector3, VertexColors
 } from "three";
 import {MeshLine, MeshLineMaterial} from "./MeshLine";
 
@@ -127,6 +128,7 @@ Plotter.prototype.makeSprite1d = function(v, fillStyle, is3D)
         sprite.position.x = v[0];
         sprite.position.z = v[1];
         sprite.position.y = v[2];
+        sprite.scale.set(0.5, 0.5, 0.5);
     } else {
         sprite.position.x = v[0];
         sprite.position.y = v[1];
@@ -246,6 +248,70 @@ Plotter.prototype.makeLarge1dCurve = function(
     return new Mesh(line.geometry, lineMaterial);
 };
 
+Plotter.prototype.make2dCurveWireframeColor = function(
+    f, sampling, extent, threshold)
+{
+
+    let geometry = new PlaneBufferGeometry(
+        15, 15, sampling, sampling);
+
+    let xMin = extent.x[0]; let yMin = extent.y[0];
+    let zMin = extent.z[0];
+    let xMax = extent.x[1]; let yMax = extent.y[1];
+    let zMax = extent.z[1];
+    let xRan = xMax - xMin; let yRan = yMax - yMin;
+    let zRan = zMax - zMin;
+
+    let pAttribute = geometry.getAttribute('position');
+    let cols = [];
+    let nbSup = 0;
+    let nbInf = 0;
+
+    for (let j = 0; j <= sampling; ++j) {
+        let y = yMin + yRan * (j / sampling);
+        for (let i = 0; i <= sampling; ++i) {
+            let x = xMin + xRan * (i / sampling);
+            let z = zRan * f(x, y, 0) / 2;
+            let id = i + (sampling + 1) * j;
+            pAttribute.setX(id, x);
+            pAttribute.setY(id, y);
+            pAttribute.setZ(id, z);
+
+            if (z < threshold) {
+                ++nbInf;
+                cols.push(0.9, 0, 0);
+            } else if (z > threshold) {
+                ++nbSup;
+                cols.push(0, 0, 0.9);
+            } else {
+                cols.push(0, 0, 0);
+                console.log('strictly');
+            }
+        }
+    }
+
+    let colors = new Float32Array(cols);
+    console.log(nbInf);
+    console.log(nbSup);
+    geometry.addAttribute('color',
+        new BufferAttribute(colors, 3)
+    );
+
+    geometry.computeVertexNormals();
+
+    let material = new MeshPhongMaterial({
+        vertexColors: VertexColors,
+        side: DoubleSide,
+        wireframe: true
+    });
+
+    let plane = new Mesh(geometry, material);
+    plane.rotation.x = - Math.PI / 2;
+    plane.position.z = 0;
+
+    return plane;
+};
+
 Plotter.prototype.make2dCurve = function(
     f, sampling, extent)
 {
@@ -276,7 +342,7 @@ Plotter.prototype.make2dCurve = function(
     let material = new MeshPhongMaterial({
         color: new Color('#4c72e2'),
         side: DoubleSide,
-        shininess: 100,
+        shininess: 100
     });
 
     let plane = new Mesh(geometry, material);

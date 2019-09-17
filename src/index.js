@@ -6,7 +6,7 @@ import {
     Color,
     DirectionalLight, Euler,
     Font,
-    Group,
+    Group, HemisphereLight,
     PerspectiveCamera, Plane, Quaternion,
     Scene,
     Vector3,
@@ -82,6 +82,8 @@ function init() {
     let directionalLight = new DirectionalLight(0x887766);
     directionalLight.position.set(1, 1, 1).normalize();
     scene.add(directionalLight);
+    // var light = new HemisphereLight(0xffffff, 0xffffff, 100);
+    // scene.add(light);
 
     // AXES RED GREEN BLUE
     let axesHelper = new AxesHelper(5);
@@ -131,9 +133,8 @@ function init() {
         .getSlides(plotter, camera, fontGenerator);
 
     slider.addSlides(slides1D);
-    // slider.clearSlides();
+    slider.clearSlides();
     slider.addSlides(slides2D);
-
 }
 
 let fontGenerator = null;
