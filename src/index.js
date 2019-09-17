@@ -226,45 +226,6 @@ function init() {
         plotter.generatorCurve1d.bind(plotter), sampling1d, extent
     );
 
-    // Right join
-    let largeCurve1d2 = plotter.makeLarge1dCurve(
-        plotter.generatorCurve1d.bind(plotter), sampling1d, extent, 2,
-        [
-            new Plane(new Vector3(1, 0, 0), -13.2), // left cut
-            // new Plane(new Vector3(-1, 0, 0), 5),
-        ]
-    );
-    let largeCurve1d3 = plotter.makeLarge1dCurve(
-        plotter.generatorCurve1d.bind(plotter), sampling1d, extent, 4,
-        [
-            new Plane(new Vector3(-1, 0, 0), 13.2), // right cut
-            new Plane(new Vector3(1, 0, 0), -11.3), // left cut
-        ]
-    );
-
-    // Middle join
-    let largeCurve1d4 = plotter.makeLarge1dCurve(
-        plotter.generatorCurve1d.bind(plotter), sampling1d, extent, 1,
-        [
-            new Plane(new Vector3(-1, 0, 0), -0.3), // right cut
-            new Plane(new Vector3(1, 0, 0), 5.70), // left cut
-        ]
-    );
-    let largeCurve1d5 = plotter.makeLarge1dCurve(
-        plotter.generatorCurve1d.bind(plotter), sampling1d, extent, 1,
-        [
-            new Plane(new Vector3(-1, 0, 0), 0.52), // right cut
-            new Plane(new Vector3(1, 0, 0), 5.95), // left cut
-        ]
-    );
-    let largeCurve1d6 = plotter.makeLarge1dCurve(
-        plotter.generatorCurve1d.bind(plotter), sampling1d, extent, 3,
-        [
-            new Plane(new Vector3(-1, 0, 0), -9.38), // right cut
-            new Plane(new Vector3(1, 0, 0), 10.48), // left cut
-        ]
-    );
-
     let lookAt1 = new Quaternion();
     let upv1 = new Vector3(0, 1, 0);
     lookAt1.setFromAxisAngle(upv1.normalize(), 0);
@@ -292,6 +253,71 @@ function init() {
         new Vector3(20, 0, -4), '#0011aa'
     );
 
+
+
+    // Curves mess
+
+    // Light Blue
+    let lightBlueCurve1 = plotter.makeLarge1dCurve(
+        plotter.generatorCurve1d.bind(plotter), sampling1d, extent, 2,
+        [
+            new Plane(new Vector3(1, 0, 0), -13.2), // left cut
+            // new Plane(new Vector3(-1, 0, 0), 5),
+        ]
+    );
+    let lightBlueCurve2 = plotter.makeLarge1dCurve(
+        plotter.generatorCurve1d.bind(plotter), sampling1d, extent, 2,
+        [
+            new Plane(new Vector3(1, 0, 0), -14.3), // left cut
+            // new Plane(new Vector3(-1, 0, 0), 5),
+        ]
+    );
+
+    // Green
+    let greenCurve1 = plotter.makeLarge1dCurve(
+        plotter.generatorCurve1d.bind(plotter), sampling1d, extent, 4,
+        [
+            new Plane(new Vector3(-1, 0, 0), 13.2), // right cut
+            new Plane(new Vector3(1, 0, 0), -11.3), // left cut
+        ]
+    );
+
+    // Orange
+    let orangeCurve1 = plotter.makeLarge1dCurve(
+        plotter.generatorCurve1d.bind(plotter), sampling1d, extent, 1,
+        [
+            new Plane(new Vector3(-1, 0, 0), -0.3), // right cut
+            new Plane(new Vector3(1, 0, 0), 5.70), // left cut
+        ]
+    );
+    let orangeCurve2 = plotter.makeLarge1dCurve(
+        plotter.generatorCurve1d.bind(plotter), sampling1d, extent, 1,
+        [
+            new Plane(new Vector3(-1, 0, 0), 0.52), // right cut
+            new Plane(new Vector3(1, 0, 0), 5.95), // left cut
+        ]
+    );
+    let orangeCurve3 = plotter.makeLarge1dCurve(
+        plotter.generatorCurve1d.bind(plotter), sampling1d, extent, 1,
+        [
+            new Plane(new Vector3(-1, 0, 0), 0.30), // right cut
+            new Plane(new Vector3(1, 0, 0), 5.87), // left cut
+        ]
+    );
+
+    // Purple
+    let purpleCurve1 = plotter.makeLarge1dCurve(
+        plotter.generatorCurve1d.bind(plotter), sampling1d, extent, 3,
+        [
+            new Plane(new Vector3(-1, 0, 0), -9.38), // right cut
+            new Plane(new Vector3(1, 0, 0), 10.48), // left cut
+        ]
+    );
+
+    let groupOrangeLightBlue1 = plotter.makeGroup();
+    groupOrangeLightBlue1.add(lightBlueCurve2);
+    groupOrangeLightBlue1.add(orangeCurve3);
+
     slider.addSlides([
         {
             mesh: xyHelper,
@@ -299,25 +325,47 @@ function init() {
             opacityMax: 0.5,
             explainText: '1-dimensional persistent homology on an example',
         },
-        // {
-        //     mesh: largeCurve1d2,
-        //     animateIn: swipeInUp({y: [-15, 15]}),
-        //     explainText: '',
-        // },
-        // {
-        //     mesh: largeCurve1d3,
-        //     animateIn: swipeInUp({y: [-15, 15]}),
-        //     explainText: '',
-        // },
-        // TODO [HIGH]: group meshes for simultaneous entry
+        {
+            mesh: orangeCurve1,
+            animateIn: swipeInUp({y: [-15, 0]}),
+            explainText: '',
+        },
+
 
         {
-            mesh: largeCurve1d6,
+            mesh: groupOrangeLightBlue1,
+            animateIn: swipeInUp({y: [-15, 0]}),
+            explainText: '',
+        },
+
+
+        {
+            mesh: orangeCurve2,
+            animateIn: swipeInUp({y: [-15, 0]}),
+            explainText: '',
+        },
+
+
+
+        {
+            mesh: lightBlueCurve1,
+            animateIn: swipeInUp({y: [-15, 15]}),
+            explainText: '',
+        },
+        {
+            mesh: greenCurve1,
             animateIn: swipeInUp({y: [-15, 15]}),
             explainText: '',
         },
 
-        {   mesh: smin2, removeAfter:  [largeCurve1d2, largeCurve1d3],
+
+        {
+            mesh: purpleCurve1,
+            animateIn: swipeInUp({y: [-15, 15]}),
+            explainText: '',
+        },
+
+        {   mesh: smin2, removeAfter:  [lightBlueCurve1, greenCurve1],
             explainText: '',   },
 
         {
@@ -386,13 +434,13 @@ function init() {
         {   mesh: smin2, removeAfter:  [largeCurve1d],
             explainText: '',   },
         {
-            mesh: largeCurve1d2,
+            mesh: lightBlueCurve1,
             animateIn: swipeInUp({y: [-5, -4]}),
             duration: 20,
             explainText: '',
         },
 
-        {   mesh: smin3, removeAfter:  [largeCurve1d2],
+        {   mesh: smin3, removeAfter:  [lightBlueCurve1],
             explainText: '',    },
         {
             mesh: largeCurve1d,

@@ -3,7 +3,7 @@
 import {
     ArrowHelper,
     Color, DoubleSide,
-    Geometry, GridHelper,
+    Geometry, GridHelper, Group,
     Line,
     LineBasicMaterial,
     Mesh, MeshBasicMaterial,
@@ -374,6 +374,12 @@ Plotter.prototype.makeAxisHelperZ = function()
     let origin = new Vector3(-16, -16, 0);
     return this.makeArrowHelper(dir, origin)
 };
+
+Plotter.prototype.makeGroup = function()
+{
+    return new Group();
+};
+
 
 //
 // Linear transitions
