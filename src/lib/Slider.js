@@ -55,6 +55,24 @@ Slider.prototype.getSlideAt = function(index)
     return this.slides[index];
 };
 
+// For debugging purposes.
+Slider.prototype.clearSlides = function() {
+    this.slides = [[[ ]]];
+    this.currentSlide = -1;
+    this.transiting = false;
+    this.activeMeshes = [];
+    this.needAnimation = [];
+    this.needIn = [];
+    this.needOut = [];
+    this.needCam = [];
+    this.time = 0;
+    this.maxTime = 100;
+    this.startTime = 0;
+    this.defaultMaxTimeTransition = 10;
+    this.maxTimeTransition = 10;
+    this.maxTimeCameraTransition = 10;
+};
+
 Slider.prototype.addSlide = function(slide)
 {
     this.slides.push(slide);
