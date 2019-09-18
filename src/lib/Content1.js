@@ -434,14 +434,15 @@ Content1.prototype.getSlides = function(
         },
         {
             mesh: dataText,
-            explainText: '',
+            explainText: 'The function is represented with a piecewise-linear curve. ',
         },
 
         // START MESS
 
         {
             mesh: smin1,
-            explainText: '',
+            explainText: 'The global minimum of the function is highlighted in red. ',
+            removeAfter: [curve1d]
         },
         // {
         //     mesh: largeCurve1d,
@@ -454,11 +455,12 @@ Content1.prototype.getSlides = function(
             removeAfter: [],
             animateIn: swipeInUp({y: [-15, -5]}),
             duration: 20,
-            explainText: '',
+            explainText: 'Now consider a filtration (a bottom-up swipe) of the function. ',
         },
         {
             mesh: smin2,
-            explainText: '',
+            explainText: 'Starting from the lowest value, the filtration contains' +
+                ' at first one connected component. ',
         },
 
         // Group 1
@@ -467,11 +469,12 @@ Content1.prototype.getSlides = function(
             removeAfter: [orangeCurve1],
             animateIn: swipeInUp({y: [-5, -4]}),
             duration: 20,
-            explainText: '',
+            explainText: 'Until the second local minimum is reached: ' +
+                'there are now two connected components. ',
         },
         {
             mesh: smin3,
-            explainText: '',
+            explainText: 'The third minimum is reached. ',
         },
 
 
@@ -481,11 +484,12 @@ Content1.prototype.getSlides = function(
             removeAfter: [groupOrangeLightBlue1],
             animateIn: swipeInUp({y: [-4, -3.2]}),
             duration: 20,
-            explainText: '',
+            explainText: 'So the filtration contains three ' +
+                'connected components (separate pieces). ',
         },
         {
             mesh: smin4,
-            explainText: '',
+            explainText: 'The fourth local minimum is encountered. ',
         },
 
         // Group 3
@@ -494,18 +498,19 @@ Content1.prototype.getSlides = function(
             removeAfter: [groupOrangePurpleLightBlue1],
             animateIn: swipeInUp({y: [-3.2, -2.3]}),
             duration: 20,
-            explainText: '',
+            explainText: 'Something happens then: two connected components merge into one. ',
         },
         {
             mesh: smax1,
-            explainText: '',
+            explainText: 'This corresponds to a local maximum. ',
         },
 
         // Group 4 JOIN
         {
             mesh: groupOrangePurpleLightBlue2,
             removeAfter: [groupOrangePurpleLightBlueGreen1],
-            explainText: '',
+            explainText: 'The color of the <b>oldest</b> component is given to the union: ' +
+                'this is called the <b>Elder Rule</b>. ',
         },
 
 
@@ -515,11 +520,12 @@ Content1.prototype.getSlides = function(
             removeAfter: [groupOrangePurpleLightBlue2],
             animateIn: swipeInUp({y: [-2.3, 0]}),
             duration: 20,
-            explainText: '',
+            explainText: 'Continue the bottom-up filtration. ' +
+                'The filtrated function is sometimes called <i>sub-level set</i>. ',
         },
         {
             mesh: smin5,
-            explainText: '',
+            explainText: 'New local minimum, new connected component. ',
         },
 
 
@@ -529,18 +535,19 @@ Content1.prototype.getSlides = function(
             removeAfter: [groupOrangePurpleLightBlue3],
             animateIn: swipeInUp({y: [0, 4.2]}),
             duration: 20,
-            explainText: '',
+            explainText: 'Go on with the filtration... ',
         },
         {
             mesh: smax2,
-            explainText: '',
+            explainText: '... until, here, a maximum is reached. ',
         },
 
         // Group 7 JOIN
         {
             mesh: groupOrangeGreenLightBlue1,
             removeAfter: [groupOrangePurpleLightBlueGreen2],
-            explainText: '',
+            explainText: 'According to the <b>Elder Rule</b>, ' +
+                'the oldest component absorbs the youngest.',
         },
 
         // Group 8
@@ -549,18 +556,18 @@ Content1.prototype.getSlides = function(
             removeAfter: [groupOrangeGreenLightBlue1],
             animateIn: swipeInUp({y: [4.2, 6.8]}),
             duration: 20,
-            explainText: '',
+            explainText: 'And on with the filtration... ',
         },
         {
             mesh: smax3,
-            explainText: '',
+            explainText: 'Another maximum. ',
         },
 
         // Group 9 JOIN
         {
             mesh: groupOrangeLightBlue2,
             removeAfter: [groupOrangeGreenLightBlue2, groupOrangeLightBlue2],
-            explainText: '',
+            explainText: 'Which means the Elder Rule is invoked again. ',
         },
 
         // end of line (at last)
@@ -568,7 +575,7 @@ Content1.prototype.getSlides = function(
             mesh: orangeCurve10,
             animateIn: swipeInUp({y: [6.8, 15]}),
             duration: 20,
-            explainText: '',
+            explainText: 'In the end, there is only one connected component left. ',
         },
 
         {
@@ -577,12 +584,13 @@ Content1.prototype.getSlides = function(
             duration: 50,
             removeAfter: [
                 xyHelper, xHelper, rangeText, domainText, dataText,
-                curve1d, orangeCurve10,
+                orangeCurve10,
                 smin1, smin2, smin3, smin4, smin5,
                 smax1, smax2, smax3,
                 lastCriticalPoints
             ],
-            explainText: '',
+            explainText: 'And here we have all critical points. ' +
+                'Note for this case they are only maxima and minima. ',
         }
 
         /// END MESS

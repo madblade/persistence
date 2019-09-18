@@ -280,7 +280,8 @@ Content1.prototype.getSlides = function(
 
     return [
         {
-            mesh: curve1d2
+            mesh: curve1d2,
+            explainText: ''
         },
         {
             camera: camera,
@@ -293,29 +294,35 @@ Content1.prototype.getSlides = function(
             },
             transition: smootherCamera,
             duration: 50,
+            explainText: ''
         },
         {
             mesh: zHelper,
             animateIn: stretchIn,
+            explainText: ''
             // animateOut: stretchOut
         },
         {
             mesh: xzHelper,
             animateIn: swipeInBack,
             opacityMax: 0.5, // to be fixed someday
+            explainText: ''
         },
         {
-            mesh: groupText
+            mesh: groupText,
+            explainText: ''
         },
         {
             mesh: curve2d,
             animateIn: swipeInBack, // left-to-right camera
             duration: 50,
-            removeAfter: [curve2d]
+            removeAfter: [curve2d],
+            explainText: ''
         },
         {
             mesh: curve2dTransparent,
-            opacityMax: 0.1
+            opacityMax: 0.1,
+            explainText: ''
         },
 
         // Demo minima
@@ -330,19 +337,23 @@ Content1.prototype.getSlides = function(
             },
             transition: smootherCamera,
             duration: 50,
+            explainText: ''
         },
         {
-            mesh: groupMin
+            mesh: groupMin,
+            explainText: ''
         },
         {
             mesh: groupSpriteMin,
-            removeAfter: [groupMin]
+            removeAfter: [groupMin],
+            explainText: ''
         },
         {
             mesh: curve2dClippable1,
             animateIn: swipeInUp({y: [-15, 0.1]}),
             duration: 90,
-            removeAfter: [groupSpriteMin]
+            removeAfter: [groupSpriteMin],
+            explainText: ''
         },
 
         // Demo maxima
@@ -357,13 +368,16 @@ Content1.prototype.getSlides = function(
             },
             transition: smootherCamera,
             duration: 50,
+            explainText: ''
         },
         {
-            mesh: groupSad
+            mesh: groupSad,
+            explainText: ''
         },
         {
             mesh: groupSpriteSad,
-            removeAfter: [groupSad]
+            removeAfter: [groupSad],
+            explainText: ''
         },
         {
             camera: camera,
@@ -376,38 +390,45 @@ Content1.prototype.getSlides = function(
             },
             transition: smootherCamera,
             duration: 50,
+            explainText: ''
         },
         {
             mesh: curve2dClippable2,
             animateIn: swipeInUp({y: [0.1, 5]}),
             duration: 90,
-            removeAfter: [groupSpriteSad, curve2dClippable1]
+            removeAfter: [groupSpriteSad, curve2dClippable1],
+            explainText: ''
         },
 
         // Demo saddles
         {
-            mesh: groupMax
+            mesh: groupMax,
+            explainText: ''
         },
         {
             mesh: groupSpriteMax,
-            removeAfter: [groupMax]
+            removeAfter: [groupMax],
+            explainText: ''
         },
         {
             mesh: curve2dClippable1,
             animateIn: swipeInUp({y: [5, 15]}),
             duration: 90,
-            removeAfter: [groupSpriteMax, curve2dClippable2]
+            removeAfter: [groupSpriteMax, curve2dClippable2],
+            explainText: ''
         },
 
         // Demo regular
         {
-            mesh: curve2dWireframeReg1
+            mesh: curve2dWireframeReg1,
+            explainText: ''
         },
         {
             mesh: spriteReg1,
             removeAfter: [
                 spriteReg1, curve2dWireframeReg1, curve2dClippable1
-            ]
+            ],
+            explainText: ''
         },
 
         {
@@ -417,12 +438,15 @@ Content1.prototype.getSlides = function(
         // All critical points
         {
             mesh: minMesh,
+            explainText: ''
         },
         {
             mesh: maxMesh,
+            explainText: ''
         },
         {
             mesh: sadMesh,
+            explainText: ''
         },
         {
             mesh: persistenceMesh,
@@ -430,11 +454,13 @@ Content1.prototype.getSlides = function(
                 persistenceMesh,
                 curve2dTransparent,
                 minMesh, maxMesh, sadMesh
-            ]
+            ],
+            explainText: ''
         },
         {
             mesh: curve2d,
-            removeAfter: [curve2d]
+            removeAfter: [curve2d],
+            explainText: ''
         },
 
         // Towards tracking and higher-dimensional homology
@@ -446,7 +472,8 @@ Content1.prototype.getSlides = function(
                     plotter.generatorCurve2d.bind(plotter),
                     sampling2d
                 );
-            }
+            },
+            explainText: ''
         }
     ];
 };
