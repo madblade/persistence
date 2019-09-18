@@ -388,7 +388,7 @@ Content1.prototype.getSlides = function(
             mesh: xyHelper,
             animateIn: fadeIn,
             opacityMax: 0.5,
-            explainText: '1-dimensional persistent homology on an example',
+            explainText: '1-dimensional persistent homology on an example...',
         },
         {
             camera: camera,
@@ -400,7 +400,7 @@ Content1.prototype.getSlides = function(
             },
             transition: smootherCamera,
             duration: 50,
-            explainText: 'Let us consider a 1-dimensional domain',
+            explainText: 'Let us consider a 1-dimensional domain.',
         },
         {
             mesh: xHelper,

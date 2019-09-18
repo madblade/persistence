@@ -6,7 +6,7 @@
 
 import {Group, Object3D, Vector3} from "three";
 
-function Slider(scene, camera, controls)
+function Slider(scene, camera, controls, explainerElement)
 {
 
     this.scene = scene;
@@ -20,7 +20,7 @@ function Slider(scene, camera, controls)
     // }
     this.slides = [[[ ]]];
 
-    this.currentSlide = -1;
+    this.currentSlide = 0;
 
     this.transiting = false;
 
@@ -44,7 +44,7 @@ function Slider(scene, camera, controls)
 
     this.lastBackwards = false;
 
-    this.explainerElement = null;
+    this.explainerElement = explainerElement;
 
     this.debug = true;
 }

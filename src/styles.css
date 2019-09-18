@@ -38,21 +38,38 @@ i {
     -webkit-transform: rotate(135deg);
 }
 
-#rightbutton {
-    height: 100%;
-    width: 30px;
+.button-wrapper {
     position: absolute;
-    bottom: 0;
-    right: 0;
+    height: 100%;
     z-index: 3;
+    display: table;
+    width: 40px;
+}
+
+.button-wrapper-right {
+    right: 0;
+}
+
+.button-wrapper-left {
+    left: 0;
+}
+
+.button-verticalizer {
+    vertical-align: middle;
+    display: table-cell;
 }
 
 #leftbutton {
-    height: 100%;
-    width: 30px;
-    position: absolute;
-    bottom: 0;
-    left: 0;
+    display: inline-block;
+    width: 40px;
+    height: 80px;
+    z-index: 3;
+}
+
+#rightbutton {
+    display: inline-block;
+    width: 40px;
+    height: 80px;
     z-index: 3;
 }
 
@@ -61,8 +78,11 @@ i {
     z-index: 2;
     width: 100%;
     bottom: 0;
+    height: 100px;
 }
 
 #explainer-text {
+    margin: 0 45px;
     text-align: center;
+    font-size: 20pt;
 }

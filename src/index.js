@@ -93,7 +93,9 @@ function init() {
     // scene.add(axesHelper);
 
     // Slides
-    slider = new Slider(scene, camera, controls);
+    let explainerElement = document.getElementById('explainer-text');
+
+    slider = new Slider(scene, camera, controls, explainerElement);
     window.addEventListener(
         'keydown', slider.onKeyDown.bind(slider), false
     );
@@ -106,7 +108,6 @@ function init() {
         .addEventListener('click',
         () => slider.onKeyDown({keyCode: 37}), false);
 
-    let explainerElement = document.getElementById('explainer-text');
 
     plotter = new Plotter();
 
@@ -133,7 +134,7 @@ function init() {
         .getSlides(plotter, camera, fontGenerator);
 
     slider.addSlides(slides1D);
-    slider.clearSlides();
+    // slider.clearSlides();
     slider.addSlides(slides2D);
 }
 
