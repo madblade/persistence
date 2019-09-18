@@ -126,12 +126,13 @@ Content1.prototype.getSlides = function(
     curve2d.material.clippingPlanes = [
         new Plane(new Vector3(0, 0, 1), 15)
     ];
-    let curve2d2 = plotter.make2dCurve(
+    let curve2dClippable1 = plotter.make2dCurve(
         plotter.generatorCurve2d.bind(plotter), sampling2d, extent
     );
-    curve2d2.material.clippingPlanes = [
+    curve2dClippable1.material.clippingPlanes = [
         new Plane(new Vector3(0, -1, 0), 15)
     ];
+    let curve2dClippable2 = curve2dClippable1.clone();
     let curve2dt = plotter.make2dCurve(
         plotter.generatorCurve2d.bind(plotter), sampling2d, extent
     );
@@ -159,7 +160,7 @@ Content1.prototype.getSlides = function(
     );
     let curve2dWireframeMin2 = plotter.make2dCurveWireframeColor(
         plotter.generatorCurve2d.bind(plotter), sampling2d, extent,
-        77, 21
+        115, 78
     );
     let curve2dWireframeSad1 = plotter.make2dCurveWireframeColor(
         plotter.generatorCurve2d.bind(plotter), sampling2d, extent,
@@ -179,7 +180,7 @@ Content1.prototype.getSlides = function(
     );
     let curve2dWireframeReg1 = plotter.make2dCurveWireframeColor(
         plotter.generatorCurve2d.bind(plotter), sampling2d, extent,
-        50, 50
+        75, 55
     );
 
     let topology = new Topology();
@@ -194,10 +195,11 @@ Content1.prototype.getSlides = function(
     let criticalPoints = persistenceDiagram[0];
     let persistencePairs = persistenceDiagram[1];
 
+    console.log(criticalPoints);
     let ev = pointEvaluator(generator, extent, sampling2d, sampling2d);
     let pointMin1 = ev(100, 55);
     let spriteMin1 = plotter.makeSprite1d(pointMin1, "#ff0000", true);
-    let pointMin2 = ev(77, 21);
+    let pointMin2 = ev(115, 78);
     let spriteMin2 = plotter.makeSprite1d(pointMin2, "#ff0000", true);
     let pointSad1 = ev(110, 67);
     let spriteSad1 = plotter.makeSprite1d(pointSad1, "#ffffff", true);
@@ -207,9 +209,10 @@ Content1.prototype.getSlides = function(
     let spriteMax1 = plotter.makeSprite1d(pointMax1, "#0000ff", true);
     let pointMax2 = ev(63, 60);
     let spriteMax2 = plotter.makeSprite1d(pointMax2, "#0000ff", true);
-    let pointReg1 = ev(50, 50);
-    let spriteReg1 = plotter.makeSprite1d(pointReg1, "#00ff00", true);
-
+    let pointReg1 = ev(75, 55);
+    let spriteReg1 = plotter.makeSprite1d(pointReg1, "#000000", true);
+    spriteReg1.position.x += 0.3;
+    spriteReg1.position.y -= 0.3;
 
     // Find all critical points
     let min = [];
@@ -225,7 +228,6 @@ Content1.prototype.getSlides = function(
             default: break;
         }
     }
-    console.log(criticalPoints);
     let minMesh = new Group();
     let maxMesh = new Group();
     let sadMesh = new Group();
@@ -261,48 +263,6 @@ Content1.prototype.getSlides = function(
 
     return [
         {
-            mesh: groupSpriteMin
-        },
-        {
-            mesh: groupMin
-        },
-        {
-            mesh: groupSpriteSad
-        },
-        {
-            mesh: groupSad
-        },
-        {
-            mesh: groupSpriteMax
-        },
-        {
-            mesh: groupMax
-        },
-        {
-            mesh: spriteReg1
-        },
-        {
-            mesh: curve2dWireframeReg1,
-            removeAfter: [
-                groupSpriteMin, groupMin,
-                groupSpriteSad, groupSad,
-                groupSpriteMax, groupMax,
-                spriteReg1, curve2dWireframeReg1
-            ]
-        },
-        {
-            mesh: minMesh,
-        },
-        {
-            mesh: maxMesh,
-        },
-        {
-            mesh: sadMesh,
-        },
-        {
-            mesh: curve1d2
-        },
-        {
             camera: camera,
             target: {
                 position1: new Vector3(), // reset by slider
@@ -313,16 +273,15 @@ Content1.prototype.getSlides = function(
             transition: smootherCamera,
             duration: 50,
         },
-        // {
-        //     mesh: zHelper,
-        //     animateIn: stretchIn,
-        //     // animateOut: stretchOut
-        // },
+        {
+            mesh: zHelper,
+            animateIn: stretchIn,
+            // animateOut: stretchOut
+        },
         {
             mesh: xzHelper,
             animateIn: swipeInBack,
-            opacityMax: 0.5, // TODO fix that
-            // removeAfter: [zHelper]
+            opacityMax: 0.5, // to be fixed someday
         },
         {
             mesh: groupText
@@ -331,30 +290,96 @@ Content1.prototype.getSlides = function(
             mesh: curve2d,
             animateIn: swipeInBack, // left-to-right camera
             duration: 50,
-            removeAfter: [curve2d, curve1d2]
+            removeAfter: [curve2d]
         },
         {
             mesh: curve2dTransparent,
             opacityMax: 0.1
         },
+
+        // Demo minima
         {
-            mesh: curve2d2,
-            animateIn: swipeInUp({y: [-15, 0]}),
-            duration: 90,
-            removeAfter: [curve2d2]
+            mesh: groupMin
         },
         {
-            mesh: curve2d2,
-            animateIn: swipeInUp({y: [0, 5]}),
-            duration: 90,
-            removeAfter: [curve2d2]
+            mesh: groupSpriteMin,
+            removeAfter: [groupMin]
         },
         {
-            mesh: curve2d2,
+            mesh: curve2dClippable1,
+            animateIn: swipeInUp({y: [-15, 0.1]}),
+            duration: 90,
+            removeAfter: [groupSpriteMin]
+        },
+
+        // Demo maxima
+        {
+            mesh: groupSad
+        },
+        {
+            mesh: groupSpriteSad,
+            removeAfter: [groupSad]
+        },
+        {
+            mesh: curve2dClippable2,
+            animateIn: swipeInUp({y: [0.1, 5]}),
+            duration: 90,
+            removeAfter: [groupSpriteSad, curve2dClippable1]
+        },
+
+        // Demo saddles
+        {
+            mesh: groupMax
+        },
+        {
+            mesh: groupSpriteMax,
+            removeAfter: [groupMax]
+        },
+        {
+            mesh: curve2dClippable1,
             animateIn: swipeInUp({y: [5, 15]}),
             duration: 90,
-            removeAfter: [curve2d2, curve2dTransparent]
+            removeAfter: [groupSpriteMax, curve2dClippable2]
         },
+
+        // Demo regular
+        {
+            mesh: curve2dWireframeReg1
+        },
+        {
+            mesh: spriteReg1,
+            removeAfter: [
+                spriteReg1, curve2dWireframeReg1, curve2dClippable1
+            ]
+        },
+
+        {
+            removeAfter: []
+        },
+
+        // All critical points
+        {
+            mesh: minMesh,
+        },
+        {
+            mesh: maxMesh,
+        },
+        {
+            mesh: sadMesh,
+            removeAfter: [
+                curve2dTransparent,
+                minMesh, maxMesh, sadMesh
+            ]
+        },
+
+        // TODO persistence
+
+        {
+            mesh: curve2d,
+            removeAfter: curve2d
+        },
+
+        // Towards tracking and higher-dimensional homology
         {
             mesh: curve2dt,
             animate: function(time, maxTime, mesh) {

@@ -123,7 +123,7 @@ Plotter.prototype.makeSprite1d = function(v, fillStyle, is3D)
     let material = new SpriteMaterial({
         map: threeTexture,
         color: 0xffffff,
-        depthWrite: false
+        // depthWrite: false
     });
     let sprite = new Sprite(material);
     if (is3D) {
@@ -302,7 +302,7 @@ Plotter.prototype.make2dCurveWireframeColor = function(
                 cols.push(0.9, 0.5, 0.0);
                 ++nbSup;
             } else {
-                cols.push(0, 0, 0);
+                cols.push(0.9, 0.5, 0.9);
             }
         }
     }
