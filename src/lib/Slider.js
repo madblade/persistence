@@ -4,7 +4,7 @@
 
 "use strict";
 
-import {Group, Object3D} from "three";
+import {Group, Object3D, Vector3} from "three";
 
 function Slider(scene, camera, controls)
 {
@@ -623,6 +623,11 @@ Slider.prototype.update = function() {
                 flat[i].camera, flat[i].target, false // backwards
             );
             if (finished) {
+                if (flat[i].target.controlTarget) {
+                    console.log(flat[i].target.controlTarget);
+                    this.controls.target.copy(flat[i].target.controlTarget);
+                    // this.controls.object.quaternion.copy(flat[i].target.quaternion2);
+                }
                 if (this.debug) {
                     console.log('end camera movement');
                 }

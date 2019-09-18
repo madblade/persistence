@@ -15,12 +15,18 @@ Content1.prototype.getSlides = function(
     let lookAt2 = new Quaternion();
     let upv2 = new Vector3(0, 1, 0);
     lookAt2.setFromAxisAngle(upv2.normalize(), Math.PI/2);
-
     let lookAt3 = new Quaternion();
     let upv3 = new Vector3(1, 0, 0);
     lookAt3.setFromAxisAngle(upv3.normalize(), -Math.PI/8);
-
     lookAt2.multiply(lookAt3);
+
+    let lookAt4 = new Quaternion();
+    let upv4 = new Vector3(0, 1, 0);
+    lookAt4.setFromAxisAngle(upv4.normalize(), Math.PI/2);
+    let lookAt5 = new Quaternion();
+    let upv5 = new Vector3(1, 0, 0);
+    lookAt5.setFromAxisAngle(upv5.normalize(), -Math.PI/8);
+    lookAt4.multiply(lookAt5);
 
     // Transitions
     let stretchIn = function(t, s, m, mx, mesh)
@@ -237,7 +243,7 @@ Content1.prototype.getSlides = function(
         maxMesh.add(plotter.makeSprite1d(max[i], "#0000ff", true));
     }
     for (let i = 0; i < sad.length; ++i) {
-        sadMesh.add(plotter.makeSprite1d(sad[i], "#ffffff", true));
+        sadMesh.add(plotter.makeSprite1d(sad[i], "#aaaaaa", true));
     }
 
     let groupMin = new Group();
@@ -277,9 +283,10 @@ Content1.prototype.getSlides = function(
             camera: camera,
             target: {
                 position1: new Vector3(), // reset by slider
-                position2: new Vector3(50, 20, -15),
+                position2: new Vector3(55, 20, -15),
                 quaternion1: new Quaternion(), // reset by slider
-                quaternion2: lookAt2
+                quaternion2: lookAt2,
+                controlTarget: new Vector3(5, 0, -15)
             },
             transition: smootherCamera,
             duration: 50,
@@ -310,6 +317,18 @@ Content1.prototype.getSlides = function(
 
         // Demo minima
         {
+            camera: camera,
+            target: {
+                position1: new Vector3(), // reset by slider
+                position2: new Vector3(25, 5, -15),
+                quaternion1: new Quaternion(), // reset by slider
+                quaternion2: lookAt4,
+                controlTarget: new Vector3(5, -5, -15)
+            },
+            transition: smootherCamera,
+            duration: 50,
+        },
+        {
             mesh: groupMin
         },
         {
@@ -325,11 +344,35 @@ Content1.prototype.getSlides = function(
 
         // Demo maxima
         {
+            camera: camera,
+            target: {
+                position1: new Vector3(), // reset by slider
+                position2: new Vector3(25, 5, -12.5),
+                quaternion1: new Quaternion(), // reset by slider
+                quaternion2: lookAt4,
+                controlTarget: new Vector3(5, -5, -12.5)
+            },
+            transition: smootherCamera,
+            duration: 50,
+        },
+        {
             mesh: groupSad
         },
         {
             mesh: groupSpriteSad,
             removeAfter: [groupSad]
+        },
+        {
+            camera: camera,
+            target: {
+                position1: new Vector3(), // reset by slider
+                position2: new Vector3(55, 20, -15),
+                quaternion1: new Quaternion(), // reset by slider
+                quaternion2: lookAt4,
+                controlTarget: new Vector3(5, 0, -15)
+            },
+            transition: smootherCamera,
+            duration: 50,
         },
         {
             mesh: curve2dClippable2,
