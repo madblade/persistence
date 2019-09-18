@@ -318,6 +318,20 @@ Topology.prototype.computePersistenceDiagram = function(
         starters = nextRoundStarters;
     }
 
+    // Dirtily remove saddle-global assignments
+    for (let i = persistenceDiagram.length - 1; i >= 0; --i) {
+        let pp = persistenceDiagram[i];
+        let pp1 = pp[0];
+        let pp2 = pp[1];
+        if (pp1[0] === globalMin[0] && pp1[1] === globalMin[1] ||
+            pp2[0] === globalMin[0] && pp2[1] === globalMin[1] ||
+            pp1[0] === globalMax[0] && pp1[1] === globalMax[1] ||
+            pp2[0] === globalMax[0] && pp2[1] === globalMax[1])
+        {
+            persistenceDiagram.splice(i, 1);
+        }
+    }
+
     persistenceDiagram.unshift([[globalMin[0], globalMin[1]], [globalMax[0], globalMax[1]]]);
     return [cps, persistenceDiagram];
 };
