@@ -250,6 +250,20 @@ Plotter.prototype.makeLarge1dCurve = function(
     return new Mesh(line.geometry, lineMaterial);
 };
 
+Plotter.prototype.makeLargeSegment = function(p1, p2)
+{
+    let lineMaterial = new MeshLineMaterial({
+        color: new Color('#ff6452'),
+        lineWidth: 0.2,
+    });
+    let geometry = new Geometry();
+    geometry.vertices.push(new Vector3(p1[0], p1[2], p1[1]));
+    geometry.vertices.push(new Vector3(p2[0], p2[2], p2[1]));
+    let line = new MeshLine();
+    line.setGeometry(geometry);
+    return new Mesh(line.geometry, lineMaterial);
+};
+
 Plotter.prototype.make2dCurveWireframeColor = function(
     f, sampling, extent, coordX, coordY)
 {

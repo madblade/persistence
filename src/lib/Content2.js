@@ -195,7 +195,6 @@ Content1.prototype.getSlides = function(
     let criticalPoints = persistenceDiagram[0];
     let persistencePairs = persistenceDiagram[1];
 
-    console.log(criticalPoints);
     let ev = pointEvaluator(generator, extent, sampling2d, sampling2d);
     let pointMin1 = ev(100, 55);
     let spriteMin1 = plotter.makeSprite1d(pointMin1, "#ff0000", true);
@@ -220,7 +219,7 @@ Content1.prototype.getSlides = function(
     let sad = [];
     for (let i = 0; i < criticalPoints.length; ++i) {
         let c = criticalPoints[i];
-        let point = pointEvaluator(generator, extent, sampling2d, sampling2d)(c[0], c[1]);
+        let point = ev(c[0], c[1]);
         switch (c[2]) {
             case 'min': min.push(point); break;
             case 'max': max.push(point); break;
@@ -260,6 +259,18 @@ Content1.prototype.getSlides = function(
     let groupSpriteMin = new Group();
     groupSpriteMin.add(spriteMin1);
     groupSpriteMin.add(spriteMin2);
+
+    // Build persistence mesh
+    let persistenceMesh = new Group();
+    for (let i = 0; i < persistencePairs.length; ++i) {
+        let pp = persistencePairs[i];
+        let cp1 = pp[0];
+        let cp2 = pp[1];
+        let point1 = ev(cp1[0], cp1[1]);
+        let point2 = ev(cp2[0], cp2[1]);
+        let segment = plotter.makeLargeSegment(point1, point2);
+        persistenceMesh.add(segment);
+    }
 
     return [
         {
@@ -366,17 +377,18 @@ Content1.prototype.getSlides = function(
         },
         {
             mesh: sadMesh,
+        },
+        {
+            mesh: persistenceMesh,
             removeAfter: [
+                persistenceMesh,
                 curve2dTransparent,
                 minMesh, maxMesh, sadMesh
             ]
         },
-
-        // TODO persistence
-
         {
             mesh: curve2d,
-            removeAfter: curve2d
+            removeAfter: [curve2d]
         },
 
         // Towards tracking and higher-dimensional homology
