@@ -82,8 +82,8 @@ function init() {
     let directionalLight = new DirectionalLight(0x887766);
     directionalLight.position.set(1, 1, 1).normalize();
     scene.add(directionalLight);
-    // var light = new HemisphereLight(0xffffff, 0xffffff, 100);
-    // scene.add(light);
+    var light = new HemisphereLight(0xffffff, 0xffffff, 1);
+    scene.add(light);
 
     // AXES RED GREEN BLUE
     let axesHelper = new AxesHelper(5);
@@ -140,13 +140,6 @@ function init() {
 let fontGenerator = null;
 function loadFont()
 {
-    // try {
-    //     json = JSON.parse( text );
-    // } catch ( e ) {
-    //     console.warn( 'THREE.FontLoader: typeface.js support is being deprecated. Use typeface.json instead.' );
-    //     json = JSON.parse( text.substring( 65, text.length - 2 ) );
-    // }
-
     fontGenerator = new Font(Helvetiker);
     init();
     animate();

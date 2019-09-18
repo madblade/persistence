@@ -153,9 +153,33 @@ Content1.prototype.getSlides = function(
     let curve2dTransparent = plotter.make2dCurve(
         plotter.generatorCurve2d.bind(plotter), sampling2d, extent
     );
-    let curve2dWireframe = plotter.make2dCurveWireframeColor(
+    let curve2dWireframeMin1 = plotter.make2dCurveWireframeColor(
         plotter.generatorCurve2d.bind(plotter), sampling2d, extent,
-        0
+        100, 55
+    );
+    let curve2dWireframeMin2 = plotter.make2dCurveWireframeColor(
+        plotter.generatorCurve2d.bind(plotter), sampling2d, extent,
+        77, 21
+    );
+    let curve2dWireframeSad1 = plotter.make2dCurveWireframeColor(
+        plotter.generatorCurve2d.bind(plotter), sampling2d, extent,
+        110, 67
+    );
+    let curve2dWireframeSad2 = plotter.make2dCurveWireframeColor(
+        plotter.generatorCurve2d.bind(plotter), sampling2d, extent,
+        110, 41
+    );
+    let curve2dWireframeMax1 = plotter.make2dCurveWireframeColor(
+        plotter.generatorCurve2d.bind(plotter), sampling2d, extent,
+        99, 77
+    );
+    let curve2dWireframeMax2 = plotter.make2dCurveWireframeColor(
+        plotter.generatorCurve2d.bind(plotter), sampling2d, extent,
+        63, 60
+    );
+    let curve2dWireframeReg1 = plotter.make2dCurveWireframeColor(
+        plotter.generatorCurve2d.bind(plotter), sampling2d, extent,
+        50, 50
     );
 
     let topology = new Topology();
@@ -170,7 +194,24 @@ Content1.prototype.getSlides = function(
     let criticalPoints = persistenceDiagram[0];
     let persistencePairs = persistenceDiagram[1];
 
-    // Find critical points
+    let ev = pointEvaluator(generator, extent, sampling2d, sampling2d);
+    let pointMin1 = ev(100, 55);
+    let spriteMin1 = plotter.makeSprite1d(pointMin1, "#ff0000", true);
+    let pointMin2 = ev(77, 21);
+    let spriteMin2 = plotter.makeSprite1d(pointMin2, "#ff0000", true);
+    let pointSad1 = ev(110, 67);
+    let spriteSad1 = plotter.makeSprite1d(pointSad1, "#ffffff", true);
+    let pointSad2 = ev(110, 41);
+    let spriteSad2 = plotter.makeSprite1d(pointSad2, "#ffffff", true);
+    let pointMax1 = ev(99, 77);
+    let spriteMax1 = plotter.makeSprite1d(pointMax1, "#0000ff", true);
+    let pointMax2 = ev(63, 60);
+    let spriteMax2 = plotter.makeSprite1d(pointMax2, "#0000ff", true);
+    let pointReg1 = ev(50, 50);
+    let spriteReg1 = plotter.makeSprite1d(pointReg1, "#00ff00", true);
+
+
+    // Find all critical points
     let min = [];
     let max = [];
     let sad = [];
@@ -184,6 +225,7 @@ Content1.prototype.getSlides = function(
             default: break;
         }
     }
+    console.log(criticalPoints);
     let minMesh = new Group();
     let maxMesh = new Group();
     let sadMesh = new Group();
@@ -197,9 +239,56 @@ Content1.prototype.getSlides = function(
         sadMesh.add(plotter.makeSprite1d(sad[i], "#ffffff", true));
     }
 
+    let groupMin = new Group();
+    groupMin.add(curve2dWireframeMin1);
+    groupMin.add(curve2dWireframeMin2);
+    let groupMax = new Group();
+    groupMax.add(curve2dWireframeMax1);
+    groupMax.add(curve2dWireframeMax2);
+    let groupSad = new Group();
+    groupSad.add(curve2dWireframeSad1);
+    groupSad.add(curve2dWireframeSad2);
+
+    let groupSpriteMax = new Group();
+    groupSpriteMax.add(spriteMax1);
+    groupSpriteMax.add(spriteMax2);
+    let groupSpriteSad = new Group();
+    groupSpriteSad.add(spriteSad1);
+    groupSpriteSad.add(spriteSad2);
+    let groupSpriteMin = new Group();
+    groupSpriteMin.add(spriteMin1);
+    groupSpriteMin.add(spriteMin2);
+
     return [
         {
-            mesh: curve2dWireframe
+            mesh: groupSpriteMin
+        },
+        {
+            mesh: groupMin
+        },
+        {
+            mesh: groupSpriteSad
+        },
+        {
+            mesh: groupSad
+        },
+        {
+            mesh: groupSpriteMax
+        },
+        {
+            mesh: groupMax
+        },
+        {
+            mesh: spriteReg1
+        },
+        {
+            mesh: curve2dWireframeReg1,
+            removeAfter: [
+                groupSpriteMin, groupMin,
+                groupSpriteSad, groupSad,
+                groupSpriteMax, groupMax,
+                spriteReg1, curve2dWireframeReg1
+            ]
         },
         {
             mesh: minMesh,

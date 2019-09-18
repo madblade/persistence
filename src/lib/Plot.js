@@ -105,6 +105,7 @@ Plotter.prototype.makeSprite1d = function(v, fillStyle, is3D)
     canvasTexture.width = size;
     canvasTexture.height = size;
     let context = canvasTexture.getContext('2d');
+
     context.beginPath();
     context.fillStyle = fillStyle;
     context.arc(
@@ -121,7 +122,8 @@ Plotter.prototype.makeSprite1d = function(v, fillStyle, is3D)
 
     let material = new SpriteMaterial({
         map: threeTexture,
-        color: 0xffffff
+        color: 0xffffff,
+        depthWrite: false
     });
     let sprite = new Sprite(material);
     if (is3D) {
@@ -249,11 +251,16 @@ Plotter.prototype.makeLarge1dCurve = function(
 };
 
 Plotter.prototype.make2dCurveWireframeColor = function(
-    f, sampling, extent, threshold)
+    f, sampling, extent, coordX, coordY)
 {
-
+    let widthSegments = 10;
+    let heightSegments = 10;
+    let halfSubSampling = 5;
+    let subSampling = 2 * halfSubSampling;
+    let width = 15 * widthSegments / sampling;
+    let height = 15 * heightSegments / sampling;
     let geometry = new PlaneBufferGeometry(
-        15, 15, sampling, sampling);
+        width, height, widthSegments, heightSegments);
 
     let xMin = extent.x[0]; let yMin = extent.y[0];
     let zMin = extent.z[0];
@@ -267,32 +274,42 @@ Plotter.prototype.make2dCurveWireframeColor = function(
     let nbSup = 0;
     let nbInf = 0;
 
+    // coordX and coordY are inverted
+    let xCenter = xMin + xRan * (coordX / sampling);
+    let yCenter = yMin + yRan * (coordY / sampling);
+    let threshold = zRan * f(xCenter, yCenter, 0) / 2;
+
     for (let j = 0; j <= sampling; ++j) {
         let y = yMin + yRan * (j / sampling);
+        if (Math.abs(j - coordY) > 5) continue;
+
         for (let i = 0; i <= sampling; ++i) {
             let x = xMin + xRan * (i / sampling);
+            if (Math.abs(i - coordX) > 5) continue;
+
             let z = zRan * f(x, y, 0) / 2;
-            let id = i + (sampling + 1) * j;
+            // let id = i + (sampling + 1) * j;
+            let id = (i - coordX + subSampling/2) +
+                (subSampling + 1) * (j - coordY + subSampling/2);
             pAttribute.setX(id, x);
             pAttribute.setY(id, y);
             pAttribute.setZ(id, z);
 
             if (z < threshold) {
                 ++nbInf;
-                cols.push(0.9, 0, 0);
+                cols.push(0.0, 0.5, 0.9);
             } else if (z > threshold) {
+                cols.push(0.9, 0.5, 0.0);
                 ++nbSup;
-                cols.push(0, 0, 0.9);
             } else {
                 cols.push(0, 0, 0);
-                console.log('strictly');
             }
         }
     }
 
     let colors = new Float32Array(cols);
-    console.log(nbInf);
-    console.log(nbSup);
+    // console.log(nbInf);
+    // console.log(nbSup);
     geometry.addAttribute('color',
         new BufferAttribute(colors, 3)
     );
@@ -340,7 +357,7 @@ Plotter.prototype.make2dCurve = function(
     geometry.computeVertexNormals();
 
     let material = new MeshPhongMaterial({
-        color: new Color('#4c72e2'),
+        color: new Color('#3b49a6'),
         side: DoubleSide,
         shininess: 100
     });
