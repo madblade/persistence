@@ -145,16 +145,16 @@ Content1.prototype.getSlides = function(
     lookAt1.setFromAxisAngle(upv1.normalize(), 0);
 
     let domainText = plotter.makeText(
-        'domain', fontGenerator,
-        new Vector3(10, -19, 0), '#006699'
+        'D', fontGenerator,
+        new Vector3(14, -19, 0), '#006699'
     );
     let rangeText = plotter.makeText(
-        'range', fontGenerator,
-        new Vector3(-20, 15, 0), '#006699'
+        'R', fontGenerator,
+        new Vector3(-18, 15, 0), '#006699'
     );
     let dataText = plotter.makeText(
-        'data', fontGenerator,
-        new Vector3(20, 0, -4), '#0011aa'
+        'f', fontGenerator,
+        new Vector3(18, -5, 0), '#0011aa'
     );
 
 
@@ -382,6 +382,10 @@ Content1.prototype.getSlides = function(
     groupOrangeLightBlue2.add(lightBlueCurve7.clone());
     groupOrangeLightBlue2.position.z += 0.01;
 
+    let lastCriticalPoints = plotter.makeGroup();
+    lastCriticalPoints.add(smin6);
+    lastCriticalPoints.add(smax4);
+    lastCriticalPoints.add(smax5);
 
     return [
         {
@@ -400,33 +404,33 @@ Content1.prototype.getSlides = function(
             },
             transition: smootherCamera,
             duration: 50,
-            explainText: 'Let us consider a 1-dimensional domain.',
+            explainText: 'Let us consider a function defined on a 1-dimensional domain.',
         },
         {
             mesh: xHelper,
             animateIn: stretchIn,
             // animateOut: stretchOut,
-            explainText: 'The domain is represented by the x-axis',
+            explainText: 'The domain is represented by the x-axis.',
         },
         {
             mesh: domainText,
-            explainText: 'The domain is represented by the x-axis',
+            explainText: 'The domain is represented by the x-axis.',
         },
         {
             mesh: yHelper,
             animateIn: stretchIn,
             // animateOut: stretchOut,
-            explainText: 'A 1-dimensional range is represented on the y-axis',
+            explainText: 'The 1-dimensional function range is represented on the y-axis.',
         },
         {
             mesh: rangeText,
-            explainText: '(Explanations to be continued)',
+            explainText: 'The 1-dimensional function range is represented on the y-axis.',
         },
         {
             mesh: curve1d,
             animateIn: swipeInRight,
             duration: 45,
-            explainText: '',
+            explainText: 'The function is represented with a piecewise-linear curve. ',
         },
         {
             mesh: dataText,
@@ -566,24 +570,17 @@ Content1.prototype.getSlides = function(
             duration: 20,
             explainText: '',
         },
-        {
-            mesh: smin6,
-            explainText: '',
-        },
-        {
-            mesh: smax4,
-            explainText: '',
-        },
 
         {
-            mesh: smax5,
+            mesh: lastCriticalPoints,
             animateIn: swipeInUp({y: [12, 15]}),
             duration: 50,
             removeAfter: [
                 xyHelper, xHelper, rangeText, domainText, dataText,
                 curve1d, orangeCurve10,
-                smin1, smin2, smin3, smin4, smin5, smin6,
-                smax1, smax2, smax3, smax4, smax5
+                smin1, smin2, smin3, smin4, smin5,
+                smax1, smax2, smax3,
+                lastCriticalPoints
             ],
             explainText: '',
         }

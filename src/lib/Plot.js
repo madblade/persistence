@@ -135,7 +135,7 @@ Plotter.prototype.makeSprite1d = function(v, fillStyle, is3D)
         sprite.position.x = v[0];
         sprite.position.y = v[1];
         sprite.position.z = -0.05;
-        sprite.scale.set(10, 10, 1);
+        sprite.scale.set(1, 1, 1);
     }
     return sprite;
 };

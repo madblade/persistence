@@ -144,12 +144,12 @@ Content1.prototype.getSlides = function(
     );
 
     let domain2Text = plotter.makeText(
-        'domain', fontGenerator,
+        'D', fontGenerator,
         new Vector3(8, -15, -31), '#006600',
         new Euler(-Math.PI / 2, 0, 0, 'XYZ') // rotation
     );
     let range2Text = plotter.makeText(
-        'range', fontGenerator,
+        'R', fontGenerator,
         new Vector3(-16, 15, 4), '#006600',
         new Euler(0, Math.PI / 2, 0, 'XYZ') // rotation
     );
@@ -279,6 +279,9 @@ Content1.prototype.getSlides = function(
     }
 
     return [
+        {
+            mesh: curve1d2
+        },
         {
             camera: camera,
             target: {
