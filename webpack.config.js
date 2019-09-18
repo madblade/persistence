@@ -17,7 +17,7 @@ module.exports =
 
     output: {
         path: path.resolve(__dirname, './dist'),
-        publicPath: '../models/',
+        publicPath: './',
         filename: '[name].[hash].js'
     },
 
