@@ -281,7 +281,12 @@ Content1.prototype.getSlides = function(
     return [
         {
             mesh: curve1d2,
-            explainText: ''
+            explainText: 'Critical points are assembled in <b>persistence</b> pairs, ' +
+                'which are min-max pairs for 1-dimensional domains. '
+        },
+        {
+            explainText: '<b>Persistent homology</b> studies this set of persistence pairs, ' +
+                'sometimes represented in plots called persistence diagrams. '
         },
         {
             camera: camera,
@@ -294,35 +299,36 @@ Content1.prototype.getSlides = function(
             },
             transition: smootherCamera,
             duration: 50,
-            explainText: ''
+            explainText: 'Let us see how this extends to two dimensions. '
         },
         {
             mesh: zHelper,
             animateIn: stretchIn,
-            explainText: ''
+            explainText: 'So let us add a dimension to our domain. '
             // animateOut: stretchOut
         },
         {
             mesh: xzHelper,
             animateIn: swipeInBack,
             opacityMax: 0.5, // to be fixed someday
-            explainText: ''
+            explainText: 'So let us add a dimension to our domain. '
         },
         {
             mesh: groupText,
-            explainText: ''
+            explainText: 'So let us add a dimension to our domain. '
         },
         {
             mesh: curve2d,
             animateIn: swipeInBack, // left-to-right camera
             duration: 50,
             removeAfter: [curve2d],
-            explainText: ''
+            explainText: 'And let us extend the function to this domain. '
         },
         {
             mesh: curve2dTransparent,
             opacityMax: 0.1,
-            explainText: ''
+            explainText: 'The function is computationally represented ' +
+                'by a piecewise-linear mesh. '
         },
 
         // Demo minima
@@ -337,26 +343,29 @@ Content1.prototype.getSlides = function(
             },
             transition: smootherCamera,
             duration: 50,
-            explainText: ''
+            explainText: 'Let us examine critical points. '
         },
         {
             mesh: groupMin,
-            explainText: ''
+            explainText: 'Local minima can be detected due to their ' +
+                'neighborhood only showing higher values. '
         },
         {
             mesh: groupSpriteMin,
             removeAfter: [groupMin],
-            explainText: ''
+            explainText: 'Local minima can be detected due to their ' +
+                'neighborhood only showing higher values. '
         },
         {
             mesh: curve2dClippable1,
             animateIn: swipeInUp({y: [-15, 0.1]}),
             duration: 90,
             removeAfter: [groupSpriteMin],
-            explainText: ''
+            explainText: 'Local minima can be detected due to their ' +
+                'neighborhood only showing higher values. '
         },
 
-        // Demo maxima
+        // Demo saddles
         {
             camera: camera,
             target: {
@@ -368,16 +377,18 @@ Content1.prototype.getSlides = function(
             },
             transition: smootherCamera,
             duration: 50,
-            explainText: ''
+            explainText: 'But there are other types of critical points: <b>saddles</b>. '
         },
         {
             mesh: groupSad,
-            explainText: ''
+            explainText: 'In the neighborhood of saddles, higher points ' +
+                'and lower points are disconnected in more than two groups (here, four). '
         },
         {
             mesh: groupSpriteSad,
             removeAfter: [groupSad],
-            explainText: ''
+            explainText: 'In the neighborhood of saddles, higher points ' +
+                'and lower points are disconnected in more than two groups (here, four). '
         },
         {
             camera: camera,
@@ -390,45 +401,46 @@ Content1.prototype.getSlides = function(
             },
             transition: smootherCamera,
             duration: 50,
-            explainText: ''
+            explainText: 'Then, as for the 1-dimensional case, there are local maxima. '
         },
         {
             mesh: curve2dClippable2,
             animateIn: swipeInUp({y: [0.1, 5]}),
             duration: 90,
             removeAfter: [groupSpriteSad, curve2dClippable1],
-            explainText: ''
+            explainText: 'Then, as for the 1-dimensional case, there are local maxima. '
         },
 
-        // Demo saddles
+        // Demo maxima
         {
             mesh: groupMax,
-            explainText: ''
+            explainText: 'Maxima have neighborhoods with only lower points. '
         },
         {
             mesh: groupSpriteMax,
             removeAfter: [groupMax],
-            explainText: ''
+            explainText: 'Maxima have neighborhoods with only lower points. '
         },
         {
             mesh: curve2dClippable1,
             animateIn: swipeInUp({y: [5, 15]}),
             duration: 90,
             removeAfter: [groupSpriteMax, curve2dClippable2],
-            explainText: ''
+            explainText: 'Maxima have neighborhoods with only lower points. '
         },
 
         // Demo regular
         {
             mesh: curve2dWireframeReg1,
-            explainText: ''
+            explainText: 'Any other point has a neighborhood which is cut in exactly ' +
+                'two pieces: one higher, one lower. '
         },
         {
             mesh: spriteReg1,
             removeAfter: [
                 spriteReg1, curve2dWireframeReg1, curve2dClippable1
             ],
-            explainText: ''
+            explainText: 'These are called regular points. '
         },
 
         {
@@ -438,29 +450,38 @@ Content1.prototype.getSlides = function(
         // All critical points
         {
             mesh: minMesh,
-            explainText: ''
+            explainText: 'These are all minima... '
         },
         {
             mesh: maxMesh,
-            explainText: ''
+            explainText: '... all maxima... '
         },
         {
             mesh: sadMesh,
-            explainText: ''
+            explainText: '... and all saddles. '
         },
         {
             mesh: persistenceMesh,
+            explainText: 'As in the previous case, ' +
+                'critical points are associated in pairs by analyzing ' +
+                'merging events of the sub-level filtration. '
+        },
+        {
+            explainText: 'Here we show min-saddle and saddle-max pairs. ' +
+                'Every point belongs to exactly one pair. '
+        },
+        {
             removeAfter: [
                 persistenceMesh,
                 curve2dTransparent,
                 minMesh, maxMesh, sadMesh
             ],
-            explainText: ''
+            explainText: '(there are also saddle-saddle pairs)'
         },
         {
             mesh: curve2d,
-            removeAfter: [curve2d],
-            explainText: ''
+            removeAfter: [curve2d, curve1d2],
+            explainText: 'This extends smoothly to 3 dimensions. '
         },
 
         // Towards tracking and higher-dimensional homology
@@ -473,7 +494,16 @@ Content1.prototype.getSlides = function(
                     sampling2d
                 );
             },
-            explainText: ''
+            explainText: 'But another interesting question asks the evolution ' +
+                'of persistent homology classes for time-varying functions. '
+        },
+        {
+            removeAfter: [curve2dt],
+            explainText: 'For instance, tracking persistence pairs throughout time is ' +
+                'an interesting perspective of this subject. '
+        },
+        {
+            explainText: 'Thank you for reading! '
         }
     ];
 };

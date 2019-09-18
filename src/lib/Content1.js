@@ -392,7 +392,7 @@ Content1.prototype.getSlides = function(
             mesh: xyHelper,
             animateIn: fadeIn,
             opacityMax: 0.5,
-            explainText: '1-dimensional persistent homology on an example...',
+            explainText: 'Persistent homology on an example.',
         },
         {
             camera: camera,
@@ -458,9 +458,13 @@ Content1.prototype.getSlides = function(
             explainText: 'Now consider a filtration (a bottom-up swipe) of the function. ',
         },
         {
-            mesh: smin2,
             explainText: 'Starting from the lowest value, the filtration contains' +
                 ' at first one connected component. ',
+        },
+        {
+            mesh: smin2,
+            explainText: 'Until the second local minimum is reached: '+
+                'there are now two connected components. '
         },
 
         // Group 1
@@ -485,7 +489,7 @@ Content1.prototype.getSlides = function(
             animateIn: swipeInUp({y: [-4, -3.2]}),
             duration: 20,
             explainText: 'So the filtration contains three ' +
-                'connected components (separate pieces). ',
+                'connected components (three separate pieces). ',
         },
         {
             mesh: smin4,
@@ -508,11 +512,23 @@ Content1.prototype.getSlides = function(
         // Group 4 JOIN
         {
             mesh: groupOrangePurpleLightBlue2,
-            removeAfter: [groupOrangePurpleLightBlueGreen1],
             explainText: 'The color of the <b>oldest</b> component is given to the union: ' +
                 'this is called the <b>Elder Rule</b>. ',
         },
 
+        {
+            explainText: 'The local maximum where the merging occurs is associated to ' +
+                'the local minimum of the <b>youngest</b> merged component. ',
+        },
+        {
+            explainText: 'Critical points (minima and maxima) are thus associated ' +
+                'in pairs. ',
+        },
+        {
+            removeAfter: [groupOrangePurpleLightBlueGreen1],
+            explainText: 'These pairs are called <b>persistence pairs</b>; ' +
+                'their value difference is called the <b>persistence</b>. ',
+        },
 
         // Group 5
         {
@@ -520,12 +536,12 @@ Content1.prototype.getSlides = function(
             removeAfter: [groupOrangePurpleLightBlue2],
             animateIn: swipeInUp({y: [-2.3, 0]}),
             duration: 20,
-            explainText: 'Continue the bottom-up filtration. ' +
-                'The filtrated function is sometimes called <i>sub-level set</i>. ',
+            explainText: 'Going on with the swipe... ',
         },
         {
             mesh: smin5,
-            explainText: 'New local minimum, new connected component. ',
+            explainText: '... a new local minimum is encountered, ' +
+                'which means a new connected component. ',
         },
 
 
@@ -549,6 +565,10 @@ Content1.prototype.getSlides = function(
             explainText: 'According to the <b>Elder Rule</b>, ' +
                 'the oldest component absorbs the youngest.',
         },
+        {
+            explainText: 'And the maximum is associated with the minimum ' +
+                'of the youngest (here, purple) component in a persistence pair. ',
+        },
 
         // Group 8
         {
@@ -556,7 +576,8 @@ Content1.prototype.getSlides = function(
             removeAfter: [groupOrangeGreenLightBlue1],
             animateIn: swipeInUp({y: [4.2, 6.8]}),
             duration: 20,
-            explainText: 'And on with the filtration... ',
+            explainText: 'Continue the bottom-up filtration. ' +
+            'This filtrated function is sometimes called a <b>sub-level set</b>. ',
         },
         {
             mesh: smax3,
@@ -580,8 +601,8 @@ Content1.prototype.getSlides = function(
 
         {
             mesh: lastCriticalPoints,
-            animateIn: swipeInUp({y: [12, 15]}),
-            duration: 50,
+            // animateIn: swipeInUp({y: [12, 15]}),
+            // duration: 50,
             removeAfter: [
                 xyHelper, xHelper, rangeText, domainText, dataText,
                 orangeCurve10,

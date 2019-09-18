@@ -70,7 +70,7 @@ function init() {
         1, 2000);
     camera.position.x = 0;
     camera.position.y = 0;
-    camera.position.z = 100;
+    camera.position.z = 200;
     let controls = new OrbitControls(camera, renderer.domElement);
     // controls.enablePan = false;
     controls.target.copy(new Vector3(0, 0, -15));
