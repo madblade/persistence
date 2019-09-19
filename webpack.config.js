@@ -48,7 +48,7 @@ module.exports =
         ]
     },
 
-    devtool: 'inline-source-map',
+    // devtool: 'inline-source-map',
 
     devServer: {
         contentBase: 'http://localhost:9000/dist',
