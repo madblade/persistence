@@ -404,7 +404,7 @@ Content1.prototype.getSlides = function(
             },
             transition: smootherCamera,
             duration: 50,
-            explainText: 'Let us consider a function defined on a 1-dimensional domain.',
+            explainText: 'Consider a function defined on a 1-dimensional domain.',
         },
         {
             mesh: xHelper,
@@ -488,7 +488,7 @@ Content1.prototype.getSlides = function(
             removeAfter: [groupOrangeLightBlue1],
             animateIn: swipeInUp({y: [-4, -3.2]}),
             duration: 20,
-            explainText: 'So the filtration contains three ' +
+            explainText: 'Therefore the filtration contains three ' +
                 'connected components (three separate pieces). ',
         },
         {
@@ -502,7 +502,8 @@ Content1.prototype.getSlides = function(
             removeAfter: [groupOrangePurpleLightBlue1],
             animateIn: swipeInUp({y: [-3.2, -2.3]}),
             duration: 20,
-            explainText: 'Something happens then: two connected components merge into one. ',
+            explainText: 'At this moment, something happens: ' +
+                'two connected components merge into one. ',
         },
         {
             mesh: smax1,
@@ -610,8 +611,8 @@ Content1.prototype.getSlides = function(
                 smax1, smax2, smax3,
                 lastCriticalPoints
             ],
-            explainText: 'And here we have all critical points. ' +
-                'Note for this case they are only maxima and minima. ',
+            explainText: 'All critical points are shown here. ' +
+                'Notice that for this case they are only maxima and minima. ',
         }
 
         /// END MESS

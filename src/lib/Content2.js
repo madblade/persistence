@@ -304,18 +304,18 @@ Content1.prototype.getSlides = function(
         {
             mesh: zHelper,
             animateIn: stretchIn,
-            explainText: 'So let us add a dimension to our domain. '
+            explainText: 'Let us first add a dimension to our domain. '
             // animateOut: stretchOut
         },
         {
             mesh: xzHelper,
             animateIn: swipeInBack,
             opacityMax: 0.5, // to be fixed someday
-            explainText: 'So let us add a dimension to our domain. '
+            explainText: 'Let us first a dimension to our domain. '
         },
         {
             mesh: groupText,
-            explainText: 'So let us add a dimension to our domain. '
+            explainText: 'Let us first a dimension to our domain. '
         },
         {
             mesh: curve2d,
@@ -343,7 +343,7 @@ Content1.prototype.getSlides = function(
             },
             transition: smootherCamera,
             duration: 50,
-            explainText: 'Let us examine critical points. '
+            explainText: 'There are three types of critical points in the 2D case. '
         },
         {
             mesh: groupMin,
@@ -377,7 +377,8 @@ Content1.prototype.getSlides = function(
             },
             transition: smootherCamera,
             duration: 50,
-            explainText: 'But there are other types of critical points: <b>saddles</b>. '
+            explainText: 'There is a new type of critical point that we did ' +
+                'not encounter in the 1D case: <b>saddles</b>. '
         },
         {
             mesh: groupSad,
@@ -450,7 +451,7 @@ Content1.prototype.getSlides = function(
         // All critical points
         {
             mesh: minMesh,
-            explainText: 'These are all minima... '
+            explainText: 'Here are all minima... '
         },
         {
             mesh: maxMesh,

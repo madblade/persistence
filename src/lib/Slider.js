@@ -304,7 +304,6 @@ Slider.prototype.endOldSlideTransition = function(
 Slider.prototype.startNewSlideTransistion = function(
     newSlideIndex, newSlide, backwards)
 {
-
     if (!backwards) {
         let addBefore = newSlide.addBefore;
         if (addBefore && addBefore.length) {
@@ -314,6 +313,11 @@ Slider.prototype.startNewSlideTransistion = function(
         }
 
         this.addMesh(newSlide.mesh, newSlide.opacityMax);
+    }
+
+    if (this.explainerElement) {
+        this.explainerElement.innerHTML =
+            !newSlide.explainText ? '' : newSlide.explainText;
     }
 };
 
@@ -339,10 +343,6 @@ Slider.prototype.endNewSlideTransition = function(
 
     if (this.needCam[newSlideIndex]) {
         this.needCam[newSlideIndex] = false;
-    }
-
-    if (this.explainerElement) {
-        this.explainerElement.innerHTML = !newSlide.explainText ? '' : newSlide.explainText;
     }
 };
 
