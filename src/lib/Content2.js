@@ -311,11 +311,11 @@ Content1.prototype.getSlides = function(
             mesh: xzHelper,
             animateIn: swipeInBack,
             opacityMax: 0.5, // to be fixed someday
-            explainText: 'Let us first a dimension to our domain. '
+            explainText: 'Let us first add a dimension to our domain. '
         },
         {
             mesh: groupText,
-            explainText: 'Let us first a dimension to our domain. '
+            explainText: 'Let us first add a dimension to our domain. '
         },
         {
             mesh: curve2d,
